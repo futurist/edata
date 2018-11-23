@@ -8,7 +8,7 @@
   "browser": "dist/umd.js",
   "scripts": {
     "lint": "eslint src tests",
-    "test": "npm run lint && ospec",
+    "test": "npm run build && ospec",
     "build": "rollup -c",
     "preversion": "npm run test",
     "version": "npm run build",
@@ -37,6 +37,8 @@
   "author": "James Yang <jamesyang999@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@babel/core": "^7.1.6",
+    "@babel/preset-env": "^7.1.6",
     "eslint": "^5.5.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.14.0",
@@ -47,6 +49,7 @@
     "lodash": "^4.17.11",
     "ospec": "^3.0.1",
     "rollup": "^0.63.4",
+    "rollup-plugin-babel": "^4.0.3",
     "rollup-plugin-buble": "^0.19.2",
     "rollup-plugin-commonjs": "^9.1.4",
     "rollup-plugin-node-resolve": "^3.3.0"

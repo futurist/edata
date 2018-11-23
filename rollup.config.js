@@ -1,5 +1,5 @@
 // rollup.config.js
-import buble from 'rollup-plugin-buble'
+import babel from 'rollup-plugin-babel'
 import resolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
 
@@ -7,11 +7,11 @@ export default [
   {
     input: './src/index.js',
     plugins: [
-      buble(),
       resolve({
         preferBuiltins: false
       }),
-      commonjs()
+      commonjs(),
+      babel()
     ],
     output: [
       { format: 'cjs', file: 'dist/cjs.js' },
@@ -35,7 +35,6 @@ export default [
   {
     input: './src/index.js',
     plugins: [
-      buble(),
       resolve({
         preferBuiltins: true
       }),

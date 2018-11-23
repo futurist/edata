@@ -169,8 +169,16 @@ You can play with the [demo here](https://flems.io/#0=N4IgZglgNgpgziAXAbVAOwIYFs
 
 ## API
 
-#### - rdata = require('rdata')
+#### - import rdata, {DefaultClass} from 'rdata'
 > The lib expose a default `rdata` function to use
+
+The `DefaultClass` can be used for sub-class your own implemention of `rdata`.
+
+**Notice**
+
+Be careful when using `class`, you have to transpile your code to `ES5` to run correctly.
+
+To avoid this (use `class` directly), you should import `rdata/dist/node`, or `rdata/dist/es`, the different between the two is the `node` version use native `events` package for `EventEmitter`.
 
 #### - rdataFactory = rdata(options)
 > the `rdataFactory` is used to turn data into *wrapped_rdata*.
@@ -185,7 +193,8 @@ A `wrapped_rdata` is just a [EventEmitter](https://nodejs.org/api/events.html) +
 *return: function(data) -> wrapped_rdata*
 
 ```js
-class MyWrapClass extends rdata.DefaultClass {
+import rdata, {DefaultClass} from 'rdata'
+class MyWrapClass extends DefaultClass {
     map(fn) {
         this.on('data', fn)
         return () => this.off('data', fn)
