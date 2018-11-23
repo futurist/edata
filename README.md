@@ -4,7 +4,7 @@ Turn data into reactive rdata.
 A rdata object is an [EventEmitter](https://nodejs.org/api/events.html), plus a value attribute (getter/setter), and helpers like unwrap, get, set, unset etc.
 
 [![Build Status](https://travis-ci.org/futurist/rdata.svg?branch=master)](https://travis-ci.org/futurist/rdata)
-[![NPM Version](https://img.shields.io/npm/v/rdata.svg)](https://www.npmjs.com/package/rdata) [![Join the chat at https://gitter.im/rdata/Lobby](https://badges.gitter.im/rdata/Lobby.svg)](https://gitter.im/rdata/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![NPM Version](https://img.shields.io/npm/v/rdata.svg)](https://www.npmjs.com/package/rdata)
 
 ## Install
 
