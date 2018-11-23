@@ -1,6 +1,6 @@
 {
   "name": "rdata",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Turn data into reactive EventEmitter, plus a value attribute and helpers like unwrap, get, set, unset etc.",
   "main": "dist/cjs.js",
   "module": "dist/es.js",
