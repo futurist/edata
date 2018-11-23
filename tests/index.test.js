@@ -1,6 +1,5 @@
 let it = require('ospec')
-let rdata = require('../src')
-let { DefaultClass } = rdata
+let { default: rdata, DefaultClass } = require('../dist/node')
 let { keys } = Object
 function isWrapper (s) { return s instanceof DefaultClass }
 

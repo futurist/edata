@@ -1,5 +1,25 @@
 'use strict'
 
+import EventEmitter from 'events'
+
+class DefaultWrapper extends EventEmitter {
+  constructor (...args) {
+    super()
+    if (args.length > 0) this._value = args[0]
+  }
+  get value () {
+    return this._value
+  }
+  set value (val) {
+    const oldVal = this._value
+    this._value = val
+    this.emit('data', val, oldVal)
+  }
+  valueOf () {
+    return this._value
+  }
+}
+
 const { assign, keys, getPrototypeOf } = Object
 const { toString, hasOwnProperty } = Object.prototype
 const { isArray } = Array
@@ -552,38 +572,5 @@ function rdata ({
   }
 }
 
-const EventEmitter = require('events')
-class DefaultWrapper extends EventEmitter {
-  constructor (...args) {
-    super()
-    if (args.length > 0) this._value = args[0]
-  }
-  get value () {
-    return this._value
-  }
-  set value (val) {
-    const oldVal = this._value
-    this._value = val
-    this.emit('data', val, oldVal)
-  }
-  valueOf () {
-    return this._value
-  }
-}
-rdata.DefaultClass = DefaultWrapper
-
-module.exports = rdata
-
-// var d = rdata()
-// var c = d({ a: 1, b: { c: 2 } })
-
-// // var x = c.get('a').map((val, oldVal) => console.log(111, val, oldVal))
-// var pos = c.setComputed('x', ['a', 'b.c'], (a, b) => a + b)
-// c.set('a', 2)
-// c.change.on('data', val=>{
-//     console.log(val)
-// })
-// c.value = (10)
-// pos()
-// c.set('a', 3)
-// console.log(c.unwrap('x'))
+export default rdata
+export const DefaultClass = DefaultWrapper
