@@ -1,0 +1,55 @@
+{
+  "name": "rdata",
+  "version": "0.1.0",
+  "description": "Turn data into reactive EventEmitter, plus a value attribute and helpers like unwrap, get, set, unset etc.",
+  "main": "dist/cjs.js",
+  "module": "dist/es.js",
+  "jsnext:main": "dist/es.js",
+  "browser": "dist/umd.js",
+  "scripts": {
+    "lint": "eslint src tests",
+    "test": "npm run lint && ospec",
+    "build": "rollup -c",
+    "preversion": "npm run test",
+    "version": "npm run build",
+    "postversion": "git push --follow-tags"
+  },
+  "files": [
+    "dist",
+    "src",
+    "tests",
+    "index.d.ts"
+  ],
+  "keywords": [
+    "getter",
+    "setter",
+    "observer",
+    "observable",
+    "reactive",
+    "stream",
+    "model",
+    "frp",
+    "data events",
+    "data flow",
+    "state management",
+    "functional-reactive-programming"
+  ],
+  "author": "James Yang <jamesyang999@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^5.5.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "events": "^3.0.0",
+    "lodash": "^4.17.11",
+    "ospec": "^3.0.1",
+    "rollup": "^0.63.4",
+    "rollup-plugin-buble": "^0.19.2",
+    "rollup-plugin-commonjs": "^9.1.4",
+    "rollup-plugin-node-resolve": "^3.3.0"
+  },
+  "dependencies": {}
+}
