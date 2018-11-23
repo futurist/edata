@@ -1,5 +1,14 @@
 import { EventEmitter } from "events";
 
+type ValueOf<T> = T[keyof T];
+
+declare interface MUTATION_TYPE {
+    CREATE: 'create';
+    ADD: 'add';
+    CHANGE: 'change';
+    DELETE: 'delete';
+}
+
 declare class WrapClass<T = any> extends EventEmitter {
     protected _value: T;
     public value: T;
@@ -12,7 +21,7 @@ declare interface IOptions {
 }
 
 declare interface WrapFactory {
-    (options: IOptions): DataFactory;
+    (options?: Partial<IOptions>): DataFactory;
     DefaultClass: WrapClass
 }
 
@@ -21,13 +30,13 @@ declare interface DataFactory {
 }
 
 declare interface IUnwrapConfig {
-    json: boolean;
-    map: (val: any) => any;
+    json?: boolean;
+    map?: (val: any) => any;
 }
 
 declare interface IChangeValue {
-    value: IWrappedData,
-    type: 'change' | 'delete' | 'add',
+    data: IWrappedData,
+    type: ValueOf<MUTATION_TYPE>,
     path: string[]
 }
 
@@ -58,13 +67,6 @@ declare interface IWrappedData extends WrapClass {
     unset(path: string | string[]): any;
     unwrap(config?: IUnwrapConfig): any;
     unwrap(path: string | string[], config?: IUnwrapConfig): any;
-}
-
-declare interface MUTATION_TYPE {
-    CREATE: 'create';
-    ADD: 'add';
-    CHANGE: 'change';
-    DELETE: 'delete';
 }
 
 declare interface IWrappedRoot extends IWrappedData {
