@@ -1,7 +1,7 @@
 # rdata
 Turn data into reactive rdata.
 
-A rdata object is an [EventEmitter](https://nodejs.org/api/events.html), plus a value attribute (getter/setter), and helpers like unwrap, get, set, unset etc.
+A **rdata** is an [EventEmitter](https://nodejs.org/api/events.html) + `.value` attribute (getter/setter), and helper methods to manipulate it.
 
 [![Build Status](https://travis-ci.org/futurist/rdata.svg?branch=master)](https://travis-ci.org/futurist/rdata)
 [![NPM Version](https://img.shields.io/npm/v/rdata.svg)](https://www.npmjs.com/package/rdata)
@@ -18,56 +18,63 @@ npm i -S rdata
 <script src="https://unpkg.com/rdata"></script>
 <script>
     // rdata is a global
-    rdata(...)
+    rdata...
 </script>
 ```
 
 
 ## Usage
 
-### - **Convert existing data and use wrapped data**
+### - **Initialize rdata**
 
 ```js
 import rdata from 'rdata'
 const rdataFactory = rdata({})
-const data = {
+const model = rdataFactory({
     age: 20,
     firstName: 'Hello',
     lastName: 'World',
     address: {
         city: 'Earth'
     }
-}
-const model = rdataFactory(data)
-// model and everything inside is a rdata(getter/setter + EventEmitter!)
+})
+```
 
-// rdata.value is a getter/setter
-model.value.firstName.value  // get Hello
+model and everything inside is a rdata (EventEmitter + `.value`)
 
-// rdata.map can have callback
+the `rdata.value` is a getter/setter
+```js
+model.value.firstName.value  // get: firstName
+model.value.firstName.value = ''  // set: firstName
+```
+
+use `rdata.on` to listen on data changes
+```js
 model.value.firstName.on('data', newVal=>{
     console.log('First Name changed to: ' + newVal)
 })
 
-model.value.firstName.value = 'Hi' // set to Hi
-// [console] First Name changed to: Hi
+model.value.firstName.value = 'Hi'
+//[console] First Name changed to: Hi
+```
 
-// every rdata is EventEmitter, so
-model.value.address.value.city.on('data', newVal=>console.log('new value:', newVal))
-// for long path, use helper method: .set
-model.value.address.value.city.value = 'Mars'  // set 'Mars'
+get a `rdata` from path
+```js
+const city = model.get('address.city')
+//instead of:
+// const city = model.value.address.value.city
+city.value = 'Earth'
+```
+
+every `rdata` is [EventEmitter](https://nodejs.org/api/events.html), so
+```js
+model.get('address.city').on('data', newVal=>console.log('new value:', newVal))
 model.set('address', {city: 'Mars'})  // set to address.city, same as above!
-
-// get a rdata from path
-const city = model.get('address.city')  // Mars
-city.value  // get 'Mars'
-city.value = 'Earth'  // set 'Earth'
 
 model.unwrap('address')  // flatten: {city: 'Earth'}
 model.unset('address')   // delete model.address
 
 model.unwrap() // flatten all: {age: 20, firstName: 'Hello', lastName: 'World'}
-
 ```
 
 **Notice** all `rdata object` has default `valueOf` function that returns `value`, so below are same:
@@ -83,13 +90,15 @@ model.get('age') + 10  // 30
 
 The root `model` has a `change` rdata, you can callback for every data changes.
 
+**observe changes** of model
 ```js
-// start observe model changes
-model.change.on('data', ({value, type, path})=>{
-    console.log('data mutated:', path, type, value.unwrap())
-})
-// you can .off the event any time!
+const onDataChange = ({data, type, path})=>{
+    console.log('data mutated:', path, type, data.unwrap())
+}
+model.change.on('data', onDataChange)
+```
 
+```js
 model.set('address.city', 'Mars')
 // [console] data mutated: [ 'address', 'city' ] add Mars
 model.get('address.city')('Earth')
@@ -98,7 +107,12 @@ model.unset('address.city')
 // [console] data mutated: [ 'address', 'city' ] delete Earth
 ```
 
-### - **Define data relations**
+to stop, you can `.off` the event any time!
+```js
+model.change.off('data', onDataChange)
+```
+
+### - **Define Data Relations**
 
 You can define data relations using `setComputed`, as below:
 
@@ -128,7 +142,7 @@ class App extends React.Component {
         super(props)
         const {model} = this.props
         this.state = model.unwrap()
-        // {name: 'earth'}
+        // init: {name: 'earth'}
         
         this.onInputChange = e => {
             const {name, value} = e.target
@@ -174,16 +188,26 @@ You can play with the [demo here](https://flems.io/#0=N4IgZglgNgpgziAXAbVAOwIYFs
 
 The `DefaultClass` can be used for sub-class your own implemention of `rdata`.
 
+You can `extends` this class to add your own methods:
+
+```js
+class MyRDataClass extends DefaultClass {
+    method(){
+        // do sth.
+    }
+}
+```
+
 **Notice**
 
-Be careful when using `class`, you have to transpile your code to `ES5` to run correctly.
+Be careful when using above `class` keyword, by default, you have to transpile your code to `ES5` to run correctly.
 
-To avoid this (use `class` directly), you should import `rdata/dist/node`, or `rdata/dist/es`, the different between the two is the `node` version use native `events` package for `EventEmitter`.
+If you need to use `class` without transpile, you should import `rdata/dist/node`, or `rdata/dist/es`, the different between the two is the `node` version use native `events` package for `EventEmitter`.
 
 #### - rdataFactory = rdata(options)
 > the `rdataFactory` is used to turn data into *wrapped_rdata*.
 
-A `wrapped_rdata` is just a [EventEmitter](https://nodejs.org/api/events.html) + value attribute (getter/setter), with some helper methods added to it, like `get`, `set` etc.
+A `wrapped_rdata` is `rdata` + some helper methods, like `get`, `set` etc.
 
 `options` has below options:
 - **WrapClass**: Default implementation is [here](https://github.com/futurist/rdata/blob/2e2c73b2d8aefaca61b4bc38b920c449c3f747ad/src/index.js#L556)
@@ -194,22 +218,23 @@ A `wrapped_rdata` is just a [EventEmitter](https://nodejs.org/api/events.html) +
 
 ```js
 import rdata, {DefaultClass} from 'rdata'
-class MyWrapClass extends DefaultClass {
+class MyRDataClass extends DefaultClass {
     map(fn) {
         this.on('data', fn)
         return () => this.off('data', fn)
     }
 }
 var rdataFactory = rdata({
-    WrapClass: MyWrapClass
+    WrapClass: MyRDataClass
 })
-rdataFactory(data1).map(...)
-rdataFactory(data2).map(...)
+const root1 = rdataFactory(data1)
+const root2 = rdataFactory(data2)
+root1.map(onChangeHandler)
 ...
 ```
 
 #### - root = rdataFactory(data: any)
-> the `root` is a *wrapped_rdata*, with all nested data wrapped.
+> the above code example, `root` is a *wrapped_rdata*, with all nested data wrapped.
 
 *return: wrapped_rdata for `data`*
 
@@ -247,7 +272,7 @@ The `wrapped_rdata.change` rdata object's value has `path` property to reflect t
 
 ```js
 var xy = root.slice('x.y')
-xy.change.map(({data, type, path})=>console.log(type, path))
+xy.change.on('data', ({data, type, path})=>console.log(type, path))
 xy.set('z', 1)
 // x.y changed! ['z']
 ```
