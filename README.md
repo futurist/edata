@@ -164,7 +164,7 @@ ReactDOM.render(<App model={model.slice('user')} />, app)
 
 ```
 
-You can play with the [demo here](#)
+You can play with the [demo here](https://flems.io/#0=N4IgZglgNgpgziAXAbVAOwIYFsZJAOgAsAXLKEAGhAGMB7NYmBvAHgBMIA3AAgjYF4AOiAwAHUcIB8LAPQdOkkAF8K6bLkQEAVgip0GTYnn1xi3LLTYwo3ftwBObDMQwAKAJSvgAVzgx7iNzAmDiBAOQwGPbEhGFKSu6CaEnUUBhwcNwAguLcMAAejGhsmQBKkdTE+ADCtFii9IZBSdyt3CbE9t6VtPauova0onDuwC1tE3Deov79g8OJaBMTHUEWVlBKttwxEHD4A0Nw48s7hHv4ps4w2+vW+N5oAO72Yh4nyzIyQSEw4ZHRWJKD4TEFtXb7egASTQom8xGqhAwaAA5jc7OjJM0lqdlqtguoKNxOBgoN4YFsMfgXPY0cQwac7lBLjBiK5fkSSWSYItcdxgTjTgyzhd6ABZSzWRHItHbLxOFxE4gATxmRNEzkICX4kjGgr5Iv2fmIAGUXIwvMK+cgNTEALqBBUYfBc8lWtoJYUCiYCj50eqNBgAET4EsebNGwqZ+GoSNRMHw9FcYSdYSV50haAlG2l8d5HvGfrqDTQhgA6tAoABVNAWcMePV86OxmUJ2hgMDJ1Pp0VZyVQXNo-Otb1tD72JhWPqR-UreimNb9ymGg7zY6ztqrXz+ABy6lu-Yez1eomTvzCw+WE+I3nsS3YXEk7taLEIAGZJAAJaxQWhBbf2HuOBKLI75PhupwsBAsLwtwvz8GE57EqS5L8D4fiAeoWz0IOMBoRCiZoDCcIInGaJbDI4F8rI8hUQWaC+mg5QYJUQYAPJivgE7FLMLA5KI5j9mh0ZwFAEDUDAyYAReFGSESYiiIslA0MW0D+HgABGGAadYyl+LAlQQPOeAAIwAOyICZAAsyiqCAvx4DGGTKfoRRGJoyh2lQYloAA1ggKBqDgeATixVRWJw1hDDgDD4Doym3uQmgkMQwyIF8jyiL5KIxnUMihZUMjeFgbD5RU4UwJFv6iDFVTxVQKozHgcDUPYECiEYKhBRoIAFcQAC0bB1PgEVRTVhhxboICJXgKVpRlsLZblWBlWFg15cVpV9etWAjZVY21ZNymNT1LVtR1tndSFToJfYSUgHNcDpUVi05f6+VOgAAgADPgJn4N9ch7MQRUlUdDWqqdrXtZ1dpKEAA)
 
 
 ## API
@@ -178,7 +178,7 @@ You can play with the [demo here](#)
 A `wrapped_rdata` is just a [EventEmitter](https://nodejs.org/api/events.html) + value attribute (getter/setter), with some helper methods added to it, like `get`, `set` etc.
 
 `options` has below options:
-- **WrapClass**: Default implementation is [here](#)
+- **WrapClass**: Default implementation is [here](https://github.com/futurist/rdata/blob/2e2c73b2d8aefaca61b4bc38b920c449c3f747ad/src/index.js#L556)
 - **unwrapConfig**: when `unwrap`, you can add default config
 - **addMethods**: You can add your own API with this option
 
