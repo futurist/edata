@@ -1,5 +1,5 @@
 let it = require('ospec')
-let { default: rdata, DefaultClass } = require('../dist/node')
+let { default: edata, DefaultClass } = require('../dist/node')
 let { keys } = Object
 function isWrapper (s) { return s instanceof DefaultClass }
 
@@ -14,7 +14,7 @@ class WrapClass extends DefaultClass {
 
 /* eslint no-redeclare: 0 */
 it('mithril stream', () => {
-  var w = rdata({
+  var w = edata({
     WrapClass
   })
   var d = w({ a: 1, b: { c: 2 } })
@@ -30,7 +30,7 @@ it('mithril stream', () => {
 })
 
 it('root test', () => {
-  var w = rdata({
+  var w = edata({
     WrapClass
   })
   var d = w({ a: 1, b: { c: 2 } })
@@ -39,7 +39,7 @@ it('root test', () => {
 })
 
 it('root unwrap', () => {
-  var w = rdata({
+  var w = edata({
     WrapClass
   })
   var data = { a: { b: { c: 2 } } }
@@ -53,7 +53,7 @@ it('root unwrap', () => {
 })
 
 it('not dive into stream', () => {
-  var d = rdata({
+  var d = edata({
     WrapClass
   })({
     a: 1,
@@ -70,7 +70,7 @@ it('not dive into stream', () => {
 
 it('array test', () => {
   var spy = it.spy()
-  var x = rdata({
+  var x = edata({
     WrapClass
   })({ a: { b: [] } })
   // x.value.a.value = (x.value.a.value) // give it a change first to test map
@@ -121,7 +121,7 @@ it('array test', () => {
 
 it('single unwrap', () => {
   var spy = it.spy()
-  var x = rdata({
+  var x = edata({
     WrapClass
   })({ a: { b: new WrapClass(10) } })
   x.change.map(spy)
@@ -130,7 +130,7 @@ it('single unwrap', () => {
 
 it('set test', () => {
   var spy = it.spy()
-  var d = rdata({
+  var d = edata({
     WrapClass
   })({})
   d.change.map(spy)
@@ -154,7 +154,7 @@ it('object test', () => {
   }
 
   var spy = it.spy()
-  var w = rdata({
+  var w = edata({
     WrapClass
   })
   var d = w(x)
@@ -288,7 +288,7 @@ it('circle object test', () => {
   xa.a = x
 
   var spy = it.spy()
-  var w = rdata({
+  var w = edata({
     WrapClass
   })
   var d = w(x)
@@ -315,7 +315,7 @@ it('circle object test', () => {
 })
 
 it('ensure', () => {
-  var w = rdata({
+  var w = edata({
     WrapClass
   })
   var d = w({
@@ -331,7 +331,7 @@ it('ensure', () => {
 
 it('getset', () => {
   var spy = it.spy()
-  var w = rdata({
+  var w = edata({
     WrapClass
   })
   var d = w({
@@ -359,7 +359,7 @@ it('getset', () => {
 
 it('set descriptor', () => {
   var spy = it.spy()
-  var w = rdata({
+  var w = edata({
     WrapClass
   })
   var d = w({
@@ -387,7 +387,7 @@ it('set descriptor', () => {
 
 it('model slice', () => {
   var spy = it.spy()
-  var w = rdata({
+  var w = edata({
     WrapClass
   })
   var d = w({
@@ -422,7 +422,7 @@ it('model slice', () => {
 
 it('multiple slice', () => {
   var spy = it.spy()
-  var w = rdata({
+  var w = edata({
     WrapClass
   })
   var d = w({
@@ -447,7 +447,7 @@ it('multiple slice', () => {
 
 it('nested getset', () => {
   var spy = it.spy()
-  var d = rdata({
+  var d = edata({
     WrapClass
   })({
     air: {
@@ -473,7 +473,7 @@ it('add intermediate object when set', () => {
     ['change', ['a'], 1],
     ['change', ['a'], 2]
   ]
-  var d = rdata({
+  var d = edata({
     WrapClass
   })({})
   d.change.map(({ type, path, data }) => {
@@ -488,7 +488,7 @@ it('add intermediate object when set', () => {
 })
 
 it('setMany', () => {
-  var d = rdata({
+  var d = edata({
     WrapClass
   })({})
   d.setMany({
@@ -519,7 +519,7 @@ it('setMany', () => {
 })
 
 it('getMany', () => {
-  var d = rdata({
+  var d = edata({
     WrapClass
   })({
     a: { b: 1 },
@@ -547,7 +547,7 @@ it('getMany', () => {
 })
 
 it('get with mapFunc', () => {
-  var d = rdata({
+  var d = edata({
     WrapClass
   })({
     a: { b: 1 },
@@ -559,7 +559,7 @@ it('get with mapFunc', () => {
 
 it('hold change', () => {
   var spy = it.spy()
-  var root = rdata({
+  var root = edata({
     WrapClass
   })({
     a: { b: 1 },
@@ -582,7 +582,7 @@ it('hold change', () => {
 
 it('skip change', () => {
   var spy = it.spy()
-  var d = rdata({
+  var d = edata({
     WrapClass
   })({
     a: { b: 1 },
@@ -619,7 +619,7 @@ it('unwrap map', () => {
     }
   }
 
-  const d = rdata(
+  const d = edata(
     {
       unwrapConfig: packer => {
         // console.log(obj.path)
@@ -666,7 +666,7 @@ it('unwrap map', () => {
 })
 
 it('options.addMethods', () => {
-  const d = rdata(
+  const d = edata(
     {
       addMethods: [
         obj => {
@@ -689,7 +689,7 @@ it('should not dig into non-Array/POJO', () => {
       }
     }
   }
-  const d = rdata()({
+  const d = edata()({
     x: 1,
     b: new MyClass()
   })
@@ -699,7 +699,7 @@ it('should not dig into non-Array/POJO', () => {
 
 it('setComputed', () => {
   var spy = it.spy()
-  var d = rdata({
+  var d = edata({
     WrapClass
   })
   var c = d({ a: 1, b: { c: 2 } })
@@ -720,7 +720,7 @@ it('setComputed', () => {
 })
 
 it('context', () => {
-  var d = rdata({
+  var d = edata({
     WrapClass
   })
   var c = d({
