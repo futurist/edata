@@ -15,7 +15,7 @@ export default [
     ],
     output: [
       { format: 'cjs', file: 'dist/cjs.js' },
-      { format: 'umd', file: 'dist/umd.js', name: 'rdata' }
+      { format: 'umd', file: 'dist/umd.js', name: 'edata' }
     ]
   },
 

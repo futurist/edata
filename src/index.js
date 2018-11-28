@@ -74,7 +74,7 @@ function getPathType (p) {
 
 const defaultMapFunc = val => val != null ? val.unwrap() : val
 
-function rdata ({
+function edata ({
   WrapClass = DefaultWrapper,
   unwrapConfig = null,
   addMethods = []
@@ -550,21 +550,21 @@ function rdata ({
       ))
     }
 
-    function setComputed (path, rdataArr, combineFunc) {
+    function setComputed (path, edataArray, combineFunc) {
       const obj = this.ensure(path)
-      const arr = rdataArr.map(r => isWrapper(r) ? r : this.get(r))
+      const arr = edataArray.map(r => isWrapper(r) ? r : this.get(r))
       if (arr.some(r => !isWrapper(r))) return false
       let allFullfilled = false
       const checkValues = () => {
-        if (!allFullfilled) allFullfilled = arr.every(rdata => '_value' in rdata)
+        if (!allFullfilled) allFullfilled = arr.every(edata => '_value' in edata)
         if (allFullfilled) {
           obj.value = combineFunc(...arr)
         }
       }
       checkValues()
-      arr.forEach(rdata => rdata.on('data', checkValues))
+      arr.forEach(edata => edata.on('data', checkValues))
       return () => {
-        arr.forEach(rdata => rdata.removeListener('data', checkValues))
+        arr.forEach(edata => edata.removeListener('data', checkValues))
       }
     }
 
@@ -572,5 +572,5 @@ function rdata ({
   }
 }
 
-export default rdata
+export default edata
 export const DefaultClass = DefaultWrapper

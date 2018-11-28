@@ -57,7 +57,7 @@ declare interface IWrappedData extends WrapClass {
     get(path: string | string[], mapFunc?: (val: IWrappedData | undefined) => any): IWrappedData | undefined;
     set(value: any): IWrappedData;
     set(path: string | string[], value: any, descriptor?: object): IWrappedData;
-    setComputed(path: string | string[], rdataArr: any[], combineFunc: (...args: IWrappedData[])=>void): IDisposer;
+    setComputed(path: string | string[], edataArray: any[], combineFunc: (...args: IWrappedData[])=>void): IDisposer;
     getMany(pathMap: object | string[] | string, mapFunc?: (val: IWrappedData | undefined) => any): object | Array<any> | IWrappedData | undefined;
     setMany(kvMap: object, descriptors?: object): object;
     getset(valueFn: (prevVal: IWrappedData | undefined) => any): IWrappedData;
@@ -74,10 +74,10 @@ declare interface IWrappedRoot extends IWrappedData {
     MUTATION_TYPE: MUTATION_TYPE
 }
 
-declare const rdata: WrapFactory;
-export = rdata;
+declare const edata: WrapFactory;
+export = edata;
 
-declare module 'rdata' {
-    export = rdata;
+declare module 'edata' {
+    export = edata;
 }
 
