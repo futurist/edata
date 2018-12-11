@@ -1,6 +1,6 @@
 {
   "name": "edata",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Turn javascript data into extended EventEmitter, plus a .value getter/setter and helper methods to manipulate it",
   "main": "dist/cjs.js",
   "module": "dist/es.js",
@@ -43,7 +43,7 @@
   },
   "homepage": "https://github.com/futurist/edata#readme",
   "author": "James Yang <jamesyang999@gmail.com>",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@babel/core": "^7.1.6",
     "@babel/preset-env": "^7.1.6",
