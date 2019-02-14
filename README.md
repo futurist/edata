@@ -220,7 +220,7 @@ wrapped_edata = EventEmitter + '.value' + '.get' + '.set' ...
 `options` has below options:
 - **WrapClass**: Default implementation is [here](https://github.com/futurist/edata/blob/2e2c73b2d8aefaca61b4bc38b920c449c3f747ad/src/index.js#L556)
 - **unwrapConfig**: when `unwrap`, you can add default config
-- **addMethods**: You can add your own API with this option
+- **extensions**: You can add your own API with this option
 
 *return: function(data) -> wrapped_edata*
 

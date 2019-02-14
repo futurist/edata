@@ -2,10 +2,12 @@
 
 import EventEmitter from 'events'
 
-class DefaultWrapper extends EventEmitter {
-  constructor (...args) {
+export default edata
+
+export class DefaultWrapClass extends EventEmitter {
+  constructor () {
     super()
-    if (args.length > 0) this._value = args[0]
+    if (arguments.length > 0) this._value = arguments[0]
   }
   get value () {
     return this._value
@@ -74,11 +76,12 @@ function getPathType (p) {
 
 const defaultMapFunc = val => val != null ? val.unwrap() : val
 
-function edata ({
-  WrapClass = DefaultWrapper,
-  unwrapConfig = null,
-  addMethods = []
-} = {}) {
+function edata (config = {}) {
+  const {
+    WrapClass = DefaultWrapClass,
+    unwrapConfig = null,
+    extensions = []
+  } = config
   class ChangeClass extends WrapClass {
     constructor (packed) {
       super()
@@ -194,7 +197,7 @@ function edata ({
     return result
   }
 
-  return source => {
+  const wrapSource = source => {
     let root
     let _cache = null
     root = createWrap(source, [])
@@ -242,6 +245,7 @@ function edata ({
       packed.root = root
       packed.path = path
       packed.on('data', () => {
+        if (root.change == null) return
         root.change.value = ({ data: packed, type: MUTATION_TYPE.CHANGE })
       })
       root.change.value = {
@@ -254,7 +258,6 @@ function edata ({
       packed.get = get
       packed.getMany = getMany
       packed.set = set
-      packed.setComputed = setComputed
       packed.setMany = setMany
       packed.getset = getset
       packed.ensure = ensure
@@ -264,8 +267,12 @@ function edata ({
         packed.push = push
         packed.pop = pop
       }
-      addMethods.forEach(plugin => {
-        plugin(packed)
+      extensions.forEach(plugin => {
+        plugin(packed, {
+          isWrapper,
+          wrapSource,
+          createWrap
+        })
       })
       return packed
     }
@@ -550,27 +557,7 @@ function edata ({
       ))
     }
 
-    function setComputed (path, edataArray, combineFunc) {
-      const obj = this.ensure(path)
-      const arr = edataArray.map(r => isWrapper(r) ? r : this.get(r))
-      if (arr.some(r => !isWrapper(r))) return false
-      let allFullfilled = false
-      const checkValues = () => {
-        if (!allFullfilled) allFullfilled = arr.every(edata => '_value' in edata)
-        if (allFullfilled) {
-          obj.value = combineFunc(...arr)
-        }
-      }
-      checkValues()
-      arr.forEach(edata => edata.on('data', checkValues))
-      return () => {
-        arr.forEach(edata => edata.removeListener('data', checkValues))
-      }
-    }
-
     return root
   }
+  return wrapSource
 }
-
-export default edata
-export const DefaultClass = DefaultWrapper
