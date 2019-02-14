@@ -1,9 +1,9 @@
 let it = require('ospec')
-let { default: edata, DefaultClass } = require('../dist/node')
+let { default: edata, DefaultWrapClass } = require('../dist/node')
 let { keys } = Object
-function isWrapper (s) { return s instanceof DefaultClass }
+function isWrapper (s) { return s instanceof DefaultWrapClass }
 
-class WrapClass extends DefaultClass {
+class WrapClass extends DefaultWrapClass {
   map (fn) {
     this.on('data', fn)
     return () => {
@@ -665,10 +665,10 @@ it('unwrap map', () => {
   })
 })
 
-it('options.addMethods', () => {
+it('options.extensions', () => {
   const d = edata(
     {
-      addMethods: [
+      extensions: [
         obj => {
           obj.add = function (n) {
             this.value = (this.value + n)
@@ -697,26 +697,31 @@ it('should not dig into non-Array/POJO', () => {
   it(d.value.b.value.abc.x).equals(1)
 })
 
-it('setComputed', () => {
+it('extensions - combine', () => {
   var spy = it.spy()
   var d = edata({
-    WrapClass
+    WrapClass,
+    extensions: [
+      require('../src/extensions/combine')
+    ]
   })
   var c = d({ a: 1, b: { c: 2 } })
   var t = new WrapClass(0)
-  var disposer = c.setComputed('x', ['a', 'b.c', t], (a, b, c) => a + b + c)
+  var combined = c.combine(['a', 'b.c', t])
+  combined.on('data', ([a1, a2, a3]) => c.set('x', a1 + a2 + a3))
+  combined.check()
   c.get('x').map(spy)
   it(c.unwrap('x')).equals(3)
   c.set('a', 2)
   it(c.unwrap('x')).equals(4)
   t.value = 10
   it(c.unwrap('x')).equals(14)
-  disposer && disposer()
+  combined.end()
   c.set('a', 3)
   it(c.unwrap('x')).equals(14)
   it(spy.callCount).equals(2)
   // should not compute for non-exists
-  it(c.setComputed('y', ['v', 'w'])).equals(false)
+  it(c.combine(['v', 'w'])).equals(false)
 })
 
 it('context', () => {
