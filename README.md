@@ -53,8 +53,8 @@ model.value.firstName.value = ''  // set: firstName
 
 use `edata.on` to listen on value changes
 ```js
-model.value.firstName.on('data', newVal=>{
-    console.log('First Name changed to: ' + newVal)
+model.value.firstName.on('data', e=>{
+    console.log('First Name changed to: ' + e.data)
 })
 
 model.value.firstName.value = 'Hi'
@@ -71,7 +71,7 @@ city.value = 'Earth'
 
 every `edata` is an [EventEmitter](https://nodejs.org/api/events.html), so
 ```js
-model.get('address.city').on('data', newVal=>console.log('new value:', newVal))
+model.get('address.city').on('data', e=>console.log('new value:', e.data))
 model.set('address', {city: 'Mars'})  // set to address.city, same as above!
 
 model.unwrap('address')  // flatten: {city: 'Earth'}
@@ -128,7 +128,7 @@ model.setComputed(
     ['firstName', 'lastName'],
     (a, b) => a + ' ' + b
 )
-model.get('fullName').on('data', val => console.log(val))
+model.get('fullName').on('data', e => console.log(e.data))
 firstName.value = 'Green'
 // [console] Green World
 
