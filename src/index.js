@@ -15,7 +15,7 @@ export class DefaultWrapClass extends EventEmitter {
   set value (val) {
     const oldVal = this._value
     this._value = val
-    this.emit('data', val, oldVal)
+    this.emit('data', { data: val, oldData: oldVal })
   }
   valueOf () {
     return this._value
