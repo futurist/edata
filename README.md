@@ -244,9 +244,9 @@ root1.map(onChangeHandler)
 #### - root = edataFactory(data: any)
 > the above code example, `root` is a *wrapped_edata*, with all nested data wrapped.
 
-*return: wrapped_edata for `observer`*
+*return: wrapped_edata*
 
-`root.observer` is also an edata object, you can listen to `observer` event for children changes.
+`root.observer` is also an edata object, you can listen to `change` event for children changes.
 
 Any data inside root is a `wrapped_edata`, and may be contained by `{}` or `[]` edata object, keep the same structure as before.
 
@@ -272,7 +272,7 @@ z.value = 10
 ```
 
 #### - wrapped_edata.slice(path: string|string[], filter?: ({data, type, path}):boolean, from = root)
-> get nested wrapped data from path, and attach a `observer` edata object to it that filtered from `(from||root).observer` edata object, the default filter is to test if the `root.path` starts with path.
+> get nested wrapped data from path, and attach a `observer` edata object to observe scope mutations that the `root.path` starts with path.
 
 *return: `wrapped_edata`, which have a `.observer` edata object*
 
