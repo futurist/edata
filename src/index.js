@@ -15,7 +15,7 @@ export class DefaultWrapClass extends EventEmitter {
   set value (val) {
     const oldVal = this._value
     this._value = val
-    this.emit('data', { data: val, oldData: oldVal })
+    this.emit('change', { data: val, oldData: oldVal })
   }
   valueOf () {
     return this._value
@@ -111,7 +111,7 @@ function edata (config = {}) {
     }
     set value ({ data, type, meta }) {
       const { root } = this._packed
-      if (!root || root.change.skip || this.skip) return
+      if (!root || root.observer.skip || this.skip) return
       this.count++
       if (meta == null) {
         meta = { path: data.path }
@@ -120,7 +120,7 @@ function edata (config = {}) {
         this.changeStack.push(assign({ data, type }, meta))
       } else {
         this._value = (assign({ data, type }, meta))
-        this.emit('data', this._value)
+        this.emit('change', this._value)
       }
     }
   }
@@ -206,15 +206,15 @@ function edata (config = {}) {
       const obj = this
       const part = makeChange(obj.get(path))
       if (!isWrapper(part)) return part
-      const { change } = part
+      const { observer } = part
       const target = from || root
       const subPath = getPath(path).map(v => v[1])
       if (!isFunction(filter)) {
         filter = (arg) => arg.path.join().indexOf(subPath.join()) === 0
       }
-      target.change.on('data', ({ data, type, path }) => {
+      target.observer.on('change', ({ data, type, path }) => {
         if (filter({ data, type, path })) {
-          change.value = {
+          observer.value = {
             data,
             type,
             meta: {
@@ -234,7 +234,7 @@ function edata (config = {}) {
       //   const _fn = _change.count > 0 ? ignoreFirstCall(fn) : fn
       //   return oldMap.call(this, _fn)
       // }
-      packed.change = _change
+      packed.observer = _change
       packed.MUTATION_TYPE = MUTATION_TYPE
       return packed
     }
@@ -244,11 +244,11 @@ function edata (config = {}) {
       // type: 0->CHANGE, 1->ADD, 2->DELETE
       packed.root = root
       packed.path = path
-      packed.on('data', () => {
-        if (root.change == null) return
-        root.change.value = ({ data: packed, type: MUTATION_TYPE.CHANGE })
+      packed.on('change', () => {
+        if (root.observer == null) return
+        root.observer.value = ({ data: packed, type: MUTATION_TYPE.CHANGE })
       })
-      root.change.value = {
+      root.observer.value = {
         data: packed,
         type
       }
@@ -284,12 +284,12 @@ function edata (config = {}) {
         _cache = [[source, packed, null]]
         root = makeChange(packed)
       }
-      let skip = root.change.skip
-      root.change.skip = (true)
+      let skip = root.observer.skip
+      root.observer.skip = (true)
 
       if (shouldNotDig(source)) {
         packed = bindMethods(wrapper(source), prevPath)
-        root.change.skip = (skip)
+        root.observer.skip = (skip)
         return packed
       }
 
@@ -327,7 +327,7 @@ function edata (config = {}) {
           }
         })
       }
-      root.change.skip = (skip)
+      root.observer.skip = (skip)
       return ret
     }
 
@@ -497,7 +497,7 @@ function edata (config = {}) {
             Object.defineProperty(n, p, assign({ value }, descriptor))
           }
           action = MUTATION_TYPE.ADD
-          root.change.value = {
+          root.observer.value = {
             data: value,
             type: action
           }
@@ -521,7 +521,7 @@ function edata (config = {}) {
       if (!(p in parent)) return
       let deleteVal = parent[p]
       delete parent[p]
-      root.change.value = {
+      root.observer.value = {
         data: deleteVal,
         type: MUTATION_TYPE.DELETE
       }

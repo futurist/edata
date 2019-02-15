@@ -53,7 +53,7 @@ model.value.firstName.value = ''  // set: firstName
 
 use `edata.on` to listen on value changes
 ```js
-model.value.firstName.on('data', e=>{
+model.value.firstName.on('change', e=>{
     console.log('First Name changed to: ' + e.data)
 })
 
@@ -71,7 +71,7 @@ city.value = 'Earth'
 
 every `edata` is an [EventEmitter](https://nodejs.org/api/events.html), so
 ```js
-model.get('address.city').on('data', e=>console.log('new value:', e.data))
+model.get('address.city').on('change', e=>console.log('new value:', e.data))
 model.set('address', {city: 'Mars'})  // set to address.city, same as above!
 
 model.unwrap('address')  // flatten: {city: 'Earth'}
@@ -96,9 +96,9 @@ The root `model` has a `change` attribute, which is also an edata, you can callb
 **observe changes** of model
 ```js
 const onDataChange = ({data, type, path})=>{
-    console.log('data mutated:', path, type, data.unwrap())
+    console.log('value mutated:', path, type, data.unwrap())
 }
-model.change.on('data', onDataChange)
+model.change.on('change', onDataChange)
 ```
 
 ```js
@@ -112,7 +112,7 @@ model.unset('address.city')
 
 to stop, you can `.off` the event any time!
 ```js
-model.change.off('data', onDataChange)
+model.change.off('change', onDataChange)
 ```
 
 ### - **Define Data Relations**
@@ -128,7 +128,7 @@ model.setComputed(
     ['firstName', 'lastName'],
     (a, b) => a + ' ' + b
 )
-model.get('fullName').on('data', e => console.log(e.data))
+model.get('fullName').on('change', e => console.log(e.data))
 firstName.value = 'Green'
 // [console] Green World
 
@@ -161,11 +161,11 @@ class App extends React.Component {
     }
 
     componentDidMount(){
-        model.change.on('data', this.onModelChange)
+        model.change.on('change', this.onModelChange)
     }
   
     componentWillUnmount(){
-        model.change.off('data', this.onModelChange)
+        model.change.off('change', this.onModelChange)
     }
     
     render(){
@@ -228,8 +228,8 @@ wrapped_edata = EventEmitter + '.value' + '.get' + '.set' ...
 import edata, {DefaultClass} from 'edata'
 class MyedataClass extends DefaultClass {
     map(fn) {
-        this.on('data', fn)
-        return () => this.off('data', fn)
+        this.on('change', fn)
+        return () => this.off('change', fn)
     }
 }
 var edataFactory = edata({
@@ -244,9 +244,9 @@ root1.map(onChangeHandler)
 #### - root = edataFactory(data: any)
 > the above code example, `root` is a *wrapped_edata*, with all nested data wrapped.
 
-*return: wrapped_edata for `data`*
+*return: wrapped_edata for `change`*
 
-`root.change` is also an edata object, you can listen to `data` event for children changes.
+`root.change` is also an edata object, you can listen to `change` event for children changes.
 
 Any data inside root is a `wrapped_edata`, and may be contained by `{}` or `[]` edata object, keep the same structure as before.
 
@@ -280,7 +280,7 @@ The `wrapped_edata.change` edata object's value has `path` property to reflect t
 
 ```js
 var xy = root.slice('x.y')
-xy.change.on('data', ({data, type, path})=>console.log(type, path))
+xy.change.on('change', ({data, type, path})=>console.log(type, path))
 xy.set('z', 1)
 // x.y changed! ['z']
 ```
