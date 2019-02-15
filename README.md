@@ -91,14 +91,14 @@ model.get('age') + 10  // 30
 
 ### - **Observe model changes**
 
-The root `model` has a `change` attribute, which is also an edata, you can callback for every changes.
+The root `model` has a `observer` attribute, which is also an edata, you can callback for every changes.
 
 **observe changes** of model
 ```js
 const onDataChange = ({data, type, path})=>{
     console.log('value mutated:', path, type, data.unwrap())
 }
-model.change.on('change', onDataChange)
+model.observer.on('change', onDataChange)
 ```
 
 ```js
@@ -112,7 +112,7 @@ model.unset('address.city')
 
 to stop, you can `.off` the event any time!
 ```js
-model.change.off('change', onDataChange)
+model.observer.off('change', onDataChange)
 ```
 
 ### - **Define Data Relations**
@@ -161,11 +161,11 @@ class App extends React.Component {
     }
 
     componentDidMount(){
-        model.change.on('change', this.onModelChange)
+        model.observer.on('change', this.onModelChange)
     }
   
     componentWillUnmount(){
-        model.change.off('change', this.onModelChange)
+        model.observer.off('change', this.onModelChange)
     }
     
     render(){
@@ -244,9 +244,9 @@ root1.map(onChangeHandler)
 #### - root = edataFactory(data: any)
 > the above code example, `root` is a *wrapped_edata*, with all nested data wrapped.
 
-*return: wrapped_edata for `change`*
+*return: wrapped_edata for `observer`*
 
-`root.change` is also an edata object, you can listen to `change` event for children changes.
+`root.observer` is also an edata object, you can listen to `observer` event for children changes.
 
 Any data inside root is a `wrapped_edata`, and may be contained by `{}` or `[]` edata object, keep the same structure as before.
 
@@ -272,15 +272,15 @@ z.value = 10
 ```
 
 #### - wrapped_edata.slice(path: string|string[], filter?: ({data, type, path}):boolean, from = root)
-> get nested wrapped data from path, and attach a `change` edata object to it that filtered from `(from||root).change` edata object, the default filter is to test if the `root.path` starts with path.
+> get nested wrapped data from path, and attach a `observer` edata object to it that filtered from `(from||root).observer` edata object, the default filter is to test if the `root.path` starts with path.
 
-*return: `wrapped_edata`, which have a `.change` edata object*
+*return: `wrapped_edata`, which have a `.observer` edata object*
 
-The `wrapped_edata.change` edata object's value has `path` property to reflect the sub path of the sliced data.
+The `wrapped_edata.observer` edata object's value has `path` property to reflect the sub path of the sliced data.
 
 ```js
 var xy = root.slice('x.y')
-xy.change.on('change', ({data, type, path})=>console.log(type, path))
+xy.observer.on('change', ({data, type, path})=>console.log(type, path))
 xy.set('z', 1)
 // x.y changed! ['z']
 ```
