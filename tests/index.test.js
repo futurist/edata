@@ -13,19 +13,25 @@ class WrapClass extends DefaultWrapClass {
 }
 
 /* eslint no-redeclare: 0 */
-it('mithril stream', () => {
+it('basic', () => {
   var w = edata({
     WrapClass
   })
   var d = w({ a: 1, b: { c: 2 } })
   it(isWrapper(d)).equals(true)
+  // event
+  d.value.a.on('data', e => {
+    it(e).deepEquals({ data: 10, oldData: 1 })
+  })
+  d.value.a.value = 10
   it(keys(d.value)).deepEquals(['a', 'b'])
   it(keys(d.value.b.value)).deepEquals(['c'])
   it(isWrapper(d.value.b)).equals(true)
-  it(d.value.a.value).equals(1)
+  it(d.value.a.value).equals(10)
   it(typeof d.value.b.value).equals('object')
   it(d.value.b.value.c.value).equals(2)
   it(Object.keys(d.set({ b: 1 }).value)).deepEquals(['b'])
+  // root set
   it(d.set({ b: 1 }).unwrap()).deepEquals({ b: 1 })
 })
 
