@@ -5,9 +5,9 @@ function isWrapper (s) { return s instanceof DefaultWrapClass }
 
 class WrapClass extends DefaultWrapClass {
   map (fn) {
-    this.on('data', fn)
+    this.on('change', fn)
     return () => {
-      this.removeListener('data', fn)
+      this.removeListener('change', fn)
     }
   }
 }
@@ -20,7 +20,7 @@ it('basic', () => {
   var d = w({ a: 1, b: { c: 2 } })
   it(isWrapper(d)).equals(true)
   // event
-  d.value.a.on('data', e => {
+  d.value.a.on('change', e => {
     it(e).deepEquals({ data: 10, oldData: 1 })
   })
   d.value.a.value = 10
@@ -80,7 +80,7 @@ it('array test', () => {
     WrapClass
   })({ a: { b: [] } })
   // x.value.a.value = (x.value.a.value) // give it a change first to test map
-  x.change.map(spy)
+  x.observer.map(spy)
 
   var b = x.value.a.value.b
   b.value = ([])
@@ -130,7 +130,7 @@ it('single unwrap', () => {
   var x = edata({
     WrapClass
   })({ a: { b: new WrapClass(10) } })
-  x.change.map(spy)
+  x.observer.map(spy)
   it(x.value.a.unwrap()).deepEquals({ b: 10 })
 })
 
@@ -139,7 +139,7 @@ it('set test', () => {
   var d = edata({
     WrapClass
   })({})
-  d.change.map(spy)
+  d.observer.map(spy)
   it(spy.callCount).equals(0)
   d.ensure('x.y.z', 10)
   it(spy.callCount).equals(3)
@@ -164,7 +164,7 @@ it('object test', () => {
     WrapClass
   })
   var d = w(x)
-  d.change.map(spy)
+  d.observer.map(spy)
   it(spy.callCount).equals(0)
 
   it(d.unwrap()).deepEquals({
@@ -298,7 +298,7 @@ it('circle object test', () => {
     WrapClass
   })
   var d = w(x)
-  d.change.map(spy)
+  d.observer.map(spy)
   it(spy.callCount).equals(0)
 
   it(keys(d.value).join()).equals('a')
@@ -343,7 +343,7 @@ it('getset', () => {
   var d = w({
     a: 1, b: { c: 2 }
   })
-  d.change.map(spy)
+  d.observer.map(spy)
   var r = d.getset('b.c', v => {
     return v.value + 1
   })
@@ -371,7 +371,7 @@ it('set descriptor', () => {
   var d = w({
     a: 1, b: { c: 2 }
   })
-  d.change.map(spy)
+  d.observer.map(spy)
   var r = d.set('b.x', 3, {})
   it(spy.callCount).equals(1)
   it(r.unwrap()).equals(3)
@@ -399,31 +399,31 @@ it('model slice', () => {
   var d = w({
     a: 1, b: { c: 2 }
   })
-  d.change.map(spy)
+  d.observer.map(spy)
   const values = [
     [ 'b', 'c' ],
     ['a'],
     [ 'b', 'c' ]
   ]
-  d.change.map(({ data, type, path }) => {
+  d.observer.map(({ data, type, path }) => {
     it(type).equals('change')
     it(path).deepEquals(values.shift())
   })
   var bc = d.slice('b.c')
-  var disposer = bc.change.map(spy)
-  d.slice('b').change.map(({ data, path }) => {
+  var disposer = bc.observer.map(spy)
+  d.slice('b').observer.map(({ data, path }) => {
     it(path).deepEquals(['c'])
   })
   d.set('b.c', 3)
   it(spy.callCount).equals(2)
   d.set('a', 2)
   it(spy.callCount).equals(3)
-  // end bc.change
+  // end bc.observer
   disposer()
   bc.value = (4)
   it(spy.callCount).equals(4)
-  it(d.get('a').change).equals(undefined)
-  it(isWrapper(d.get('b').change)).equals(true)
+  it(d.get('a').observer).equals(undefined)
+  it(isWrapper(d.get('b').observer)).equals(true)
 })
 
 it('multiple slice', () => {
@@ -435,10 +435,10 @@ it('multiple slice', () => {
     a: 1, b: { c: 2 }
   })
   var x = d.slice('b')
-  var s1 = x.change.map(spy)
+  var s1 = x.observer.map(spy)
   var y = d.slice('b')
-  var s2 = y.change.map(spy)
-  it(x.change).equals(y.change)
+  var s2 = y.observer.map(spy)
+  it(x.observer).equals(y.observer)
   d.set('b.c', 10)
   // all 2 change stream emit
   it(spy.callCount).equals(2)
@@ -461,7 +461,7 @@ it('nested getset', () => {
     }
   })
   var air = d.slice('air')
-  air.change.map(spy)
+  air.observer.map(spy)
   air.getset('value', v => v.value + 1)
   it(spy.callCount).equals(1)
   air.getset('unit', v => {
@@ -482,7 +482,7 @@ it('add intermediate object when set', () => {
   var d = edata({
     WrapClass
   })({})
-  d.change.map(({ type, path, data }) => {
+  d.observer.map(({ type, path, data }) => {
     const [_type, _path, _value] = results.shift()
     it(type).deepEquals(_type)
     it(path).deepEquals(_path)
@@ -572,17 +572,17 @@ it('hold change', () => {
     x: 2
   })
   var d = root.slice('a')
-  d.change.map(spy)
-  d.change.hold = (true)
+  d.observer.map(spy)
+  d.observer.hold = (true)
   d.set('x', 3)
   it(spy.callCount).equals(0)
-  d.change.skip = (true)
+  d.observer.skip = (true)
   d.set('x', 4)
-  d.change.skip = (false)
+  d.observer.skip = (false)
   it(spy.callCount).equals(0)
   d.set('y', 5)
   it(spy.callCount).equals(0)
-  d.change.hold = (false)
+  d.observer.hold = (false)
   it(spy.callCount).equals(2)
 })
 
@@ -595,15 +595,15 @@ it('skip change', () => {
     x: 2
   })
   // d = d.slice('a')
-  d.change.map(spy)
-  d.change.skip = (true)
+  d.observer.map(spy)
+  d.observer.skip = (true)
   d.set('x', 3)
   it(spy.callCount).equals(0)
   d.set('x', 4)
   it(spy.callCount).equals(0)
   d.set('y', 5)
   it(spy.callCount).equals(0)
-  d.change.skip = (false)
+  d.observer.skip = (false)
   it(spy.callCount).equals(0)
 })
 
@@ -714,7 +714,7 @@ it('extensions - combine', () => {
   var c = d({ a: 1, b: { c: 2 } })
   var t = new WrapClass(0)
   var combined = c.combine(['a', 'b.c', t])
-  combined.on('data', ([a1, a2, a3]) => c.set('x', a1 + a2 + a3))
+  combined.on('change', ([a1, a2, a3]) => c.set('x', a1 + a2 + a3))
   combined.check()
   c.get('x').map(spy)
   it(c.unwrap('x')).equals(3)

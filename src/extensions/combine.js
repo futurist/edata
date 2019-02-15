@@ -10,12 +10,12 @@ module.exports = (root, {
     const checkValues = () => {
       if (!allFullfilled) allFullfilled = arr.every(edata => '_value' in edata)
       if (allFullfilled) {
-        combinedData.emit('data', arr)
+        combinedData.emit('change', arr)
       }
     }
-    arr.forEach(edata => edata.on('data', checkValues))
+    arr.forEach(edata => edata.on('change', checkValues))
     combinedData.end = () => {
-      arr.forEach(edata => edata.removeListener('data', checkValues))
+      arr.forEach(edata => edata.removeListener('change', checkValues))
     }
     combinedData.check = checkValues
     return combinedData
