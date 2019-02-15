@@ -89,6 +89,12 @@ function edata (config = {}) {
       this._packed = packed
       this.count = 0
     }
+    map (fn) {
+      this.on('change', fn)
+      return () => {
+        this.removeListener('change', fn)
+      }
+    }
     get skip () {
       return this._skip
     }
