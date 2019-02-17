@@ -17,6 +17,12 @@ export class DefaultWrapClass extends EventEmitter {
     this._value = val
     this.emit('change', { data: val, oldData: oldVal })
   }
+  map (fn) {
+    this.on('change', fn)
+    return () => {
+      this.removeListener('change', fn)
+    }
+  }
   valueOf () {
     return this._value
   }
@@ -88,12 +94,6 @@ function edata (config = {}) {
       this.changeStack = []
       this._packed = packed
       this.count = 0
-    }
-    map (fn) {
-      this.on('change', fn)
-      return () => {
-        this.removeListener('change', fn)
-      }
     }
     get skip () {
       return this._skip

@@ -51,7 +51,7 @@ model.value.firstName.value  // get: firstName
 model.value.firstName.value = ''  // set: firstName
 ```
 
-use `edata.on` to listen on value changes
+use `edata.on` to listen on `change` event for value changes
 ```js
 model.value.firstName.on('change', e=>{
     console.log('First Name changed to: ' + e.data)
@@ -60,6 +60,8 @@ model.value.firstName.on('change', e=>{
 model.value.firstName.value = 'Hi'
 //[console] First Name changed to: Hi
 ```
+
+> Note: also exist `edata.map(callback)` as shortcut for `edata.on('change', callback)`
 
 get an `edata` from path
 ```js
@@ -99,6 +101,7 @@ const onDataChange = ({data, type, path})=>{
     console.log('value mutated:', path, type, data.unwrap())
 }
 model.observer.on('change', onDataChange)
+// model.observer.map(onDataChange)
 ```
 
 ```js
@@ -161,11 +164,11 @@ class App extends React.Component {
     }
 
     componentDidMount(){
-        model.observer.on('change', this.onModelChange)
+        model.observer.map(this.onModelChange)
     }
   
     componentWillUnmount(){
-        model.observer.off('change', this.onModelChange)
+        model.observer.map(this.onModelChange)
     }
     
     render(){
