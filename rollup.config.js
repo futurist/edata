@@ -1,9 +1,11 @@
 // rollup.config.js
+import { parse } from 'path'
 import babel from 'rollup-plugin-babel'
 import resolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
+import globby from 'globby'
 
-export default [
+let config = [
   {
     input: './src/index.js',
     plugins: [
@@ -47,3 +49,22 @@ export default [
   }
 
 ]
+
+config = config.concat(globby.sync('./src/extensions/*.js').map(inputFile => {
+  const { name, base } = parse(inputFile)
+  return {
+    input: inputFile,
+    plugins: [
+      resolve({
+        preferBuiltins: false
+      }),
+      commonjs(),
+      babel()
+    ],
+    output: [
+      { format: 'umd', file: 'extensions/' + base, name: 'edata_' + name }
+    ]
+  }
+}))
+
+export default config
