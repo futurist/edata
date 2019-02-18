@@ -758,6 +758,15 @@ it('context', () => {
   it(data.context(/not.exist/)).equals(undefined)
 })
 
+it('big json', ()=>{
+  var d = edata({
+    WrapClass
+  })(require('./big.json'))
+  console.time('big_json')
+  d.unwrap()
+  console.timeEnd('big_json')
+})
+
 // run if not from cli
 if (require.main === module) {
   it.run()
