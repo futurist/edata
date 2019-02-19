@@ -209,7 +209,7 @@ class MyedataClass extends DefaultClass {
 
 Be careful when using above `class` keyword, by default, you have to transpile your code to `ES5` to run correctly.
 
-If you need to use `class` without transpile, you should import `edata/dist/node`.
+If you need to use `class` without transpile, you should import `edata/dist/node`, or `edata/dist/es`, the different between the two is the es using module as exports.
 
 #### - edataFactory = edata(options)
 > the `edataFactory` is used to turn data into *wrapped_edata*.
