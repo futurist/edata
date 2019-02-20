@@ -1,7 +1,7 @@
 # edata
 Turn javascript data into extended EventEmitter.
 
-An **edata** is an [EventEmitter](https://nodejs.org/api/events.html) with `.value` (getter/setter), and helper methods to manipulate it.
+An **edata** is an [EventEmitter](https://github.com/futurist/mitt) with `.value` (getter/setter), and helper methods to manipulate it.
 
 [![Build Status](https://travis-ci.org/futurist/edata.svg?branch=master)](https://travis-ci.org/futurist/edata)
 [![NPM Version](https://img.shields.io/npm/v/edata.svg)](https://www.npmjs.com/package/edata)
@@ -71,7 +71,7 @@ const city = model.get('address.city')
 city.value = 'Earth'
 ```
 
-every `edata` is an [EventEmitter](https://nodejs.org/api/events.html), so
+every `edata` is an [EventEmitter](https://github.com/futurist/mitt), so
 ```js
 model.get('address.city').on('change', e=>console.log('new value:', e.data))
 model.set('address', {city: 'Mars'})  // set to address.city, same as above!
