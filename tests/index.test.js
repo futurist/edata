@@ -33,6 +33,8 @@ it('basic', () => {
   it(Object.keys(d.set({ b: 1 }).value)).deepEquals(['b'])
   // root set
   it(d.set({ b: 1 }).unwrap()).deepEquals({ b: 1 })
+  var x = d.wrap({ a: 1 })
+  it(isWrapper(x)).equals(true)
 })
 
 it('root test', () => {
@@ -758,7 +760,7 @@ it('context', () => {
   it(data.context(/not.exist/)).equals(undefined)
 })
 
-it('big json', ()=>{
+it('big json', () => {
   var d = edata({
     WrapClass
   })(require('./big.json'))
