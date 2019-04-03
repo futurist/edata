@@ -33,7 +33,7 @@ it('basic', () => {
   it(Object.keys(d.set({ b: 1 }).value)).deepEquals(['b'])
   // root set
   it(d.set({ b: 1 }).unwrap()).deepEquals({ b: 1 })
-  var x = d.wrap({ a: 1 })
+  var x = d.of({ a: 1 })
   it(isWrapper(x)).equals(true)
 })
 

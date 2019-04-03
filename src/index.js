@@ -258,7 +258,7 @@ function edata (config = {}) {
         data: packed,
         type
       }
-      packed.wrap = wrapper
+      packed.of = wrapper
       packed.slice = slice
       packed.context = context
       packed.get = get
