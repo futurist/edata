@@ -15,6 +15,7 @@ module.exports = (root, {
       const shouldEmit = typeof filter === 'function' ? filter(arr) : true
       if (allFullfilled && shouldEmit) {
         combinedData.emit('change', arr)
+        return arr
       }
     }
     arr.forEach(edata => edata.on('change', checkValues))

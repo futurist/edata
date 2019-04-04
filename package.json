@@ -18,7 +18,6 @@
     "dist",
     "plugins",
     "src",
-    "tests",
     "index.d.ts"
   ],
   "keywords": [
