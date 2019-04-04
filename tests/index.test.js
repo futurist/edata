@@ -4,12 +4,12 @@ let { keys } = Object
 function isWrapper (s) { return s instanceof DefaultWrapClass }
 
 class WrapClass extends DefaultWrapClass {
-  map (fn) {
-    this.on('change', fn)
-    return () => {
-      this.removeListener('change', fn)
-    }
-  }
+  // map (fn) {
+  //   this.on('change', fn)
+  //   return () => {
+  //     this.removeListener('change', fn)
+  //   }
+  // }
 }
 
 /* eslint no-redeclare: 0 */
@@ -673,10 +673,10 @@ it('unwrap map', () => {
   })
 })
 
-it('options.extensions', () => {
+it('options.plugins', () => {
   const d = edata(
     {
-      extensions: [
+      plugins: [
         obj => {
           obj.add = function (n) {
             this.value = (this.value + n)
@@ -705,12 +705,12 @@ it('should not dig into non-Array/POJO', () => {
   it(d.value.b.value.abc.x).equals(1)
 })
 
-it('extensions - combine', () => {
+it('plugins - combine', () => {
   var spy = it.spy()
   var d = edata({
     WrapClass,
-    extensions: [
-      require('../src/extensions/combine')
+    plugins: [
+      // require('../src/plugins/combine')
     ]
   })
   var c = d({ a: 1, b: { c: 2 } })
@@ -730,6 +730,21 @@ it('extensions - combine', () => {
   it(spy.callCount).equals(2)
   // should not compute for non-exists
   it(c.combine(['v', 'w'])).equals(false)
+})
+
+it('setComputed', () => {
+  const root = edata()({
+    firstName: 'Hello',
+    lastName: 'World'
+  })
+  root.setComputed(
+    'fullName',
+    ['firstName', 'lastName'],
+    ([firstName, lastName]) => firstName.value + ' ' + lastName.value
+  )
+  it(root.unwrap('fullName')).equals('Hello World')
+  root.set('firstName', 'Green')
+  it(root.unwrap('fullName')).equals('Green World')
 })
 
 it('context', () => {

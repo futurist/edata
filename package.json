@@ -16,7 +16,7 @@
   },
   "files": [
     "dist",
-    "extensions",
+    "plugins",
     "src",
     "tests",
     "index.d.ts"

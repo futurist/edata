@@ -27,5 +27,14 @@ module.exports = (root, {
     }
     return combinedData
   }
+
+  function setComputed (path, edataArray, callback) {
+    var combined = root.combine(edataArray)
+    combined.on('change', e => {
+      root.set(path, callback(e))
+    })
+    combined.check()
+  }
   root.combine = combine
+  root.setComputed = setComputed
 }
