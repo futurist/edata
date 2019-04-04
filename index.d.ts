@@ -17,7 +17,7 @@ declare class WrapClass<T = any> extends EventEmitter {
 declare interface IOptions {
     WrapClass: WrapClass;
     unwrapConfig: IUnwrapConfig;
-    extensions: Array<(packer: IWrappedData) => void>
+    plugins: Array<(packer: IWrappedData) => void>
 }
 
 declare interface WrapFactory {

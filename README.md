@@ -30,8 +30,8 @@ npm i -S edata
 ```js
 import edata from 'edata'
 const edataFactory = edata({})
-// build edata model object
-const model = edataFactory({
+// build edata root object
+const root = edataFactory({
     age: 20,
     firstName: 'Hello',
     lastName: 'World',
@@ -41,23 +41,23 @@ const model = edataFactory({
 })
 ```
 
-model and everything inside is an edata (an EventEmitter with `.value`), so
+root and everything inside is an edata (an EventEmitter with `.value`), so
 
 #### edata = EventEmitter + '.value'
 
 the `edata.value` is a getter/setter
 ```js
-model.value.firstName.value  // get: firstName
-model.value.firstName.value = ''  // set: firstName
+root.value.firstName.value  // get: firstName
+root.value.firstName.value = ''  // set: firstName
 ```
 
 use `edata.on` to listen on `change` event for value changes
 ```js
-model.value.firstName.on('change', e=>{
+root.value.firstName.on('change', e=>{
     console.log('First Name changed to: ' + e.data)
 })
 
-model.value.firstName.value = 'Hi'
+root.value.firstName.value = 'Hi'
 //[console] First Name changed to: Hi
 ```
 
@@ -65,57 +65,57 @@ model.value.firstName.value = 'Hi'
 
 get an `edata` from path
 ```js
-const city = model.get('address.city')
+const city = root.get('address.city')
 //instead of:
-// const city = model.value.address.value.city
+// const city = root.value.address.value.city
 city.value = 'Earth'
 ```
 
 every `edata` is an [EventEmitter](https://github.com/futurist/mitt), so
 ```js
-model.get('address.city').on('change', e=>console.log('new value:', e.data))
-model.set('address', {city: 'Mars'})  // set to address.city, same as above!
+root.get('address.city').on('change', e=>console.log('new value:', e.data))
+root.set('address', {city: 'Mars'})  // set to address.city, same as above!
 
-model.unwrap('address')  // flatten: {city: 'Earth'}
-model.unset('address')   // delete model.address
+root.unwrap('address')  // flatten: {city: 'Earth'}
+root.unset('address')   // delete root.address
 
-model.unwrap() // flatten all: {age: 20, firstName: 'Hello', lastName: 'World'}
+root.unwrap() // flatten all: {age: 20, firstName: 'Hello', lastName: 'World'}
 ```
 
 **Notice** all `edata object` has default `valueOf` function that returns `value`, so below are same:
 
 ```js
-model.get('age').value + 10  // 30
+root.get('age').value + 10  // 30
 
 // same as:
-model.get('age') + 10  // 30
+root.get('age') + 10  // 30
 ```
 
-### - **Observe model changes**
+### - **Observe root changes**
 
-The root `model` has a `observer` attribute, which is also an edata, you can callback for every changes.
+The root `root` has a `observer` attribute, which is also an edata, you can callback for every changes.
 
-**observe changes** of model
+**observe changes** of root
 ```js
 const onDataChange = ({data, type, path})=>{
     console.log('value mutated:', path, type, data.unwrap())
 }
-model.observer.on('change', onDataChange)
-// model.observer.map(onDataChange)
+root.observer.on('change', onDataChange)
+// root.observer.map(onDataChange)
 ```
 
 ```js
-model.set('address.city', 'Mars')
+root.set('address.city', 'Mars')
 // [console] data mutated: [ 'address', 'city' ] add Mars
-model.get('address.city').value = 'Earth'
+root.get('address.city').value = 'Earth'
 // [console] data mutated: [ 'address', 'city' ] change Earth
-model.unset('address.city')
+root.unset('address.city')
 // [console] data mutated: [ 'address', 'city' ] delete Earth
 ```
 
 to stop, you can `.off` the event any time!
 ```js
-model.observer.off('change', onDataChange)
+root.observer.off('change', onDataChange)
 ```
 
 ### - **Define Data Relations**
@@ -123,26 +123,26 @@ model.observer.off('change', onDataChange)
 You can define data relations using `setComputed`, as below:
 
 ```js
-const firstName = model.get('firstName')
-const lastName = model.get('lastName')
+const firstName = root.get('firstName')
+const lastName = root.get('lastName')
 // set fullName = firstName + ' ' + lastName
-model.setComputed(
+root.setComputed(
     'fullName',
     ['firstName', 'lastName'],
-    (a, b) => a + ' ' + b
+    ([firstName, lastName]) => firstName.value + ' ' + lastName.value
 )
-model.get('fullName').on('change', e => console.log(e.data))
+root.get('fullName').on('change', e => console.log(e.data))
 firstName.value = 'Green'
 // [console] Green World
 
-model.unwrap()
+root.unwrap()
 // {firstName:'Green', lastName:'World', fullName:'Green World'}
 ```
 
 ### - **Use in React**
 
 ```js
-const model = edata()({user: {name: 'earth'}})
+const root = edata()({user: {name: 'earth'}})
 
 class App extends React.Component {
     constructor(props){
@@ -181,7 +181,7 @@ class App extends React.Component {
     }
 }
 
-ReactDOM.render(<App model={model.slice('user')} />, app)
+ReactDOM.render(<App model={root.slice('user')} />, app)
 
 ```
 
@@ -223,7 +223,7 @@ wrapped_edata = EventEmitter + '.value' + '.get' + '.set' ...
 `options` has below options:
 - **WrapClass**: Default implementation is [here](https://github.com/futurist/edata/blob/2e2c73b2d8aefaca61b4bc38b920c449c3f747ad/src/index.js#L556)
 - **unwrapConfig**: when `unwrap`, you can add default config
-- **extensions**: You can add your own API with this option
+- **plugins**: You can add your own API with this option
 
 *return: function(data) -> wrapped_edata*
 
@@ -289,7 +289,7 @@ xy.set('z', 1)
 ```
 
 #### - wrapped_edata.context(path: string|string[])
-> Roughly the opposite to `slice`, `context` find model from closest parent, with matching path using `RegExp`.
+> Roughly the opposite to `slice`, `context` find `root model` from closest parent, with matching path using `RegExp`.
 
 Passing `""` will return `root model`.
 

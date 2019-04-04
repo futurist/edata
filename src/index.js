@@ -1,7 +1,7 @@
 'use strict'
 
 import EventEmitter from 'es-mitt'
-
+import pluginCombine from './plugins/combine'
 export default edata
 
 export class DefaultWrapClass extends EventEmitter {
@@ -86,8 +86,9 @@ function edata (config = {}) {
   const {
     WrapClass = DefaultWrapClass,
     unwrapConfig = null,
-    extensions = []
+    plugins = []
   } = config
+  plugins.unshift(pluginCombine)
   class ChangeClass extends WrapClass {
     constructor (packed) {
       super()
@@ -273,7 +274,7 @@ function edata (config = {}) {
         packed.push = push
         packed.pop = pop
       }
-      extensions.forEach(plugin => {
+      plugins.forEach(plugin => {
         plugin(packed, {
           isWrapper,
           wrapSource,

@@ -50,7 +50,7 @@ let config = [
 
 ]
 
-config = config.concat(globby.sync('./src/extensions/*.js').map(inputFile => {
+config = config.concat(globby.sync('./src/plugins/*.js').map(inputFile => {
   const { name, base } = parse(inputFile)
   return {
     input: inputFile,
@@ -62,7 +62,7 @@ config = config.concat(globby.sync('./src/extensions/*.js').map(inputFile => {
       babel()
     ],
     output: [
-      { format: 'umd', file: 'extensions/' + base, name: 'edata_' + name }
+      { format: 'umd', file: 'plugins/' + base, name: 'edata_' + name }
     ]
   }
 }))

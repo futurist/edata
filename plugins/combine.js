@@ -55,7 +55,16 @@
       return combinedData;
     }
 
+    function setComputed(path, edataArray, callback) {
+      var combined = root.combine(edataArray);
+      combined.on('change', function (e) {
+        root.set(path, callback(e));
+      });
+      combined.check();
+    }
+
     root.combine = combine;
+    root.setComputed = setComputed;
   };
 
   return combine;
