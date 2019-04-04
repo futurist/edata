@@ -1,6 +1,6 @@
 {
   "name": "edata",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Turn javascript data into extended EventEmitter, plus a .value getter/setter and helper methods to manipulate it",
   "main": "dist/cjs.js",
   "module": "dist/es.js",
