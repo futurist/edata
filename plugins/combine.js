@@ -33,6 +33,7 @@
 
         if (allFullfilled && shouldEmit) {
           combinedData.emit('change', arr);
+          return arr;
         }
       };
 
