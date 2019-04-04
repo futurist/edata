@@ -123,20 +123,18 @@ root.observer.off('change', onDataChange)
 You can define data relations using `setComputed`, as below:
 
 ```js
-const firstName = root.get('firstName')
-const lastName = root.get('lastName')
-// set fullName = firstName + ' ' + lastName
+const root = edata()({
+  firstName: 'Hello',
+  lastName: 'World'
+})
 root.setComputed(
-    'fullName',
-    ['firstName', 'lastName'],
-    ([firstName, lastName]) => firstName.value + ' ' + lastName.value
+  'fullName',
+  ['firstName', 'lastName'],
+  ([firstName, lastName]) => firstName.value + ' ' + lastName.value
 )
-root.get('fullName').on('change', e => console.log(e.data))
-firstName.value = 'Green'
-// [console] Green World
-
-root.unwrap()
-// {firstName:'Green', lastName:'World', fullName:'Green World'}
+assert.equal(root.unwrap('fullName'), 'Hello World')
+root.set('firstName', 'Green')
+assert.equal(root.unwrap('fullName'), 'Green World')
 ```
 
 ### - **Use in React**
