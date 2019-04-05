@@ -1,6 +1,6 @@
 {
   "name": "edata",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Turn javascript data into extended EventEmitter, plus a .value getter/setter and helper methods to manipulate it",
   "main": "dist/cjs.js",
   "module": "dist/es.js",
@@ -61,7 +61,8 @@
     "rollup-plugin-babel": "^4.0.3",
     "rollup-plugin-buble": "^0.19.2",
     "rollup-plugin-commonjs": "^9.1.4",
-    "rollup-plugin-node-resolve": "^3.3.0"
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-replace": "^2.1.1"
   },
   "dependencies": {
     "es-mitt": "^1.1.3"

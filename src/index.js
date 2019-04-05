@@ -519,3 +519,5 @@ function edata (config = {}) {
   }
   return wrapSource
 }
+
+edata.version = 'VERSION'
