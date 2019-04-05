@@ -58,10 +58,18 @@
 
     function setComputed(path, edataArray, callback) {
       var combined = root.combine(edataArray);
-      combined.on('change', function (e) {
+
+      var onChange = function onChange(e) {
         root.set(path, callback(e));
-      });
+      };
+
+      combined.on('change', onChange);
       combined.check();
+      return function () {
+        combined.removeListener('change', onChange);
+        combined.end();
+        combined = null;
+      };
     }
 
     root.combine = combine;
