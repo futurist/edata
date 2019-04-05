@@ -344,26 +344,6 @@ var z = root.getset('x.a', val=>val + 1)
 z.value  // 11
 ```
 
-#### - wrapped_edata.ensure(invalid?: (val:wrapped):boolean, path: string|string[], value?: any, descriptor?: object)
-> like `set`, but only `set` when the path **not exists** or `invalid` test true for the path, otherwise perform a `get` operation.
-
-The `invalid` test more like a **set then get** when specified.
-
-*return: wrapped_edata at `path`*
-
-```js
-var z = root.ensure('x.a', 5)
-// x.a exists, so perform a get, `5` ignored
-z.value  // 11
-
-var z = root.ensure('x.b', 5)
-// x.b not exists, so perform a `set`
-z.value  // 5
-
-// ensure `a.b` always >= 10
-root.ensure(val=>val<10, 'x.b', 10).unwrap() //10
-```
-
 #### - wrapped_edata.unset(path: string|string[])
 > delete `wrapped_edata` or `value` in `path`
 
@@ -403,16 +383,6 @@ root.setMany({
 root.unwrap() // {a:10, x: 1, y:2}
 ```
 
-#### - wrapped_edata.getMany(pathMap: object|string[]|string, mapFunc?:(val: IWrappedData|undefined)=>any)
-> multiple get each path from `pathMap`(can be array/object/string), and map each value with `mapFunc` as result.
-
-*return: result data with same shape as pathMap*
-
-```js
-root.unwrap() // {a:10, x:20, y:30}
-root.getMany(['x', 'y'])  // [20, 30]
-```
-
 #### - wrapped_array.push(value: any)
 > push new `value` into wrapped data when it's array, all the inside will be wrapped.
 
@@ -430,7 +400,8 @@ z.get('d.0.v').value  // 10
 *return: **unwrapped data** in last array element*
 
 ```js
-var z = root.ensure('d', [])
-z.get('d').pop()  // {v: 10}
+var root = edata()({ d: [{ v: 10 }] })
+assert.deepStrictEqual(root.get('d').pop(), { v: 10 })
+assert.deepStrictEqual(root.unwrap(), { d: [] })
 ```
 

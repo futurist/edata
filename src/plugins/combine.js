@@ -30,11 +30,17 @@ module.exports = (root, {
   }
 
   function setComputed (path, edataArray, callback) {
-    var combined = root.combine(edataArray)
-    combined.on('change', e => {
+    let combined = root.combine(edataArray)
+    const onChange = e => {
       root.set(path, callback(e))
-    })
+    }
+    combined.on('change', onChange)
     combined.check()
+    return () => {
+      combined.removeListener('change', onChange)
+      combined.end()
+      combined = null
+    }
   }
   root.combine = combine
   root.setComputed = setComputed

@@ -59,12 +59,9 @@ declare interface IWrappedData extends WrapClass {
     set(path: string | string[], value: any, descriptor?: object): IWrappedData;
     combine(edataArray: string[] | any[]): IWrappedData;
     setComputed(path: string | string[], edataArray: any[], combineFunc: (args: IWrappedData[])=>void): IDisposer;
-    getMany(pathMap: object | string[] | string, mapFunc?: (val: IWrappedData | undefined) => any): object | Array<any> | IWrappedData | undefined;
     setMany(kvMap: object, descriptors?: object): object;
     getset(valueFn: (prevVal: IWrappedData | undefined) => any): IWrappedData;
     getset(path: string | string[], valueFn: (prevVal: IWrappedData | undefined) => any, descriptor?: object): IWrappedData;
-    ensure(path: string | string[], value: any, descriptor?: object): IWrappedData;
-    ensure(invalid: (prevVal: IWrappedData) => boolean, path: string | string[], value: any, descriptor?: object): IWrappedData;
     unset(path: string | string[]): any;
     unwrap(config?: IUnwrapConfig): any;
     unwrap(path: string | string[], config?: IUnwrapConfig): any;

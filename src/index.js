@@ -72,16 +72,6 @@ function getPathType (p) {
   return match != null ? ['array', match[1]] : ['', p]
 }
 
-// const ignoreFirstCall = fn => {
-//   let calledOnce = false
-//   return function (arg) {
-//     /* eslint-disable-next-line no-return-assign */
-//     return calledOnce ? fn.call(this, arg) : calledOnce = true
-//   }
-// }
-
-const defaultMapFunc = val => val != null ? val.unwrap() : val
-
 function edata (config = {}) {
   const {
     WrapClass = DefaultWrapClass,
@@ -263,11 +253,9 @@ function edata (config = {}) {
       packed.slice = slice
       packed.context = context
       packed.get = get
-      packed.getMany = getMany
       packed.set = set
       packed.setMany = setMany
       packed.getset = getset
-      packed.ensure = ensure
       packed.unset = unset
       packed.unwrap = unwrap
       if (isArray(packed.value)) {
@@ -364,27 +352,6 @@ function edata (config = {}) {
       return a
     }
 
-    function getMany (
-      pathMap,
-      mapFunc = defaultMapFunc
-    ) {
-      const getValue = path => {
-        return this.get(path, mapFunc)
-      }
-      if (isPOJO(pathMap)) {
-        const obj = {}
-        for (let key in pathMap) {
-          if (!hasOwnProperty.call(pathMap, key)) continue
-          obj[key] = getValue(key)
-        }
-        return obj
-      } else if (isArray(pathMap)) {
-        return pathMap.map(getValue)
-      } else {
-        return getValue(pathMap)
-      }
-    }
-
     function context (path) {
       if (!path) return root
       let lastPos = -1
@@ -419,22 +386,6 @@ function edata (config = {}) {
         n = n.value[path[i][1]]
       }
       return isFunction(mapFunc) ? mapFunc(n) : n
-    }
-
-    // ensure path exists
-    function ensure (invalid, path, defaultValue, descriptor) {
-      if (!isFunction(invalid)) {
-        descriptor = defaultValue
-        defaultValue = path
-        path = invalid
-        invalid = () => false
-      }
-      let obj = this
-      let val = obj.get(path)
-      if (val == null || invalid(val)) {
-        val = obj.set(path, defaultValue, descriptor)
-      }
-      return val
     }
 
     function setMany (kvMap, descriptors = {}) {

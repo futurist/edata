@@ -111,7 +111,7 @@ it('array test', () => {
   var val = x.set('c.[0].xx', 10)
   it(spy.callCount).equals(8)
 
-  var val = x.ensure('y.[0]', 10)
+  var val = x.set('y.[0]', 10)
   it(val.value).equals(10)
   it(val.path.join()).equals('y,0')
   it(spy.callCount).equals(10)
@@ -125,6 +125,12 @@ it('array test', () => {
   c.set(_c)
   it(spy.callCount).equals(11)
   it(x.unwrap()).deepEquals({ a: { b: [] }, c: [ { yy: 2 }, { xx: 10 } ], y: [10] })
+})
+
+it('', () => {
+  var root = edata()({ d: [{ v: 10 }] })
+  it(root.get('d').pop()).deepEquals({ v: 10 })
+  it(root.unwrap()).deepEquals({ d: [] })
 })
 
 it('single unwrap', () => {
@@ -143,7 +149,7 @@ it('set test', () => {
   })({})
   d.observer.map(spy)
   it(spy.callCount).equals(0)
-  d.ensure('x.y.z', 10)
+  d.set('x.y.z', 10)
   it(spy.callCount).equals(3)
 })
 
@@ -212,9 +218,9 @@ it('object test', () => {
   it(d.get('a.x.y').value).equals(34)
   it(d.get('a.x.f').value.value.value).equals(35)
 
-  var ss = d.ensure('a.x.y', 234)
+  var ss = d.get('a.x.y', 234)
   it(spy.callCount).equals(3)
-  // ensure not change for exits one
+  // .get will not change for exits one
   it(ss.unwrap()).equals(34)
 
   // but set can
@@ -224,7 +230,7 @@ it('object test', () => {
   it(ss.unwrap()).equals(3)
 
   try {
-    var ss = d.ensure('a.v.z', 234)
+    var ss = d.set('a.v.z', 234)
   } catch (e) {
     // TypeError: Cannot create property 'z' on number '10'
     var err = e
@@ -233,8 +239,8 @@ it('object test', () => {
   // failed, but still change
   it(spy.callCount).equals(4)
 
-  // success ensured set
-  var xy = d.ensure('a.x.z', 234)
+  // success setd set
+  var xy = d.set('a.x.z', 234)
   it(spy.callCount).equals(5)
   it(xy.value).equals(234)
 
@@ -322,21 +328,6 @@ it('circle object test', () => {
   it(json).deepEquals({ a: { b: { d: 1 }, y: [ 3, 4, 5 ] } })
 })
 
-it('ensure', () => {
-  var w = edata({
-    WrapClass
-  })
-  var d = w({
-    a: 1, b: { c: 2 }
-  })
-  var a = d.ensure('a', 10)
-  it(a.unwrap()).equals(1)
-  it(d.ensure('x', 10).value).equals(10)
-  it(d.ensure(val => val.value < 10, 'a', 10).value).equals(10)
-  it(d.ensure(val => val.value < 10, 'a', 100).value).equals(10)
-  it(d.ensure(val => val.value < 5, 'a', 10).value).equals(10)
-})
-
 it('getset', () => {
   var spy = it.spy()
   var w = edata({
@@ -383,8 +374,8 @@ it('set descriptor', () => {
   r = d.get('b.x')
   it(r.value).equals(4)
 
-  d.ensure('b.y', 10, {})
-  d.ensure('b.z', 10, { enumerable: true })
+  d.set('b.y', 10, {})
+  d.set('b.z', 10, { enumerable: true })
 
   d.get('a').set()
 
@@ -524,34 +515,6 @@ it('setMany', () => {
   })
   it(r.x.unwrap()).equals(10)
   it(r.y.unwrap()).equals(20)
-})
-
-it('getMany', () => {
-  var d = edata({
-    WrapClass
-  })({
-    a: { b: 1 },
-    x: 2
-  })
-
-  // array
-  it(d.getMany(['a.b', 'x', 'y'])).deepEquals([
-    1,
-    2,
-    undefined
-  ])
-
-  // plain string
-  it(d.getMany('a.b', val => val.unwrap() + 10)).deepEquals(11)
-
-  // POJO
-  it(d.getMany({
-    'x': 1,
-    'y': null
-  })).deepEquals({
-    x: 2,
-    y: undefined
-  })
 })
 
 it('get with mapFunc', () => {
@@ -737,13 +700,16 @@ it('setComputed', () => {
     firstName: 'Hello',
     lastName: 'World'
   })
-  root.setComputed(
+  const dispose = root.setComputed(
     'fullName',
     ['firstName', 'lastName'],
     ([firstName, lastName]) => firstName.value + ' ' + lastName.value
   )
   it(root.unwrap('fullName')).equals('Hello World')
   root.set('firstName', 'Green')
+  it(root.unwrap('fullName')).equals('Green World')
+  dispose()
+  root.set('firstName', 'Good')
   it(root.unwrap('fullName')).equals('Green World')
 })
 
