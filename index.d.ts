@@ -9,6 +9,10 @@ declare interface MUTATION_TYPE {
     DELETE: 'delete';
 }
 
+declare interface IDisposer {
+    (): any;
+}
+
 declare class WrapClass<T = any> extends EventEmitter {
     protected _value: T;
     public value: T;
@@ -31,7 +35,7 @@ declare interface DataFactory {
 
 declare interface IUnwrapConfig {
     json?: boolean;
-    map?: (val: any) => any;
+    map?: (val: any) => IDisposer;
 }
 
 declare interface IChangeValue {
@@ -40,9 +44,6 @@ declare interface IChangeValue {
     path: string[]
 }
 
-declare interface IDisposer {
-    (): any;
-}
 
 declare interface IWrappedData extends WrapClass {
     root: IWrappedRoot;
