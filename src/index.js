@@ -254,7 +254,6 @@ function edata (config = {}) {
       packed.context = context
       packed.get = get
       packed.set = set
-      packed.setMany = setMany
       packed.getset = getset
       packed.unset = unset
       packed.unwrap = unwrap
@@ -386,15 +385,6 @@ function edata (config = {}) {
         n = n.value[path[i][1]]
       }
       return isFunction(mapFunc) ? mapFunc(n) : n
-    }
-
-    function setMany (kvMap, descriptors = {}) {
-      const obj = isArray(kvMap) ? [] : {}
-      for (let key in kvMap) {
-        if (!hasOwnProperty.call(kvMap, key)) continue
-        obj[key] = this.set(key, kvMap[key], descriptors[key])
-      }
-      return obj
     }
 
     function set (path, value, descriptor) {
