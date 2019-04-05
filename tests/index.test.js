@@ -488,7 +488,10 @@ it('add intermediate object when set', () => {
 
 it('setMany', () => {
   var d = edata({
-    WrapClass
+    WrapClass,
+    plugins: [
+      require('../src/plugins/set-many')
+    ]
   })({})
   d.setMany({
     'a.b': 1,
