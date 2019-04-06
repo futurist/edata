@@ -58,7 +58,7 @@ declare interface IWrappedData extends WrapClass {
     get(path: string | string[], mapFunc?: (val: IWrappedData | undefined) => any): IWrappedData | undefined;
     set(value: any): IWrappedData;
     set(path: string | string[], value: any, descriptor?: object): IWrappedData;
-    combine(edataArray: string[] | any[]): IWrappedData;
+    combine(edataArray: string[] | any[]): IWrappedCombine;
     setComputed(path: string | string[], edataArray: any[], combineFunc: (args: IWrappedData[])=>void): IDisposer;
     setMany(kvMap: object, descriptors?: object): object;
     getset(valueFn: (prevVal: IWrappedData | undefined) => any): IWrappedData;

@@ -490,7 +490,7 @@ it('setMany', () => {
   var d = edata({
     WrapClass,
     plugins: [
-      require('../src/plugins/set-many')
+      require('../plugins/set-many').default
     ]
   })({})
   d.setMany({
