@@ -10,28 +10,27 @@ An **edata** is an [EventEmitter](https://github.com/futurist/mitt) with `.value
 
 - [Install](#install)
 - [Usage](#usage)
-  * [- **Initialize edata**](#--initialize-edata)
-  * [- **Observe root changes**](#--observe-root-changes)
-  * [- **Define Data Relations**](#--define-data-relations)
-  * [- **Use in React**](#--use-in-react)
+  * [- Initialize edata](#--initialize-edata)
+  * [- Observe root changes](#--observe-root-changes)
+  * [- Define Data Relations](#--define-data-relations)
+  * [- Use in React](#--use-in-react)
 - [API](#api)
-    + [- import edata, {DefaultClass} from 'edata'](#--import-edata-defaultclass-from-edata)
-    + [- edataFactory = edata(options)](#--edatafactory--edataoptions)
-    + [- root = edataFactory(data: any)](#--root--edatafactorydata-any)
-    + [- wrapped_edata.get(path: string|string[])](#--wrapped_edatagetpath-stringstring)
-    + [- wrapped_edata.slice(path: string|string[], filter?: ({data, type, path}):boolean, from = root)](#--wrapped_edataslicepath-stringstring-filter-data-type-pathboolean-from--root)
-    + [- wrapped_edata.context(path: string|string[])](#--wrapped_edatacontextpath-stringstring)
-    + [- wrapped_edata.set(path?: string|string[], value?: any, descriptor?: object)](#--wrapped_edatasetpath-stringstring-value-any-descriptor-object)
-    + [- wrapped_edata.getset(path?: string|string[], function(prevValue:wrappedData|any, empty?: boolean)->newValue, descriptor: object)](#--wrapped_edatagetsetpath-stringstring-functionprevvaluewrappeddataany-empty-boolean-newvalue-descriptor-object)
-    + [- wrapped_edata.unset(path: string|string[])](#--wrapped_edataunsetpath-stringstring)
-    + [- wrapped_edata.unwrap(path?: string|string[], config?: {json: true})](#--wrapped_edataunwrappath-stringstring-config-json-true)
-    + [- wrapped_array.push(value: any)](#--wrapped_arraypushvalue-any)
-    + [- wrapped_array.pop()](#--wrapped_arraypop)
+    + [- import library](#--import-library)
+    + [- initialize](#--initialize)
+    + [- .get](#--get)
+    + [- .set](#--set)
+    + [- .getset](#--getset)
+    + [- .unset](#--unset)
+    + [- .unwrap](#--unwrap)
+    + [- .slice](#--slice)
+    + [- .context](#--context)
+    + [- .push](#--push)
+    + [- .pop](#--pop)
 - [plugins](#plugins)
   * [`plugins/set-many`](#pluginsset-many)
-    + [- wrapped_edata.setMany(kvMap: object, descriptors?: object)](#--wrapped_edatasetmanykvmap-object-descriptors-object)
+    + [- .setMany](#--setmany)
   * [`plugins/actions`](#pluginsactions)
-    + [- wrapped_edata.dispatch(action: object)](#--wrapped_edatadispatchaction-object)
+    + [- .dispatch](#--dispatch)
 
 <!-- tocstop -->
 
@@ -54,7 +53,7 @@ npm i -S edata
 
 ## Usage
 
-### - **Initialize edata**
+### - Initialize edata
 
 ```js
 import edata from 'edata'
@@ -127,7 +126,7 @@ root.get('age').value + 10  // 30
 root.get('age') + 10  // 30
 ```
 
-### - **Observe root changes**
+### - Observe root changes
 
 The root `root` has a `observer` attribute, which is also an edata, you can callback for every changes.
 
@@ -154,7 +153,7 @@ to stop, you can `.off` the event any time!
 root.observer.off('change', onDataChange)
 ```
 
-### - **Define Data Relations**
+### - Define Data Relations
 
 You can define data relations using `setComputed`, as below:
 
@@ -173,7 +172,7 @@ root.set('firstName', 'Green')
 assert.equal(root.unwrap('fullName'), 'Green World')
 ```
 
-### - **Use in React**
+### - Use in React
 
 ```js
 const root = edata()({user: {name: 'earth'}})
@@ -224,7 +223,12 @@ You can play with the [demo here](https://flems.io/#0=N4IgZglgNgpgziAXAbVAOwIYFs
 
 ## API
 
-#### - import edata, {DefaultClass} from 'edata'
+#### - import library
+
+```js
+import edata, {DefaultClass} from 'edata'
+```
+
 > The lib expose a default `edata` function to use
 
 The `DefaultClass` can be used for sub-class your own implemention of `edata`.
@@ -245,57 +249,46 @@ Be careful when using above `class` keyword, by default, you have to transpile y
 
 If you need to use `class` without transpile, you should import `edata/dist/node`, or `edata/dist/es`, the different between the two is the es using module as exports.
 
-#### - edataFactory = edata(options)
-> the `edataFactory` is used to turn data into *wrapped_edata*.
+#### - initialize
+
+```js
+root_wrapped_edata = edata(options: object)(initData: any)
+```
 
 A `wrapped_edata` is an `edata` with some helper methods, like `get`, `set` etc., so
+
+The `root_wrapped_edata` is a *wrapped_edata*, with all nested data wrapped, and `root.observer` is also an edata object, you can listen to `change` event for children changes.
 
 ```
 wrapped_edata = EventEmitter + '.value' + '.get' + '.set' ...
 ```
+
+`edata` convert nested `initData` object into nested `EventEmitter` instance.
 
 `options` has below options:
 - **WrapClass**: Default implementation is [here](https://github.com/futurist/edata/blob/2e2c73b2d8aefaca61b4bc38b920c449c3f747ad/src/index.js#L556)
 - **unwrapConfig**: when `unwrap`, you can add default config
 - **plugins**: You can add your own API with this option
 
-*return: function(data) -> wrapped_edata*
+*return: root wrapped_edata*
 
 ```js
-import edata, {DefaultClass} from 'edata'
-class MyedataClass extends DefaultClass {
-    map(fn) {
-        this.on('change', fn)
-        return () => this.off('change', fn)
-    }
-}
+import edata from 'edata'
 var edataFactory = edata({
     WrapClass: MyedataClass
 })
 const root1 = edataFactory(data1)
 const root2 = edataFactory(data2)
-root1.map(onChangeHandler)
+root1.on('change', onChangeHandler)
 ...
 ```
 
-#### - root = edataFactory(data: any)
-> the above code example, `root` is a *wrapped_edata*, with all nested data wrapped.
-
-*return: wrapped_edata*
-
-`root.observer` is also an edata object, you can listen to `change` event for children changes.
-
-Any data inside root is a `wrapped_edata`, and may be contained by `{}` or `[]` edata object, keep the same structure as before.
-
-Any `wrapped_edata` have `root` and `path` propperties, `get`, `set`, ... helper functions.
-
+#### - .get
 
 ```js
-var root = edataFactory({x: {y: {z: 1}}})
-root.some_api...
+wrapped_edata.get(path: string|string[])
 ```
 
-#### - wrapped_edata.get(path: string|string[])
 > get nested wrapped data from path, path is array of string or dot(`"."`) seperated string.
 
 *return: wrapped_edata at `path`*
@@ -308,33 +301,12 @@ z.value // 2
 z.value = 10
 ```
 
-#### - wrapped_edata.slice(path: string|string[], filter?: ({data, type, path}):boolean, from = root)
-> get nested wrapped data from path, and attach a `observer` edata object to observe scope mutations that the `root.path` starts with path.
-
-*return: `wrapped_edata`, which have a `.observer` edata object*
-
-The `wrapped_edata.observer` edata object's value has `path` property to reflect the sub path of the sliced data.
+#### - .set
 
 ```js
-var xy = root.slice('x.y')
-xy.observer.on('change', ({data, type, path})=>console.log(type, path))
-xy.set('z', 1)
-// x.y changed! ['z']
+wrapped_edata.set(path?: string|string[], value?: any, descriptor?: object)
 ```
 
-#### - wrapped_edata.context(path: string|string[])
-> Roughly the opposite to `slice`, `context` find `root model` from closest parent, with matching path using `RegExp`.
-
-Passing `""` will return `root model`.
-
-*return: `wrapped_edata` or `undefined` if not find*
-
-```js
-var xy = root.get('x.y')
-var x = xy.context('x')  // get closest x
-```
-
-#### - wrapped_edata.set(path?: string|string[], value?: any, descriptor?: object)
 > set nested wrapped data value from path, same rule as `get` method. The `descriptor` only applied when path not exists.
 
 *return: wrapped_edata for `value`, at `path`*
@@ -369,7 +341,12 @@ root.unwrap()  // {x: {y: {z: 1}}, a: 10, arr:[10]}  // `arr` is array!
 
 ```
 
-#### - wrapped_edata.getset(path?: string|string[], function(prevValue:wrappedData|any, empty?: boolean)->newValue, descriptor: object)
+#### - .getset
+
+```js
+wrapped_edata.getset(path?: string|string[], function(prevValue:wrappedData|any, empty?: boolean)->newValue, descriptor: object)
+```
+
 > like `set`, but value is from a function, it let you set `value` based on previous value, the `descriptor` only applied when `empty` is `true`.
 
 *return: wrapped_edata for `newValue`, at `path`*
@@ -380,7 +357,12 @@ var z = root.getset('x.a', val=>val + 1)
 z.value  // 11
 ```
 
-#### - wrapped_edata.unset(path: string|string[])
+#### - .unset
+
+```js
+wrapped_edata.unset(path: string|string[])
+```
+
 > delete `wrapped_edata` or `value` in `path`
 
 *return: deleted data been **unwrapped***
@@ -390,7 +372,12 @@ var z = root.unset('x.b')
 z // 5
 ```
 
-#### - wrapped_edata.unwrap(path?: string|string[], config?: {json: true})
+#### - .unwrap
+
+```js
+wrapped_edata.unwrap(path?: string|string[], config?: {json: true})
+```
+
 > unwrap data and nested data while keep data structure, any level of `wrapper` on any data will be stripped.
 
 If set `config` arg with `{json: true}`, then any circular referenced data will be set `undefined`, suitable for `JSON.stringify`.
@@ -405,7 +392,49 @@ var z = root.unwrap()
 z // {x: {y: {z: 11}}, a: [10]},   x.c is hidden
 ```
 
-#### - wrapped_array.push(value: any)
+
+#### - .slice
+
+```js
+wrapped_edata.slice(path: string|string[], filter?: ({data, type, path}):boolean, from = root)
+```
+
+> get nested wrapped data from path, and attach a `observer` edata object to observe scope mutations that the `root.path` starts with path.
+
+*return: `wrapped_edata`, which have a `.observer` edata object*
+
+The `wrapped_edata.observer` edata object's value has `path` property to reflect the sub path of the sliced data.
+
+```js
+var xy = root.slice('x.y')
+xy.observer.on('change', ({data, type, path})=>console.log(type, path))
+xy.set('z', 1)
+// x.y changed! ['z']
+```
+
+#### - .context
+
+```js
+wrapped_edata.context(path: string|string[])
+```
+
+> Roughly the opposite to `slice`, `context` find `root model` from closest parent, with matching path using `RegExp`.
+
+Passing `""` will return `root model`.
+
+*return: `wrapped_edata` or `undefined` if not find*
+
+```js
+var xy = root.get('x.y')
+var x = xy.context('x')  // get closest x
+```
+
+#### - .push
+
+```js
+wrapped_array.push(value: any)
+```
+
 > push new `value` into wrapped data when it's array, all the inside will be wrapped.
 
 *return: newly pushed wrapped_edata*
@@ -416,7 +445,12 @@ z.push({v: 10})
 z.get('d.0.v').value  // 10
 ```
 
-#### - wrapped_array.pop()
+#### - .pop
+
+```js
+wrapped_array.pop()
+```
+
 > pop and unwrap last element in wrapped array.
 
 *return: **unwrapped data** in last array element*
@@ -446,7 +480,12 @@ edata({
 
 will expose:
 
-#### - wrapped_edata.setMany(kvMap: object, descriptors?: object)
+#### - .setMany
+
+```js
+wrapped_edata.setMany(kvMap: object, descriptors?: object)
+```
+
 > multiple set key and value from `kvMap`, and find descriptor from `descriptors` with the key.
 
 *return: object with same key, and each value is result of set()*
@@ -478,7 +517,12 @@ edata({
 
 will expose:
 
-#### - wrapped_edata.dispatch(action: object)
+#### - .dispatch
+
+```js
+wrapped_edata.dispatch(action: object)
+```
+
 > action is of shape: `{type, path, value}`, type can be `add/change/delete`, which will be converted to command `set/set/unset` accordingly.
 
 **Notice**: this method will not emit `change` event on `root.observer`.
