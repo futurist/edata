@@ -6,6 +6,36 @@ An **edata** is an [EventEmitter](https://github.com/futurist/mitt) with `.value
 [![Build Status](https://travis-ci.org/futurist/edata.svg?branch=master)](https://travis-ci.org/futurist/edata)
 [![NPM Version](https://img.shields.io/npm/v/edata.svg)](https://www.npmjs.com/package/edata)
 
+<!-- toc -->
+
+- [Install](#install)
+- [Usage](#usage)
+  * [- **Initialize edata**](#--initialize-edata)
+    + [edata = EventEmitter + '.value'](#edata--eventemitter--value)
+  * [- **Observe root changes**](#--observe-root-changes)
+  * [- **Define Data Relations**](#--define-data-relations)
+  * [- **Use in React**](#--use-in-react)
+- [API](#api)
+    + [- import edata, {DefaultClass} from 'edata'](#--import-edata-defaultclass-from-edata)
+    + [- edataFactory = edata(options)](#--edatafactory--edataoptions)
+    + [- root = edataFactory(data: any)](#--root--edatafactorydata-any)
+    + [- wrapped_edata.get(path: string|string[])](#--wrapped_edatagetpath-stringstring)
+    + [- wrapped_edata.slice(path: string|string[], filter?: ({data, type, path}):boolean, from = root)](#--wrapped_edataslicepath-stringstring-filter-data-type-pathboolean-from--root)
+    + [- wrapped_edata.context(path: string|string[])](#--wrapped_edatacontextpath-stringstring)
+    + [- wrapped_edata.set(path?: string|string[], value?: any, descriptor?: object)](#--wrapped_edatasetpath-stringstring-value-any-descriptor-object)
+    + [- wrapped_edata.getset(path?: string|string[], function(prevValue:wrappedData|any, empty?: boolean)->newValue, descriptor: object)](#--wrapped_edatagetsetpath-stringstring-functionprevvaluewrappeddataany-empty-boolean-newvalue-descriptor-object)
+    + [- wrapped_edata.unset(path: string|string[])](#--wrapped_edataunsetpath-stringstring)
+    + [- wrapped_edata.unwrap(path?: string|string[], config?: {json: true})](#--wrapped_edataunwrappath-stringstring-config-json-true)
+    + [- wrapped_array.push(value: any)](#--wrapped_arraypushvalue-any)
+    + [- wrapped_array.pop()](#--wrapped_arraypop)
+- [plugins](#plugins)
+  * [`plugins/set-many`](#pluginsset-many)
+    + [- wrapped_edata.setMany(kvMap: object, descriptors?: object)](#--wrapped_edatasetmanykvmap-object-descriptors-object)
+  * [`plugins/actions`](#pluginsactions)
+    + [- wrapped_edata.dispatch(action: object)](#--wrapped_edatadispatchaction-object)
+
+<!-- tocstop -->
+
 ## Install
 
 **NPM**
