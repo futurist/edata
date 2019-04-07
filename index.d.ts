@@ -1,4 +1,4 @@
-import { EventEmitter } from "events";
+import EventEmitter from "es-mitt/src/index";
 
 type ValueOf<T> = T[keyof T];
 
@@ -16,6 +16,13 @@ declare interface IDisposer {
 declare class WrapClass<T = any> extends EventEmitter {
     protected _value: T;
     public value: T;
+    map: (fn: Function) => IDisposer;
+    valueOf: () => any;
+}
+
+declare class ObserverClass<T = any> extends WrapClass<T> {
+    public skip: boolean;
+    public hold: boolean;
 }
 
 declare interface IOptions {
@@ -60,12 +67,13 @@ declare interface IWrappedData extends WrapClass {
     set(path: string | string[], value: any, descriptor?: object): IWrappedData;
     combine(edataArray: string[] | any[]): IWrappedCombine;
     setComputed(path: string | string[], edataArray: any[], combineFunc: (args: IWrappedData[])=>void): IDisposer;
-    setMany(kvMap: object, descriptors?: object): object;
+    // setMany(kvMap: object, descriptors?: object): object;
     getset(valueFn: (prevVal: IWrappedData | undefined) => any): IWrappedData;
     getset(path: string | string[], valueFn: (prevVal: IWrappedData | undefined) => any, descriptor?: object): IWrappedData;
     unset(path: string | string[]): any;
     unwrap(config?: IUnwrapConfig): any;
     unwrap(path: string | string[], config?: IUnwrapConfig): any;
+    [pluginMethods: string]: any;
 }
 
 declare interface IWrappedCombine extends IWrappedData {
@@ -74,7 +82,7 @@ declare interface IWrappedCombine extends IWrappedData {
 }
 
 declare interface IWrappedRoot extends IWrappedData {
-    change: WrapClass<IChangeValue>;
+    observer: ObserverClass<IChangeValue>;
     MUTATION_TYPE: MUTATION_TYPE
 }
 

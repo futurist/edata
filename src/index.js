@@ -79,11 +79,13 @@ function edata (config = {}) {
     plugins = []
   } = config
   plugins.unshift(pluginCombine)
-  class ChangeClass extends WrapClass {
+  class ObserverClass extends WrapClass {
     constructor (packed) {
       super()
       this.changeStack = []
       this._packed = packed
+      this._skip = false
+      this._hold = false
       this.count = 0
     }
     get skip () {
@@ -225,7 +227,7 @@ function edata (config = {}) {
 
     function makeChange (packed) {
       if (!isWrapper(packed)) return packed
-      const _change = new ChangeClass(packed)
+      const _change = new ObserverClass(packed)
       // const oldMap = _change.map
       // _change.map = function (fn) {
       //   const _fn = _change.count > 0 ? ignoreFirstCall(fn) : fn
