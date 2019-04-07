@@ -11,7 +11,6 @@ An **edata** is an [EventEmitter](https://github.com/futurist/mitt) with `.value
 - [Install](#install)
 - [Usage](#usage)
   * [- **Initialize edata**](#--initialize-edata)
-    + [edata = EventEmitter + '.value'](#edata--eventemitter--value)
   * [- **Observe root changes**](#--observe-root-changes)
   * [- **Define Data Relations**](#--define-data-relations)
   * [- **Use in React**](#--use-in-react)
@@ -73,7 +72,7 @@ const root = edataFactory({
 
 root and everything inside is an edata (an EventEmitter with `.value`), so
 
-#### edata = EventEmitter + '.value'
+> edata = EventEmitter + '.value'
 
 the `edata.value` is a getter/setter
 ```js
