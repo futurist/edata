@@ -48,7 +48,14 @@ root and everything inside is an edata (an EventEmitter with `.value`), so
 the `edata.value` is a getter/setter
 ```js
 root.value.firstName.value  // get: firstName
-root.value.firstName.value = ''  // set: firstName
+root.value.firstName.value = 'name'  // set: firstName
+```
+
+you can use a shortcut:
+
+```js
+root.get('firstName')  // get: firstName
+root.set('firstName', 'name')  // set: firstName
 ```
 
 use `edata.on` to listen on `change` event for value changes
