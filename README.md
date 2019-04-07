@@ -369,20 +369,6 @@ var z = root.unwrap()
 z // {x: {y: {z: 11}}, a: [10]},   x.c is hidden
 ```
 
-#### - wrapped_edata.setMany(kvMap: object, descriptors?: object)
-> multiple set key and value from `kvMap`, and find descriptor from `descriptors` with the key.
-
-*return: object with same key, and each value is result of set()*
-
-```js
-root.unwrap() // {a:10, x:20, y:30}
-root.setMany({
-    x:1,
-    y:2
-})
-root.unwrap() // {a:10, x: 1, y:2}
-```
-
 #### - wrapped_array.push(value: any)
 > push new `value` into wrapped data when it's array, all the inside will be wrapped.
 
@@ -405,3 +391,70 @@ assert.deepStrictEqual(root.get('d').pop(), { v: 10 })
 assert.deepStrictEqual(root.unwrap(), { d: [] })
 ```
 
+## plugins
+
+### `plugins/set-many`
+
+Expose `setMany(object)` method to `set` multiple items, you can compare with React `setState` API.
+
+config:
+
+```js
+import setMany from 'edata/plugins/set-many'
+edata({
+    plugins: [
+        setMany
+    ]
+})
+```
+
+will expose:
+
+#### - wrapped_edata.setMany(kvMap: object, descriptors?: object)
+> multiple set key and value from `kvMap`, and find descriptor from `descriptors` with the key.
+
+*return: object with same key, and each value is result of set()*
+
+```js
+root.unwrap() // {a:10, x:20, y:30}
+root.setMany({
+    x:1,
+    y:2
+})
+root.unwrap() // {a:10, x: 1, y:2}
+```
+
+
+### `plugins/actions`
+
+Expose `dispatch(action)` method, to send action to root to `set/unset` data, like [Redux](https://github.com/reduxjs/redux) way.
+
+config:
+
+```js
+import actions from 'edata/plugins/actions'
+edata({
+    plugins: [
+        actions
+    ]
+})
+```
+
+will expose:
+
+#### - wrapped_edata.dispatch(action: object)
+> action is of shape: `{type, path, value}`, type can be `add/change/delete`, which will be converted to command `set/set/unset` accordingly.
+
+**Notice**: this method will not emit `change` event on `root.observer`.
+
+```js
+root.unwrap() // {x:20, y:30}
+root.dispatch({
+    type: 'add',
+    path: 'a.b',
+    value: 'hey!'
+})
+root.unwrap() // {x:20, y:30, a: {b: 'hey!'}}
+```
+
+You may record `change` event of `root.observer` as a source of actions.
