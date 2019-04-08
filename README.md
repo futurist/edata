@@ -1,7 +1,6 @@
 # edata
-Turn javascript data into extended EventEmitter.
 
-An **edata** is an [EventEmitter](https://github.com/futurist/mitt) with `.value` (getter/setter), and helper methods to manipulate it.
+An **edata** is an observable reactive [EventEmitter](https://github.com/futurist/mitt) with value getter/setter, lodash style.
 
 [![Build Status](https://travis-ci.org/futurist/edata.svg?branch=master)](https://travis-ci.org/futurist/edata)
 [![NPM Version](https://img.shields.io/npm/v/edata.svg)](https://www.npmjs.com/package/edata)
@@ -79,7 +78,7 @@ root.value.firstName.value  // get: firstName
 root.value.firstName.value = 'name'  // set: firstName
 ```
 
-you can use a shortcut:
+you can also use lodash style:
 
 ```js
 root.get('firstName')  // get: firstName
