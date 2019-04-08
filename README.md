@@ -1,8 +1,8 @@
-# edata
+# EDATA (Enhanced DATA)
 
-An **edata** is an observable reactive [EventEmitter](https://github.com/futurist/mitt) with value getter/setter, lodash style.
+**edata** is the nested observable reactive [EventEmitter](https://github.com/futurist/mitt) with `.value` getter/setter, lodash style path, and keep [Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html) in mind.
 
-It roughly referenced [Object.observe](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/observe) API (which is obsoleted), but instead using [getter/setter](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects#Defining_getters_and_setters), and lightweight than [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy).
+It roughly referenced [Object.observe API](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/observe), but instead using [getter/setter](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects#Defining_getters_and_setters) to wrap object, lightweight than [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy).
 
 [![Build Status](https://travis-ci.org/futurist/edata.svg?branch=master)](https://travis-ci.org/futurist/edata)
 [![NPM Version](https://img.shields.io/npm/v/edata.svg)](https://www.npmjs.com/package/edata)
@@ -40,22 +40,28 @@ It roughly referenced [Object.observe](https://developer.mozilla.org/en-US/docs/
 
 **NPM**
 ```sh
-npm i -S edata
+npm install --save edata
 ```
 
-**Browser**
-```html
-<script src="https://unpkg.com/edata"></script>
-<script>
-    // edata is a global
-    edata...
-</script>
+```js
+import edata from 'edata'
 ```
-
 
 ## Usage
 
 ### - Quick Start
+
+
+**Below can give you a quick idea of edata:**
+
+```js
+var root = edata()({a: {b: {c: {}}}})
+// plain_object ---> edata
+```
+
+<img src="assets/edata.png" width="640">
+
+**Complete example:**
 
 ```js
 import edata from 'edata'
@@ -73,41 +79,41 @@ root.set('address.city', 'Moon') // LOG: --> update: ['address', 'city']
 root.get('address.city').value // Moon
 ```
 
-root and everything inside is an edata (an EventEmitter with `.value`), so
+**Plain object wrapped into edata:**
 
-> edata = EventEmitter + '.value'
+> edata = EventEmitter(object)
 
-the `edata.value` is a getter/setter
+so use `edata.on` can watch changes, use `edata.value`(getter/setter) to get nested edata.
+
 ```js
 root.value.firstName.value  // get -> firstName
 root.value.firstName.value = 'name'  // set -> firstName
+root.value.address.value.city.on('change', callback)  // watch on 'change'
 ```
 
-you can also use lodash style:
+**Can also use lodash style:**
 
 ```js
-root.get('firstName')  // get: firstName
+root.get('firstName').value  // get: firstName
 root.set('firstName', 'name')  // set: firstName
+root.get('address.city').on('change', ...) // watch change
 ```
 
-use `edata.on` to listen on `change` event for value changes (shortcut: `edata.map(callback)`)
+**The callback of `change` event:**
+
 ```js
-root.get('firstName').on('change', e=>{
-    console.log('First Name changed to: ' + e.data)
+root.get('firstName').on('change', ({path, type, data})=>{
+    console.log(path, type, 'to: ' + data)
 })
 root.set('firstName', 'Hi')
-//[console] First Name changed to: Hi
+//[LOG] firstName update to: Hi
 ```
 
-> Note: `edata.on('change', callback)` has shortcut `edata.map(callback)`
+> Note: `edata.on('change', callback)` has shortcut: `edata.map(callback)`
 
-every `edata` is an [EventEmitter](https://github.com/futurist/mitt), so
-```js
-root.get('address.city').on('change', e=>console.log('new value:', e.data))
-root.set('address', {city: 'Mars'})  // set to address.city, same as above!
-```
+**Operation with .valueOf**
 
-**Notice** all `edata object` has default `valueOf` function that returns `value`, so below are same:
+`edata.valueOf()` method returns `.value`, so below are same:
 
 ```js
 root.get('age').value + 10  // 30
@@ -118,7 +124,7 @@ root.get('age') + 10  // 30
 
 ### - Flat data
 
-Since the source object is nested as **EventEmitter**, you can flat this structure into plain object using `edata.unwrap()`:
+Since the edata objects nested as **EventEmitter**, you can flat this structure into plain object using `edata.unwrap()`:
 
 ```js
 root.unwrap()
@@ -146,14 +152,14 @@ const onDataChange = ({data, type, path})=>{
 root.observer.on('change', onDataChange)
 
 root.set('address.city', 'Mars')
-// [console] data mutated: [ 'address', 'city' ] add Mars
+// [LOG] data mutated: [ 'address', 'city' ] add Mars
 root.get('address.city').value = 'Earth'
-// [console] data mutated: [ 'address', 'city' ] update Earth
+// [LOG] data mutated: [ 'address', 'city' ] update Earth
 root.unset('address.city')
-// [console] data mutated: [ 'address', 'city' ] delete Earth
+// [LOG] data mutated: [ 'address', 'city' ] delete Earth
 ```
 
-to **stop observing**, you can `.off` at any time!
+to **stop observing**, you can `.off()`
 ```js
 root.observer.off('change', onDataChange)
 ```
@@ -194,19 +200,17 @@ class App extends React.Component {
             model.set(name, value)
         }
         
-        this.onModelChange = ({data, type, path})=>{
-            this.setState({
-                [path]: data.value
-            })
+        this.onModelChange = ()=>{
+            this.setState(model.unwrap())
         }
     }
 
     componentDidMount(){
-        model.observer.map(this.onModelChange)
+        model.observer.on('change', this.onModelChange)
     }
   
     componentWillUnmount(){
-        model.observer.map(this.onModelChange)
+        model.observer.off('change', this.onModelChange)
     }
     
     render(){
@@ -230,8 +234,11 @@ You can play with the [demo here](https://flems.io/#0=N4IgZglgNgpgziAXAbVAOwIYFs
 
 #### - import library
 
+**For ES6 Module**
+
 ```js
 import edata, {DefaultClass} from 'edata'
+const root = edata()(initData)
 ```
 
 > The lib expose a default `edata` function to use
@@ -242,27 +249,34 @@ You can `extends` this class to add your own methods:
 
 ```js
 class MyedataClass extends DefaultClass {
-    added_method(){
+    my_method(){
         // do sth.
     }
 }
 ```
 
+**For CommonJS module**
+
+```js
+const edata = require('edata').default
+const root = edata()(initData)
+```
+
 **Notice**
 
-Be careful when using above `class` keyword, by default, you have to transpile your code to `ES5` to run correctly.
+Be careful when using `class` keyword, by default, you have to transpile your code to `ES5` to run correctly.
 
-If you need to use `class` without transpile, you should import `edata/dist/node`, or `edata/dist/es`, the different between the two is the es using module as exports.
+If you need to use `class` without transpile, you should import `edata/dist/node`, or `edata/dist/es`.
 
 #### - initialize
 
 ```js
-root_wrapped_edata = edata(options: object)(initData: any)
+var root = edata(options: object)(initData: any)
 ```
 
 A `wrapped_edata` is an `edata` with some helper methods, like `get`, `set` etc., so
 
-The `root_wrapped_edata` is a *wrapped_edata*, with all nested data wrapped, and `root.observer` is also an edata object, you can listen to `change` event for children changes.
+The `root` is a *wrapped_edata*, with all nested data wrapped, and `root.observer` is also an edata object, you can listen to `change` event for children changes.
 
 ```
 wrapped_edata = EventEmitter + '.value' + '.get' + '.set' ...
@@ -507,7 +521,7 @@ root.unwrap() // {a:10, x: 1, y:2}
 
 ### `plugins/actions`
 
-Expose `dispatch(action)` method, to send action to root to `set/unset` data, like [Redux](https://github.com/reduxjs/redux) way.
+If you want [CQRS](https://martinfowler.com/bliki/CQRS.html) style, like [Redux](https://github.com/reduxjs/redux) way, then this plugin exposes `.dispatch(action)` method, to send action to root to `set/unset` data, act as **Command in CQRS**.
 
 config:
 
