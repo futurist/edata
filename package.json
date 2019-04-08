@@ -1,6 +1,6 @@
 {
   "name": "edata",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "An edata is an observable reactive EventEmitter with value getter/setter, lodash style.",
   "main": "dist/cjs.js",
   "module": "dist/es.js",
