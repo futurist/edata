@@ -1,7 +1,7 @@
 {
   "name": "edata",
   "version": "0.5.2",
-  "description": "Turn javascript data into extended EventEmitter, plus a .value getter/setter and helper methods to manipulate it",
+  "description": "An edata is an observable reactive EventEmitter with value getter/setter, lodash style.",
   "main": "dist/cjs.js",
   "module": "dist/es.js",
   "jsnext:main": "dist/es.js",
