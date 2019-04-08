@@ -5,7 +5,7 @@ type ValueOf<T> = T[keyof T];
 declare interface MUTATION_TYPE {
     CREATE: 'create';
     ADD: 'add';
-    CHANGE: 'change';
+    UPDATE: 'update';
     DELETE: 'delete';
 }
 

@@ -226,7 +226,7 @@ it('object test', () => {
   // but set can
   d.set('a.x.y', 3)
   it(spy.callCount).equals(4)
-  it(spy.args[0].type).equals('change') // 0: CHANGE
+  it(spy.args[0].type).equals('update') // 0: CHANGE
   it(ss.unwrap()).equals(3)
 
   try {
@@ -273,7 +273,7 @@ it('object test', () => {
 
   d.get('a.i').set(10)
   it(spy.callCount).equals(11)
-  it(spy.args[0].type).equals('change')
+  it(spy.args[0].type).equals('update')
   it(d.value.a.value.i.value).equals(10)
   it(d.value.a.value.i.path.join()).equals('a,i')
 
@@ -399,7 +399,7 @@ it('model slice', () => {
     [ 'b', 'c' ]
   ]
   d.observer.map(({ data, type, path }) => {
-    it(type).equals('change')
+    it(type).equals('update')
     it(path).deepEquals(values.shift())
   })
   var bc = d.slice('b.c')
@@ -469,8 +469,8 @@ it('add intermediate object when set', () => {
     ['create', ['a'], {}],
     ['create', ['a', 'b'], {}],
     ['add', ['a', 'b', 'c'], 10],
-    ['change', ['a'], 1],
-    ['change', ['a'], 2]
+    ['update', ['a'], 1],
+    ['update', ['a'], 2]
   ]
   var d = edata({
     WrapClass
@@ -706,7 +706,7 @@ it('setComputed', () => {
   const dispose = root.setComputed(
     'fullName',
     ['firstName', 'lastName'],
-    ([firstName, lastName]) => firstName.value + ' ' + lastName.value
+    ([firstName, lastName]) => firstName + ' ' + lastName
   )
   it(root.unwrap('fullName')).equals('Hello World')
   root.set('firstName', 'Green')
