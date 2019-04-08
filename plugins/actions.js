@@ -9,14 +9,6 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var A;
-    (function (A) {
-        var B;
-        (function (B) {
-            var x = 0;
-            console.log(x);
-        })(B = A.B || (A.B = {}));
-    })(A = exports.A || (exports.A = {}));
     function default_1(root, util) {
         function dispatch(action) {
             // action: {path: 'a.b', type: 'add', value: 'value'}
@@ -25,7 +17,7 @@
             root.observer.skip = true;
             switch (type) {
                 case 'add':
-                case 'change':
+                case 'update':
                     root.set(path, value);
                     break;
                 case 'delete':

@@ -5,11 +5,6 @@ interface PlainObject {
 
 type RootType = PlainObject;
 
-export namespace A.B {
-    var x = 0;
-    console.log(x);
-}
-
 export default function (root: RootType, util: PlainObject) {
     function dispatch(this: any, action: PlainObject) {
         // action: {path: 'a.b', type: 'add', value: 'value'}
@@ -18,7 +13,7 @@ export default function (root: RootType, util: PlainObject) {
         root.observer.skip = true
         switch(type) {
             case 'add':
-            case 'change':
+            case 'update':
                 root.set(path, value)
                 break
             case 'delete':

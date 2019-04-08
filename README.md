@@ -2,6 +2,8 @@
 
 An **edata** is an observable reactive [EventEmitter](https://github.com/futurist/mitt) with value getter/setter, lodash style.
 
+It roughly referenced [Object.observe](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/observe) API (which is obsoleted), but instead using [getter/setter](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects#Defining_getters_and_setters), and lightweight than [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy).
+
 [![Build Status](https://travis-ci.org/futurist/edata.svg?branch=master)](https://travis-ci.org/futurist/edata)
 [![NPM Version](https://img.shields.io/npm/v/edata.svg)](https://www.npmjs.com/package/edata)
 
@@ -9,7 +11,8 @@ An **edata** is an observable reactive [EventEmitter](https://github.com/futuris
 
 - [Install](#install)
 - [Usage](#usage)
-  * [- Initialize edata](#--initialize-edata)
+  * [- Quick Start](#--quick-start)
+  * [- Flat data](#--flat-data)
   * [- Observe root changes](#--observe-root-changes)
   * [- Define Data Relations](#--define-data-relations)
   * [- Use in React](#--use-in-react)
@@ -52,13 +55,11 @@ npm i -S edata
 
 ## Usage
 
-### - Initialize edata
+### - Quick Start
 
 ```js
 import edata from 'edata'
-const edataFactory = edata({})
-// build edata root object
-const root = edataFactory({
+const root = edata({ /* options */ })({
     age: 20,
     firstName: 'Hello',
     lastName: 'World',
@@ -66,6 +67,10 @@ const root = edataFactory({
         city: 'Earth'
     }
 })
+const callback = ({type, path}) => console.log(`--> ${type}: ${path}`)
+root.observer.map(callback)
+root.set('address.city', 'Moon') // LOG: --> update: ['address', 'city']
+root.get('address.city').value // Moon
 ```
 
 root and everything inside is an edata (an EventEmitter with `.value`), so
@@ -74,8 +79,8 @@ root and everything inside is an edata (an EventEmitter with `.value`), so
 
 the `edata.value` is a getter/setter
 ```js
-root.value.firstName.value  // get: firstName
-root.value.firstName.value = 'name'  // set: firstName
+root.value.firstName.value  // get -> firstName
+root.value.firstName.value = 'name'  // set -> firstName
 ```
 
 you can also use lodash style:
@@ -85,35 +90,21 @@ root.get('firstName')  // get: firstName
 root.set('firstName', 'name')  // set: firstName
 ```
 
-use `edata.on` to listen on `change` event for value changes
+use `edata.on` to listen on `change` event for value changes (shortcut: `edata.map(callback)`)
 ```js
-root.value.firstName.on('change', e=>{
+root.get('firstName').on('change', e=>{
     console.log('First Name changed to: ' + e.data)
 })
-
-root.value.firstName.value = 'Hi'
+root.set('firstName', 'Hi')
 //[console] First Name changed to: Hi
 ```
 
-> Note: also exist `edata.map(callback)` as shortcut for `edata.on('change', callback)`
-
-get an `edata` from path
-```js
-const city = root.get('address.city')
-//instead of:
-// const city = root.value.address.value.city
-city.value = 'Earth'
-```
+> Note: `edata.on('change', callback)` has shortcut `edata.map(callback)`
 
 every `edata` is an [EventEmitter](https://github.com/futurist/mitt), so
 ```js
 root.get('address.city').on('change', e=>console.log('new value:', e.data))
 root.set('address', {city: 'Mars'})  // set to address.city, same as above!
-
-root.unwrap('address')  // flatten: {city: 'Earth'}
-root.unset('address')   // delete root.address
-
-root.unwrap() // flatten all: {age: 20, firstName: 'Hello', lastName: 'World'}
 ```
 
 **Notice** all `edata object` has default `valueOf` function that returns `value`, so below are same:
@@ -125,29 +116,44 @@ root.get('age').value + 10  // 30
 root.get('age') + 10  // 30
 ```
 
+### - Flat data
+
+Since the source object is nested as **EventEmitter**, you can flat this structure into plain object using `edata.unwrap()`:
+
+```js
+root.unwrap()
+// flat root: {age: 20, firstName: 'Hello', lastName: 'World', address: {city: 'Earth'}}
+
+root.unwrap('address')
+// flat address: {city: 'Earth'}
+
+root.unset('address')
+// delete address
+
+root.unwrap()
+// {age: 20, firstName: 'Hello', lastName: 'World'}
+```
+
 ### - Observe root changes
 
-The root `root` has a `observer` attribute, which is also an edata, you can callback for every changes.
+The root has a `observer` attribute, which is also an edata itself, you can callback for every changes.
 
-**observe changes** of root
+**start observe changes** of root
 ```js
 const onDataChange = ({data, type, path})=>{
     console.log('value mutated:', path, type, data.unwrap())
 }
 root.observer.on('change', onDataChange)
-// root.observer.map(onDataChange)
-```
 
-```js
 root.set('address.city', 'Mars')
 // [console] data mutated: [ 'address', 'city' ] add Mars
 root.get('address.city').value = 'Earth'
-// [console] data mutated: [ 'address', 'city' ] change Earth
+// [console] data mutated: [ 'address', 'city' ] update Earth
 root.unset('address.city')
 // [console] data mutated: [ 'address', 'city' ] delete Earth
 ```
 
-to stop, you can `.off` the event any time!
+to **stop observing**, you can `.off` at any time!
 ```js
 root.observer.off('change', onDataChange)
 ```
@@ -164,7 +170,7 @@ const root = edata()({
 root.setComputed(
   'fullName',
   ['firstName', 'lastName'],
-  ([firstName, lastName]) => firstName.value + ' ' + lastName.value
+  ([firstName, lastName]) => firstName + ' ' + lastName
 )
 assert.equal(root.unwrap('fullName'), 'Hello World')
 root.set('firstName', 'Green')

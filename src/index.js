@@ -35,7 +35,7 @@ const arrayKeyRegEx = /^\[(\w+)\]$/
 const MUTATION_TYPE = {
   CREATE: 'create',
   ADD: 'add',
-  CHANGE: 'change',
+  UPDATE: 'update',
   DELETE: 'delete'
 }
 
@@ -238,14 +238,14 @@ function edata (config = {}) {
       return packed
     }
 
-    function bindMethods (packed, path, type = MUTATION_TYPE.CHANGE) {
+    function bindMethods (packed, path, type = MUTATION_TYPE.UPDATE) {
       if ('path' in packed && 'root' in packed) return packed
       // type: 0->CHANGE, 1->ADD, 2->DELETE
       packed.root = root
       packed.path = path
       packed.on('change', () => {
         if (root.observer == null) return
-        root.observer.value = ({ data: packed, type: MUTATION_TYPE.CHANGE })
+        root.observer.value = ({ data: packed, type: MUTATION_TYPE.UPDATE })
       })
       root.observer.value = {
         data: packed,
@@ -415,7 +415,7 @@ function edata (config = {}) {
       if (!path.length) {
         obj.value = (createWrap(func(obj), obj.path.slice()).value)
         value = obj
-        action = MUTATION_TYPE.CHANGE
+        action = MUTATION_TYPE.UPDATE
       } else {
         const _path = path.map(v => v[1])
         for (i = 0, len = path.length - 1; i < len; i++) {
@@ -434,7 +434,7 @@ function edata (config = {}) {
         if (isWrapper(n[p])) {
           n[p].value = (createWrap(func(n[p]), obj.path.concat(_path)).value)
           value = n[p]
-          action = MUTATION_TYPE.CHANGE
+          action = MUTATION_TYPE.UPDATE
         } else {
           value = createWrap(func(n[p], true), obj.path.concat(_path))
           if (isPrimitive(descriptor)) {
