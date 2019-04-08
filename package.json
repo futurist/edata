@@ -21,18 +21,15 @@
     "index.d.ts"
   ],
   "keywords": [
-    "getter",
-    "setter",
+    "getter/setter",
     "observer",
     "observable",
     "reactive",
-    "stream",
-    "model",
+    "state management",
+    "lodash",
     "frp",
     "data events",
-    "data flow",
-    "state management",
-    "functional-reactive-programming"
+    "event emitter"
   ],
   "repository": {
     "type": "git",
