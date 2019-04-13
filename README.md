@@ -237,22 +237,24 @@ You can play with the [demo here](https://flems.io/#0=N4IgZglgNgpgziAXAbVAOwIYFs
 **For ES6 Module**
 
 ```js
-import edata, {DefaultClass} from 'edata'
+import edata, {DefaultBaseClass} from 'edata'
 const root = edata()(initData)
 ```
 
 > The lib expose a default `edata` function to use
 
-The `DefaultClass` can be used for sub-class your own implemention of `edata`.
+The `DefaultBaseClass` can be used for sub-class your own implemention of `edata`.
 
 You can `extends` this class to add your own methods:
 
 ```js
-class MyedataClass extends DefaultClass {
+class MyBaseClass extends DefaultBaseClass {
     my_method(){
         // do sth.
     }
 }
+const root = edata({ baseClass: MyBaseClass })(initData);
+root.my_method();
 ```
 
 **For CommonJS module**
@@ -285,7 +287,7 @@ wrapped_edata = EventEmitter + '.value' + '.get' + '.set' ...
 `edata` convert nested `initData` object into nested `EventEmitter` instance.
 
 `options` has below options:
-- **WrapClass**: Default implementation is [here](https://github.com/futurist/edata/blob/2e2c73b2d8aefaca61b4bc38b920c449c3f747ad/src/index.js#L556)
+- **baseClass**: Default implementation is [here](https://github.com/futurist/edata/blob/2e2c73b2d8aefaca61b4bc38b920c449c3f747ad/src/index.js#L556)
 - **unwrapConfig**: when `unwrap`, you can add default config
 - **plugins**: You can add your own API with this option
 
@@ -294,7 +296,7 @@ wrapped_edata = EventEmitter + '.value' + '.get' + '.set' ...
 ```js
 import edata from 'edata'
 var edataFactory = edata({
-    WrapClass: MyedataClass
+    baseClass: MyBaseClass
 })
 const root1 = edataFactory(data1)
 const root2 = edataFactory(data2)
