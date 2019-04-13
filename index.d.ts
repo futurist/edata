@@ -13,27 +13,26 @@ declare interface IDisposer {
     (): any;
 }
 
-declare class WrapClass<T = any> extends EventEmitter {
+declare class BaseClass<T = any> extends EventEmitter {
     protected _value: T;
     public value: T;
     map: (fn: Function) => IDisposer;
     valueOf: () => any;
 }
 
-declare class ObserverClass<T = any> extends WrapClass<T> {
+declare class ObserverClass<T = any> extends BaseClass<T> {
     public skip: boolean;
     public hold: boolean;
 }
 
 declare interface IOptions {
-    WrapClass: WrapClass;
+    baseClass: BaseClass;
     unwrapConfig: IUnwrapConfig;
     plugins: Array<(packer: IWrappedData) => void>
 }
 
 declare interface WrapFactory {
     (options?: Partial<IOptions>): DataFactory;
-    DefaultClass: WrapClass
 }
 
 declare interface DataFactory {
@@ -52,10 +51,10 @@ declare interface IChangeValue {
 }
 
 
-declare interface IWrappedData extends WrapClass {
+declare interface IWrappedData extends BaseClass {
     root: IWrappedRoot;
     path: string[];
-    wrap(value: any): WrapClass;
+    wrap(value: any): BaseClass;
     slice(
         path: string | string[],
         filter?: (data: IChangeValue) => boolean,

@@ -1,9 +1,9 @@
 let it = require('ospec')
-let { default: edata, DefaultWrapClass } = require('../dist/node')
+let { default: edata, DefaultBaseClass } = require('../dist/node')
 let { keys } = Object
-function isWrapper (s) { return s instanceof DefaultWrapClass }
+function isWrapper (s) { return s instanceof DefaultBaseClass }
 
-class WrapClass extends DefaultWrapClass {
+class TestBaseClass extends DefaultBaseClass {
   // map (fn) {
   //   this.on('change', fn)
   //   return () => {
@@ -15,7 +15,7 @@ class WrapClass extends DefaultWrapClass {
 /* eslint no-redeclare: 0 */
 it('basic', () => {
   var w = edata({
-    WrapClass
+    baseClass: TestBaseClass
   })
   var d = w({ a: 1, b: { c: 2 } })
   it(isWrapper(d)).equals(true)
@@ -39,7 +39,7 @@ it('basic', () => {
 
 it('root test', () => {
   var w = edata({
-    WrapClass
+    baseClass: TestBaseClass
   })
   var d = w({ a: 1, b: { c: 2 } })
   it(d.root).equals(d)
@@ -48,7 +48,7 @@ it('root test', () => {
 
 it('root unwrap', () => {
   var w = edata({
-    WrapClass
+    baseClass: TestBaseClass
   })
   var data = { a: { b: { c: 2 } } }
   data.a.b.x = data.a
@@ -62,10 +62,10 @@ it('root unwrap', () => {
 
 it('not dive into stream', () => {
   var d = edata({
-    WrapClass
+    baseClass: TestBaseClass
   })({
     a: 1,
-    b: new WrapClass({
+    b: new TestBaseClass({
       x: 2, y: 3
     })
   })
@@ -79,7 +79,7 @@ it('not dive into stream', () => {
 it('array test', () => {
   var spy = it.spy()
   var x = edata({
-    WrapClass
+    baseClass: TestBaseClass
   })({ a: { b: [] } })
   // x.value.a.value = (x.value.a.value) // give it a change first to test map
   x.observer.map(spy)
@@ -136,8 +136,8 @@ it('', () => {
 it('single unwrap', () => {
   var spy = it.spy()
   var x = edata({
-    WrapClass
-  })({ a: { b: new WrapClass(10) } })
+    baseClass: TestBaseClass
+  })({ a: { b: new TestBaseClass(10) } })
   x.observer.map(spy)
   it(x.value.a.unwrap()).deepEquals({ b: 10 })
 })
@@ -145,7 +145,7 @@ it('single unwrap', () => {
 it('set test', () => {
   var spy = it.spy()
   var d = edata({
-    WrapClass
+    baseClass: TestBaseClass
   })({})
   d.observer.map(spy)
   it(spy.callCount).equals(0)
@@ -155,7 +155,7 @@ it('set test', () => {
 
 it('object test', () => {
   var xa = {
-    i: new WrapClass(new WrapClass(99)),
+    i: new TestBaseClass(new TestBaseClass(99)),
     b: 1,
     v: 10,
     y: [3, 4, 5, 6]
@@ -169,7 +169,7 @@ it('object test', () => {
 
   var spy = it.spy()
   var w = edata({
-    WrapClass
+    baseClass: TestBaseClass
   })
   var d = w(x)
   d.observer.map(spy)
@@ -212,7 +212,7 @@ it('object test', () => {
   it(spy.args[0].data.path.join()).deepEquals('a,x,y')
   it(spy.args[0].type).equals('add') // 1: ADD
 
-  d.set('a.x.f', new WrapClass(new WrapClass(35)))
+  d.set('a.x.f', new TestBaseClass(new TestBaseClass(35)))
   it(spy.callCount).equals(3)
 
   it(d.get('a.x.y').value).equals(34)
@@ -303,7 +303,7 @@ it('circle object test', () => {
 
   var spy = it.spy()
   var w = edata({
-    WrapClass
+    baseClass: TestBaseClass
   })
   var d = w(x)
   d.observer.map(spy)
@@ -331,7 +331,7 @@ it('circle object test', () => {
 it('getset', () => {
   var spy = it.spy()
   var w = edata({
-    WrapClass
+    baseClass: TestBaseClass
   })
   var d = w({
     a: 1, b: { c: 2 }
@@ -359,7 +359,7 @@ it('getset', () => {
 it('set descriptor', () => {
   var spy = it.spy()
   var w = edata({
-    WrapClass
+    baseClass: TestBaseClass
   })
   var d = w({
     a: 1, b: { c: 2 }
@@ -387,7 +387,7 @@ it('set descriptor', () => {
 it('model slice', () => {
   var spy = it.spy()
   var w = edata({
-    WrapClass
+    baseClass: TestBaseClass
   })
   var d = w({
     a: 1, b: { c: 2 }
@@ -422,7 +422,7 @@ it('model slice', () => {
 it('multiple slice', () => {
   var spy = it.spy()
   var w = edata({
-    WrapClass
+    baseClass: TestBaseClass
   })
   var d = w({
     a: 1, b: { c: 2 }
@@ -447,7 +447,7 @@ it('multiple slice', () => {
 it('nested getset', () => {
   var spy = it.spy()
   var d = edata({
-    WrapClass
+    baseClass: TestBaseClass
   })({
     air: {
       value: 23, unit: 'F'
@@ -473,7 +473,7 @@ it('add intermediate object when set', () => {
     ['update', ['a'], 2]
   ]
   var d = edata({
-    WrapClass
+    baseClass: TestBaseClass
   })({})
   d.observer.map(({ type, path, data }) => {
     const [_type, _path, _value] = results.shift()
@@ -488,7 +488,7 @@ it('add intermediate object when set', () => {
 
 it('setMany', () => {
   var d = edata({
-    WrapClass,
+    baseClass: TestBaseClass,
     plugins: [
       require('../plugins/set-many').default
     ]
@@ -522,7 +522,7 @@ it('setMany', () => {
 
 it('get with mapFunc', () => {
   var d = edata({
-    WrapClass
+    baseClass: TestBaseClass
   })({
     a: { b: 1 },
     x: 2
@@ -534,7 +534,7 @@ it('get with mapFunc', () => {
 it('hold change', () => {
   var spy = it.spy()
   var root = edata({
-    WrapClass
+    baseClass: TestBaseClass
   })({
     a: { b: 1 },
     x: 2
@@ -557,7 +557,7 @@ it('hold change', () => {
 it('skip change', () => {
   var spy = it.spy()
   var d = edata({
-    WrapClass
+    baseClass: TestBaseClass
   })({
     a: { b: 1 },
     x: 2
@@ -617,7 +617,7 @@ it('unwrap map', () => {
     }
   )({
     store: {
-      [c.displayName]: new WrapClass(c.store)
+      [c.displayName]: new TestBaseClass(c.store)
     },
     api: {
       getOdps: {
@@ -674,13 +674,13 @@ it('should not dig into non-Array/POJO', () => {
 it('plugins - combine', () => {
   var spy = it.spy()
   var d = edata({
-    WrapClass,
+    baseClass: TestBaseClass,
     plugins: [
       // require('../src/plugins/combine')
     ]
   })
   var c = d({ a: 1, b: { c: 2 } })
-  var t = new WrapClass(0)
+  var t = new TestBaseClass(0)
   var combined = c.combine(['a', 'b.c', t])
   combined.on('change', ([a1, a2, a3]) => c.set('x', a1 + a2 + a3))
   combined.check()
@@ -718,7 +718,7 @@ it('setComputed', () => {
 
 it('context', () => {
   var d = edata({
-    WrapClass
+    baseClass: TestBaseClass
   })
   var c = d({
     'abc': {
@@ -746,7 +746,7 @@ it('context', () => {
 
 it('big json', () => {
   var d = edata({
-    WrapClass
+    baseClass: TestBaseClass
   })(require('./big.json'))
   console.time('big_json')
   d.unwrap()

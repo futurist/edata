@@ -4,7 +4,7 @@ import EventEmitter from 'es-mitt'
 import pluginCombine from './plugins/combine'
 export default edata
 
-export class DefaultWrapClass extends EventEmitter {
+export class DefaultBaseClass extends EventEmitter {
   constructor () {
     super()
     if (arguments.length > 0) this._value = arguments[0]
@@ -73,13 +73,14 @@ function getPathType (p) {
 }
 
 function edata (config = {}) {
-  const {
-    WrapClass = DefaultWrapClass,
+  let {
+    baseClass: BaseClass,
     unwrapConfig = null,
     plugins = []
   } = config
+  BaseClass = BaseClass || DefaultBaseClass
   plugins.unshift(pluginCombine)
-  class ObserverClass extends WrapClass {
+  class ObserverClass extends BaseClass {
     constructor (packed) {
       super()
       this.changeStack = []
@@ -123,9 +124,9 @@ function edata (config = {}) {
       }
     }
   }
-  let wrapper = (init) => new WrapClass(init)
+  let wrapper = (init) => new BaseClass(init)
   let isWrapper = (obj) => {
-    return obj instanceof WrapClass
+    return obj instanceof BaseClass
   }
 
   function isWrappedData (obj) {
