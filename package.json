@@ -9,7 +9,8 @@
   "scripts": {
     "lint": "eslint src tests",
     "test": "npm run build && ospec",
-    "build": "tsc && rollup -c",
+    "build": "tsc && rollup -c && npm run doc",
+    "doc": "markdown-toc -i api.md && markdown-toc -i README.md",
     "preversion": "npm run test",
     "version": "npm run build",
     "postversion": "git push --follow-tags"
