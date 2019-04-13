@@ -9,10 +9,10 @@
   "scripts": {
     "lint": "eslint src tests",
     "test": "npm run build && ospec",
-    "build": "tsc && rollup -c && npm run doc",
+    "build": "tsc && rollup -c",
     "doc": "markdown-toc -i api.md && markdown-toc -i README.md",
     "preversion": "npm run test",
-    "version": "npm run build",
+    "version": "npm run build && npm run doc",
     "postversion": "git push --follow-tags"
   },
   "files": [
@@ -54,6 +54,7 @@
     "events": "^3.0.0",
     "globby": "^9.0.0",
     "lodash": "^4.17.11",
+    "markdown-toc": "^1.2.0",
     "ospec": "^3.0.1",
     "rollup": "^0.63.4",
     "rollup-plugin-babel": "^4.0.3",
