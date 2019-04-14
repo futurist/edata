@@ -13,6 +13,7 @@
     + [- .of](#--of)
     + [- .slice](#--slice)
     + [- .context](#--context)
+    + [- .closest](#--closest)
     + [- .combine](#--combine)
     + [- .setComputed](#--setcomputed)
     + [- .pop](#--pop)
@@ -248,10 +249,25 @@ xy.set('z', 1)
 #### - .context
 
 ```js
-edata.context(path: string|string[])
+edata.context()
 ```
 
-> Roughly the opposite to `slice`, `context` find `root model` from closest parent, with matching path using `RegExp`.
+> Find `edata` up from **context parent**, which has been `.slice()`d and has `observer` on it.
+
+*return: closest sliced `edata` or `root`*
+
+```js
+var xy = root.slice('x.y')
+assert.equal(xy.get('x.y.z').context(), xy)
+```
+
+#### - .closest
+
+```js
+edata.closest(path: string|string[])
+```
+
+> Find `edata` up from **closest parent**, with matching path using `RegExp` or string.
 
 Passing `""` will return `root model`.
 
@@ -259,7 +275,7 @@ Passing `""` will return `root model`.
 
 ```js
 var xy = root.get('x.y')
-var x = xy.context('x')  // get closest x
+var x = xy.closest('x')  // get closest x
 ```
 
 
