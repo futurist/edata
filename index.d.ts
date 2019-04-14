@@ -52,6 +52,9 @@ declare interface IUnwrapConfig {
     map?: (val: any) => IDisposer;
 }
 
+/**
+ * The value emitted when observer got `change` event
+ */
 declare interface IObserverValue {
     data: edata,
     type: ValueOf<MUTATION_TYPE>,
@@ -133,7 +136,7 @@ declare interface edata extends BaseClass {
      * @param edataArray {edata[] | string[]} The edata array, can be path string
      * @returns {edata} The combined target edata
      */
-    combine(edataArray: string[] | any[]): edataCombined;
+    combine(edataArray: string[] | edata[]): edataCombined;
     /**
      * > Set target path from edataArray changes, using return value of combineFunc
      * @param path {string|string[]} Target path to update when edataArray changed

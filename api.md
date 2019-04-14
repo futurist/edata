@@ -10,9 +10,11 @@
     + [- .getset](#--getset)
     + [- .unset](#--unset)
     + [- .unwrap](#--unwrap)
+    + [- .of](#--of)
     + [- .slice](#--slice)
     + [- .context](#--context)
-    + [- .push](#--push)
+    + [- .combine](#--combine)
+    + [- .setComputed](#--setcomputed)
     + [- .pop](#--pop)
 - [plugins](#plugins)
   * [`plugins/set-many`](#pluginsset-many)
@@ -260,20 +262,49 @@ var xy = root.get('x.y')
 var x = xy.context('x')  // get closest x
 ```
 
-#### - .push
+
+#### - .combine
 
 ```js
-edata_array.push(value: any)
+edata.combine(edataArray: string[] | edata[]): edataCombined
 ```
 
-> push new `value` into edata when it's array, all the inside will be wrapped.
+> Combine array of source edata into one target edata, any change of source will emit change event of target
 
-*return: newly pushed edata*
+Combined edata has below additional methods:
+- `.check()` Check the source edata array for change now
+- `.end()` End the combine, stop observe changes from source edata array
+
+*return: combined `edata`*
 
 ```js
-var z = root.set('d', [])
-z.push({v: 10})
-z.get('d.0.v').value  // 10
+var abxy = root.combine(['a.b', 'x.y'])
+abxy.map(callback) //called when 'a.b' or 'x.y' changed
+```
+
+#### - .setComputed
+
+```js
+edata.setComputed(path: string | string[], edataArray: any[], combineFunc: (args: edata[])=>void): IDisposer
+```
+
+> Set target path from edataArray changes, using return value of combineFunc
+
+*return: {function} Disposer to end the computation*
+
+```js
+const root = edata()({
+  firstName: 'Hello',
+  lastName: 'World'
+})
+root.setComputed(
+  'fullName',
+  ['firstName', 'lastName'],
+  ([firstName, lastName]) => firstName + ' ' + lastName
+)
+assert.equal(root.unwrap('fullName'), 'Hello World')
+root.set('firstName', 'Green')
+assert.equal(root.unwrap('fullName'), 'Green World')
 ```
 
 #### - .pop
