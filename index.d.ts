@@ -106,11 +106,16 @@ declare interface edata extends BaseClass {
         filter?: (data: IObserverValue) => boolean,
     ): edataRoot | undefined;
     /**
-     * > Roughly the opposite to `slice`, `context` find `root model` up from closest parent, with matching path using `RegExp`.
-     * @param path {string|string[]} The target path segment
-     * @returns {edata} The matching edata as context
+     * > Find `edata` up from **context parent**, which has been `.slice()`d and has `observer` on it.
+     * @returns {edataRoot} Closest sliced `edata` or `root`
      */
-    context(path: string | string[]): edata | undefined;
+    context(): edataRoot;
+    /**
+     * > Find `edata` up from **closest parent**, with matching path using `RegExp` or string.
+     * @param path {string|string[]|RegExp} The target path segment
+     * @returns {edata} The matching edata as closest
+     */
+    closest(path: string | string[]): edata | undefined;
     /**
      * > Get nested edata from path, path is array of string or dot(`"."`) seperated string.
      * @param path {string|string[]} The path to get edata

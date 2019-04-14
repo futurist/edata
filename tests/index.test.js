@@ -718,20 +718,44 @@ it('context', () => {
           }
         }
       }
+    }
+  })
+  const data = c.get('abc.def.def.bc.data')
+  const model1 = c.slice('abc.def')
+  const model2 = c.slice('abc.def.def')
+  it(data.context()).deepEquals(model2)
+})
+
+it('closest', () => {
+  var d = edata({
+    baseClass: TestBaseClass
+  })
+  var c = d({
+    'abc': {
+      'def': {
+        'def': {
+          'bc': {
+            data: 1234
+          }
+        }
+      }
     },
     'uvw': {
       'xyz': 234
     }
   })
   const data = c.get('abc.def.def.bc.data')
-  it(data.context('')).equals(c)
-  it(data.context('bc').path.join('.')).equals('abc.def.def.bc')
-  it(data.context('abc.def.def.bc').path.join('.')).equals('abc.def.def.bc')
-  it(data.context('def').path.join('.')).equals('abc.def.def')
-  it(data.context('def.def').path.join('.')).equals('abc.def.def')
-  it(data.context(/\.def\./).path.join('.')).equals('abc.def.def')
-  it(data.context(/.*/).path.join('.')).equals('abc.def.def.bc')
-  it(data.context(/not.exist/)).equals(undefined)
+  // find root
+  it(data.closest('')).equals(c)
+  // find parent
+  it(data.closest(/./).path.join('.')).equals('abc.def.def.bc')
+  it(data.closest('bc').path.join('.')).equals('abc.def.def.bc')
+  it(data.closest('abc.def.def.bc').path.join('.')).equals('abc.def.def.bc')
+  it(data.closest('def').path.join('.')).equals('abc.def.def')
+  it(data.closest('def.def').path.join('.')).equals('abc.def.def')
+  it(data.closest(/\.def\./).path.join('.')).equals('abc.def.def')
+  it(data.closest(/.*/).path.join('.')).equals('abc.def.def.bc')
+  it(data.closest(/not.exist/)).equals(undefined)
 })
 
 it('big json', () => {

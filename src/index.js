@@ -254,6 +254,7 @@ function edata (config = {}) {
       }
       packed.of = wrapper
       packed.slice = slice
+      packed.closest = closest
       packed.context = context
       packed.get = get
       packed.set = set
@@ -354,11 +355,23 @@ function edata (config = {}) {
       return a
     }
 
-    function context (path) {
+    function context () {
+      let { path, root } = this
+      let latestRoot = root
+      for (let i = 0; i < path.length; i++) {
+        root = root.value[path[i]]
+        if ('observer' in root && root.observer instanceof ObserverClass) {
+          latestRoot = root
+        }
+      }
+      return latestRoot
+    }
+
+    function closest (path) {
       if (!path) return root
       let lastPos = -1
       const obj = this
-      const reg = new RegExp(path, 'g')
+      const reg = new RegExp(path instanceof RegExp ? path : '\\b' + path + '\\b', 'g')
       const pathString = obj.path.slice(0, -1).join('.')
       while (reg.exec(pathString)) {
         const { lastIndex } = reg
