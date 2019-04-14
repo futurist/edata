@@ -377,7 +377,7 @@ function edata (config = {}) {
       }
     }
 
-    function get (path, mapFunc) {
+    function get (path) {
       let obj = this
       let n = obj
       path = getPath(path)
@@ -387,7 +387,7 @@ function edata (config = {}) {
         }
         n = n.value[path[i][1]]
       }
-      return isFunction(mapFunc) ? mapFunc(n) : n
+      return n
     }
 
     function set (path, value, descriptor) {

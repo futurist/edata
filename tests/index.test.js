@@ -520,17 +520,6 @@ it('setMany', () => {
   it(r.y.unwrap()).equals(20)
 })
 
-it('get with mapFunc', () => {
-  var d = edata({
-    baseClass: TestBaseClass
-  })({
-    a: { b: 1 },
-    x: 2
-  })
-  it(d.get('x', v => v.unwrap())).equals(2)
-  it(d.get('y', v => v == null ? 1 : 2)).equals(1)
-})
-
 it('hold change', () => {
   var spy = it.spy()
   var root = edata({

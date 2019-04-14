@@ -28,15 +28,13 @@ declare class ObserverClass<T = any> extends BaseClass<T> {
 declare interface IOptions {
     baseClass: BaseClass;
     unwrapConfig: IUnwrapConfig;
-    plugins: Array<(packer: IWrappedData) => void>
+    plugins: Array<(packer: edata) => void>
 }
 
-declare interface WrapFactory {
-    (options?: Partial<IOptions>): DataFactory;
-}
+declare function edataConstructor (options?: Partial<IOptions>): edataFactory;
 
-declare interface DataFactory {
-    (data: any): IWrappedRoot;
+declare interface edataFactory {
+    (data: any): edataRoot;
 }
 
 declare interface IUnwrapConfig {
@@ -44,51 +42,58 @@ declare interface IUnwrapConfig {
     map?: (val: any) => IDisposer;
 }
 
-declare interface IChangeValue {
-    data: IWrappedData,
+declare interface IObserverValue {
+    data: edata,
     type: ValueOf<MUTATION_TYPE>,
     path: string[]
 }
 
 
-declare interface IWrappedData extends BaseClass {
-    root: IWrappedRoot;
+declare interface edata extends BaseClass {
+    root: edataRoot;
     path: string[];
-    wrap(value: any): BaseClass;
+    of(value: any): BaseClass;
     slice(
         path: string | string[],
-        filter?: (data: IChangeValue) => boolean,
-        from?: IWrappedData
-    ): IWrappedRoot | undefined;
-    context(path: string | string[]): IWrappedData | undefined;
-    get(path: string | string[], mapFunc?: (val: IWrappedData | undefined) => any): IWrappedData | undefined;
-    set(value: any): IWrappedData;
-    set(path: string | string[], value: any, descriptor?: object): IWrappedData;
-    combine(edataArray: string[] | any[]): IWrappedCombine;
-    setComputed(path: string | string[], edataArray: any[], combineFunc: (args: IWrappedData[])=>void): IDisposer;
+        filter?: (data: IObserverValue) => boolean,
+        from?: edata
+    ): edataRoot | undefined;
+    context(path: string | string[]): edata | undefined;
+    /**
+     * > Get nested edata from path, path is array of string or dot(`"."`) seperated string.
+     * @param path {string|string[]} The path to get edata
+     * @returns  edata at `path`
+     */
+    get(path: string | string[]): edata | undefined;
+    /**
+     * > Set value into nested edata from path, the `descriptor` only applied when path not exists.
+     * non-exist path will be auto created
+     * @param value {any} Set value to edata
+     * @returns {edata} The edata itself
+     */
+    set(value: any): edata;
+    set(path: string | string[], value: any, descriptor?: object): edata;
+    combine(edataArray: string[] | any[]): edataCombined;
+    setComputed(path: string | string[], edataArray: any[], combineFunc: (args: edata[])=>void): IDisposer;
     // setMany(kvMap: object, descriptors?: object): object;
-    getset(valueFn: (prevVal: IWrappedData | undefined) => any): IWrappedData;
-    getset(path: string | string[], valueFn: (prevVal: IWrappedData | undefined) => any, descriptor?: object): IWrappedData;
+    getset(valueFn: (prevVal: edata | undefined) => any): edata;
+    getset(path: string | string[], valueFn: (prevVal: edata | undefined) => any, descriptor?: object): edata;
     unset(path: string | string[]): any;
     unwrap(config?: IUnwrapConfig): any;
     unwrap(path: string | string[], config?: IUnwrapConfig): any;
     [pluginMethods: string]: any;
 }
 
-declare interface IWrappedCombine extends IWrappedData {
-    check: IWrappedData[] | undefined;
+declare interface edataCombined extends edata {
+    check: edata[] | undefined;
     end: Function;
 }
 
-declare interface IWrappedRoot extends IWrappedData {
-    observer: ObserverClass<IChangeValue>;
+declare interface edataRoot extends edata {
+    observer: ObserverClass<IObserverValue>;
     MUTATION_TYPE: MUTATION_TYPE
 }
 
-declare const edata: WrapFactory;
-export = edata;
-
-declare module 'edata' {
-    export = edata;
-}
+export default edataConstructor;
+export {};
 
