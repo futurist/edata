@@ -68,12 +68,12 @@ If you need to use `class` without transpile, you should import `edata/dist/node
 var root = edata(options: object)(initData: any)
 ```
 
-A `wrapped_edata` is an `edata` with some helper methods, like `get`, `set` etc., so
+A `edata` is an `edata` with some helper methods, like `get`, `set` etc., so
 
-The `root` is a *wrapped_edata*, with all nested data wrapped, and `root.observer` is also an edata object, you can listen to `change` event for children changes.
+The `root` is a *edata*, with all nested data wrapped, and `root.observer` is also an edata object, you can listen to `change` event for children changes.
 
 ```
-wrapped_edata = EventEmitter + '.value' + '.get' + '.set' ...
+edata = EventEmitter + '.value' + '.get' + '.set' ...
 ```
 
 `edata` convert nested `initData` object into nested `EventEmitter` instance.
@@ -83,7 +83,7 @@ wrapped_edata = EventEmitter + '.value' + '.get' + '.set' ...
 - **unwrapConfig**: when `unwrap`, you can add default config
 - **plugins**: You can add your own API with this option
 
-*return: root wrapped_edata*
+*return: root edata*
 
 ```js
 import edata from 'edata'
@@ -99,12 +99,12 @@ root1.on('change', onChangeHandler)
 #### - .get
 
 ```js
-wrapped_edata.get(path: string|string[])
+edata.get(path: string|string[])
 ```
 
-> get nested wrapped data from path, path is array of string or dot(`"."`) seperated string.
+> get nested edata from path, path is array of string or dot(`"."`) seperated string.
 
-*return: wrapped_edata at `path`*
+*return: edata at `path`*
 
 ```js
 var z = root.get('x.y.z')
@@ -117,16 +117,16 @@ z.value = 10
 #### - .set
 
 ```js
-wrapped_edata.set(path?: string|string[], value?: any, descriptor?: object)
+edata.set(path?: string|string[], value?: any, descriptor?: object)
 ```
 
-> set nested wrapped data value from path, same rule as `get` method. The `descriptor` only applied when path not exists.
+> set nested edata value from path, same rule as `get` method. The `descriptor` only applied when path not exists.
 
-*return: wrapped_edata for `value`, at `path`*
+*return: edata for `value`, at `path`*
 
 `path` can contain `a.[3]` alike string denote `3` is an array element of `a`.
 
-`value` can be any data types, if `path` is omitted, set value into wrapped_edata itself.
+`value` can be any data types, if `path` is omitted, set value into edata itself.
 
 If `value` is a **edata object**, then it's an **atom data**, which will not be wrapped inside.
 
@@ -157,12 +157,12 @@ root.unwrap()  // {x: {y: {z: 1}}, a: 10, arr:[10]}  // `arr` is array!
 #### - .getset
 
 ```js
-wrapped_edata.getset(path?: string|string[], function(prevValue:wrappedData|any, empty?: boolean)->newValue, descriptor: object)
+edata.getset(path?: string|string[], function(prevValue:edata|any, empty?: boolean)->newValue, descriptor: object)
 ```
 
 > like `set`, but value is from a function, it let you set `value` based on previous value, the `descriptor` only applied when `empty` is `true`.
 
-*return: wrapped_edata for `newValue`, at `path`*
+*return: edata for `newValue`, at `path`*
 
 ```js
 // x.a = 10
@@ -173,10 +173,10 @@ z.value  // 11
 #### - .unset
 
 ```js
-wrapped_edata.unset(path: string|string[])
+edata.unset(path: string|string[])
 ```
 
-> delete `wrapped_edata` or `value` in `path`
+> delete `edata` or `value` in `path`
 
 *return: deleted data been **unwrapped***
 
@@ -188,10 +188,10 @@ z // 5
 #### - .unwrap
 
 ```js
-wrapped_edata.unwrap(path?: string|string[], config?: {json: true})
+edata.unwrap(path?: string|string[], config?: {json: true})
 ```
 
-> unwrap data and nested data while keep data structure, any level of `wrapper` on any data will be stripped.
+> unwrap data and nested data while keep data structure, any level of `wrapper` will be stripped.
 
 If set `config` arg with `{json: true}`, then any circular referenced data will be set `undefined`, suitable for `JSON.stringify`.
 
@@ -205,18 +205,36 @@ var z = root.unwrap()
 z // {x: {y: {z: 11}}, a: [10]},   x.c is hidden
 ```
 
+#### - .of
+
+```js
+edata.of(value: any)
+```
+
+> Wrap value into an edata.
+
+This is important for performance when `.unwrap` for large deep tree, unwrap will only unwrap outer level of `edata(edata)` structure, and will not going deep for better performance, so `edata.of(value)` is made atom.
+
+*return: edata*
+
+```js
+var d = root.set('a.b', root.of({x: {y: 10}}));
+d.get('a.b.x.y') // -> undefined
+d.unwrap('a.b') // {x: {y: 10}}
+```
+
 
 #### - .slice
 
 ```js
-wrapped_edata.slice(path: string|string[], filter?: ({data, type, path}):boolean, from = root)
+edata.slice(path: string|string[], filter?: ({data, type, path}):boolean, from = root)
 ```
 
-> get nested wrapped data from path, and attach a `observer` edata object to observe scope mutations that the `root.path` starts with path.
+> get nested edata from path, and attach a `observer` edata object to observe scope mutations that the `root.path` starts with path.
 
-*return: `wrapped_edata`, which have a `.observer` edata object*
+*return: `edata`, which have a `.observer` edata object*
 
-The `wrapped_edata.observer` edata object's value has `path` property to reflect the sub path of the sliced data.
+The `edata.observer` edata object's value has `path` property to reflect the sub path of the sliced data.
 
 ```js
 var xy = root.slice('x.y')
@@ -228,14 +246,14 @@ xy.set('z', 1)
 #### - .context
 
 ```js
-wrapped_edata.context(path: string|string[])
+edata.context(path: string|string[])
 ```
 
 > Roughly the opposite to `slice`, `context` find `root model` from closest parent, with matching path using `RegExp`.
 
 Passing `""` will return `root model`.
 
-*return: `wrapped_edata` or `undefined` if not find*
+*return: `edata` or `undefined` if not find*
 
 ```js
 var xy = root.get('x.y')
@@ -245,12 +263,12 @@ var x = xy.context('x')  // get closest x
 #### - .push
 
 ```js
-wrapped_array.push(value: any)
+edata_array.push(value: any)
 ```
 
-> push new `value` into wrapped data when it's array, all the inside will be wrapped.
+> push new `value` into edata when it's array, all the inside will be wrapped.
 
-*return: newly pushed wrapped_edata*
+*return: newly pushed edata*
 
 ```js
 var z = root.set('d', [])
@@ -261,7 +279,7 @@ z.get('d.0.v').value  // 10
 #### - .pop
 
 ```js
-wrapped_array.pop()
+edata_array.pop()
 ```
 
 > pop and unwrap last element in wrapped array.
@@ -296,7 +314,7 @@ will expose:
 #### - .setMany
 
 ```js
-wrapped_edata.setMany(kvMap: object, descriptors?: object)
+edata.setMany(kvMap: object, descriptors?: object)
 ```
 
 > multiple set key and value from `kvMap`, and find descriptor from `descriptors` with the key.
@@ -333,7 +351,7 @@ will expose:
 #### - .dispatch
 
 ```js
-wrapped_edata.dispatch(action: object)
+edata.dispatch(action: object)
 ```
 
 > action is of shape: `{type, path, value}`, type can be `add/change/delete`, which will be converted to command `set/set/unset` accordingly.
