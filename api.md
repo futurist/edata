@@ -227,7 +227,7 @@ d.unwrap('a.b') // {x: {y: 10}}
 #### - .slice
 
 ```js
-edata.slice(path: string|string[], filter?: ({data, type, path}):boolean, from = root)
+edata.slice(path: string|string[], from = root, filter?: ({data, type, path}):boolean)
 ```
 
 > get nested edata from path, and attach a `observer` edata object to observe scope mutations that the `root.path` starts with path.
