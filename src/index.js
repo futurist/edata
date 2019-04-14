@@ -202,7 +202,7 @@ function edata (config = {}) {
     let _cache = null
     root = createWrap(source, [])
 
-    function slice (path, filter, from) {
+    function slice (path, from, filter) {
       const obj = this
       const part = makeChange(obj.get(path))
       if (!isWrapper(part)) return part
@@ -210,10 +210,10 @@ function edata (config = {}) {
       const target = from || root
       const subPath = getPath(path).map(v => v[1])
       if (!isFunction(filter)) {
-        filter = (arg) => arg.path.join().indexOf(subPath.join()) === 0
+        filter = (arg) => arg.path.join().indexOf(arg.subPath.join()) === 0
       }
       target.observer.on('change', ({ data, type, path }) => {
-        if (filter({ data, type, path })) {
+        if (filter({ data, type, path, subPath })) {
           observer.value = {
             data,
             type,
