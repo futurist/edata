@@ -261,6 +261,7 @@ function edata (config = {}) {
       packed.getset = getset
       packed.unset = unset
       packed.unwrap = unwrap
+      packed.toJSON = () => packed.unwrap({ json: true })
       if (isArray(packed.value)) {
         packed.push = push
         packed.pop = pop

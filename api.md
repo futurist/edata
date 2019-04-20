@@ -191,7 +191,7 @@ z // 5
 #### - .unwrap
 
 ```js
-edata.unwrap(path?: string|string[], config?: {json: true})
+edata.unwrap(path?: string|string[], config?: {json: false})
 ```
 
 > unwrap data and nested data while keep data structure, any level of `wrapper` will be stripped.
@@ -200,12 +200,16 @@ If set `config` arg with `{json: true}`, then any circular referenced data will 
 
 If set `config` arg with `{map: value=>...}`, then the final value is first mapped, then returned, and the return value of `unwrapConfig` will be merged into this config.
 
+The `.toJSON()` also invoke `.unwrap`, using `{json: true}` config.
+
 *return: unwrapped data*
 
 ```js
 var z = root.unwrap()
 
-z // {x: {y: {z: 11}}, a: [10]},   x.c is hidden
+console.log(z) // {x: {y: {z: 11}}, a: [10]},   x.c is hidden
+
+JSON.stringify(z) // '{"x":{"y":{"z":11}},"a":[10]}'
 ```
 
 #### - .of
@@ -270,6 +274,8 @@ edata.closest(path: string|string[])
 > Find `edata` up from **closest parent**, with matching path using `RegExp` or string.
 
 Passing `""` will return `root model`.
+
+Passing `/./` will return `parent edata`.
 
 *return: `edata` or `undefined` if not find*
 
