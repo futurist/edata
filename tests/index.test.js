@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 let it = require('ospec')
 let { default: edata, DefaultBaseClass } = require('../dist/node')
 let { keys } = Object
@@ -316,7 +317,7 @@ it('circle object test', () => {
   it(d.value.a.value.y.value[3].value.d.path.join()).equals('a,b,d')
   it(keys(d.value.a.value.y.value[3].value).join()).equals('d')
 
-  var r = (d.unwrap())
+  var r = (d.unwrap({ json: false }))
   it(r.a.c).equals(r.a)
   it(r.a.c).equals(r.a.c.c.c)
   it(r.a.y[3]).equals(r.a.b)
@@ -326,6 +327,8 @@ it('circle object test', () => {
 
   var json = d.unwrap({ json: true })
   it(json).deepEquals({ a: { b: { d: 1 }, y: [ 3, 4, 5 ] } })
+  // .toJSON test
+  it(JSON.stringify(d)).deepEquals('{"a":{"b":{"d":1},"y":[3,4,5]}}')
 })
 
 it('getset', () => {

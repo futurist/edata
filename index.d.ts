@@ -186,6 +186,10 @@ declare interface edata extends DefaultBaseClass {
      */
     unwrap(path: string | string[], config?: IUnwrapConfig): any;
     /**
+     * > Just invoke `.unwrap({json: true})`
+     */
+    toJSON(): string;
+    /**
      * Methods from plugins
      */
     [pluginMethods: string]: any;
