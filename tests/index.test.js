@@ -395,15 +395,18 @@ it('model slice', () => {
   var d = w({
     a: 1, b: { c: 2 }
   })
-  d.observer.map(spy)
+  var unmap1 = d.observer.map(spy)
   const values = [
-    [ 'b', 'c' ],
-    ['a'],
-    [ 'b', 'c' ]
+    ['update', [ 'b', 'c' ]],
+    ['update', ['a']],
+    ['update', [ 'b', 'c' ]],
+    ['create', ['x']],
+    ['add', ['x', 'y']]
   ]
-  d.observer.map(({ data, type, path }) => {
-    it(type).equals('update')
-    it(path).deepEquals(values.shift())
+  var unmap2 = d.observer.map(({ data, type, path }) => {
+    const [_type, _path] = values.shift()
+    it(type).equals(_type)
+    it(path).deepEquals(_path)
   })
   var bc = d.slice('b.c')
   var disposer = bc.observer.map(spy)
@@ -420,6 +423,9 @@ it('model slice', () => {
   it(spy.callCount).equals(4)
   it(d.get('a').observer).equals(undefined)
   it(isWrapper(d.get('b').observer)).equals(true)
+
+  // slice non-exist path
+  it(d.slice('x.y').unwrap()).deepEquals({})
 })
 
 it('multiple slice', () => {
