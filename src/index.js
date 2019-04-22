@@ -204,15 +204,19 @@ function edata (config = {}) {
 
     function slice (path, from, filter) {
       const obj = this
-      const part = makeChange(obj.get(path))
+      let targetObj = obj.get(path)
+      if (targetObj == null) {
+        targetObj = obj.set(path, {})
+      }
+      const part = makeChange(targetObj)
       if (!isWrapper(part)) return part
       const { observer } = part
-      const target = from || root
+      const targetRoot = from || root
       const subPath = getPath(path).map(v => v[1])
       if (!isFunction(filter)) {
         filter = (arg) => arg.path.join().indexOf(arg.subPath.join()) === 0
       }
-      target.observer.on('change', ({ data, type, path }) => {
+      targetRoot.observer.on('change', ({ data, type, path }) => {
         if (filter({ data, type, path, subPath })) {
           observer.value = {
             data,
