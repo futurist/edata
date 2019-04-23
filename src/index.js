@@ -126,7 +126,7 @@ function edata (config = {}) {
   }
   let wrapper = (init) => new BaseClass(init)
   let isWrapper = (obj) => {
-    return obj instanceof BaseClass
+    return obj instanceof BaseClass || obj instanceof DefaultBaseClass
   }
 
   function isWrappedData (obj) {
