@@ -4,7 +4,7 @@ import EventEmitter from 'es-mitt'
 import pluginCombine from './plugins/combine'
 export default edata
 
-export class DefaultBaseClass extends EventEmitter {
+export class EdataBaseClass extends EventEmitter {
   constructor () {
     super()
     if (arguments.length > 0) this._value = arguments[0]
@@ -78,7 +78,7 @@ function edata (config = {}) {
     unwrapConfig = null,
     plugins = []
   } = config
-  BaseClass = BaseClass || DefaultBaseClass
+  BaseClass = BaseClass || EdataBaseClass
   plugins.unshift(pluginCombine)
   class ObserverClass extends BaseClass {
     constructor (packed) {
@@ -126,7 +126,7 @@ function edata (config = {}) {
   }
   let wrapper = (init) => new BaseClass(init)
   let isWrapper = (obj) => {
-    return obj instanceof BaseClass || obj instanceof DefaultBaseClass
+    return obj instanceof BaseClass || obj instanceof EdataBaseClass
   }
 
   function isWrappedData (obj) {
