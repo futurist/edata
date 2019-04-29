@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
 let it = require('ospec')
-let { default: edata, DefaultBaseClass } = require('../dist/node')
+let { default: edata, EdataBaseClass } = require('../dist/node')
 let { keys } = Object
-function isWrapper (s) { return s instanceof DefaultBaseClass }
+function isWrapper (s) { return s instanceof EdataBaseClass }
 
-class TestBaseClass extends DefaultBaseClass {
+class TestBaseClass extends EdataBaseClass {
   // map (fn) {
   //   this.on('change', fn)
   //   return () => {

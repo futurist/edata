@@ -32,18 +32,18 @@
 - For ES6 Module
 
 ```js
-import edata, {DefaultBaseClass} from 'edata'
+import edata, {EdataBaseClass} from 'edata'
 const root = edata()(initData)
 ```
 
 > The lib expose a default `edata` function to use
 
-The `DefaultBaseClass` can be used for sub-class your own implemention of `edata`.
+The `EdataBaseClass` can be used for sub-class your own implemention of `edata`.
 
 You can `extends` this class to add your own methods:
 
 ```js
-class MyBaseClass extends DefaultBaseClass {
+class MyBaseClass extends EdataBaseClass {
     my_method(){
         // do sth.
     }

@@ -13,7 +13,7 @@ declare interface IDisposer {
     (): any;
 }
 
-declare class DefaultBaseClass<T = any> extends EventEmitter {
+declare class EdataBaseClass<T = any> extends EventEmitter {
     protected _value: T;
     /**
      * The wrapped value by this edata, maybe another child edata
@@ -30,13 +30,13 @@ declare class DefaultBaseClass<T = any> extends EventEmitter {
     valueOf: () => any;
 }
 
-declare class ObserverClass<T = any> extends DefaultBaseClass<T> {
+declare class ObserverClass<T = any> extends EdataBaseClass<T> {
     public skip: boolean;
     public hold: boolean;
 }
 
 declare interface IOptions {
-    baseClass: DefaultBaseClass;
+    baseClass: EdataBaseClass;
     unwrapConfig: IUnwrapConfig;
     plugins: Array<(packer: edata) => void>
 }
@@ -62,7 +62,7 @@ declare interface IObserverValue {
 }
 
 
-declare interface edata extends DefaultBaseClass {
+declare interface edata extends EdataBaseClass {
     /**
      * The root edata that hold all the things
      */
@@ -84,7 +84,7 @@ declare interface edata extends DefaultBaseClass {
      * @param value {any} The value want to wrap
      * @returns {edata} The wrapped edata
      */
-    of(value: any): DefaultBaseClass;
+    of(value: any): EdataBaseClass;
     /**
      * > get nested edata from path, and attach a `observer` edata object to observe scope mutations that the `root.path` starts with path.
      * The `edata.observer` edata object's value has `path` property to reflect the sub path of the sliced data.
@@ -220,6 +220,6 @@ declare interface edataRoot extends edata {
 
 export default edataConstructor;
 export {
-    DefaultBaseClass
+    EdataBaseClass
 };
 
