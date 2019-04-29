@@ -124,6 +124,12 @@ root.unwrap()
 // {age: 20, firstName: 'Hello', lastName: 'World'}
 ```
 
+Also exist `edata.toJSON()`, so the `JSON.stringify(edata)` just like
+
+```js
+JSON.stringify(edata.unwrap({json:true}))
+```
+
 ### - Observe root changes
 
 The root has a `observer` attribute, which is also an edata itself, you can callback for every changes.
