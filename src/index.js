@@ -247,7 +247,13 @@ function edata (config = {}) {
       if ('path' in packed && 'root' in packed) return packed
       // type: 0->CHANGE, 1->ADD, 2->DELETE
       packed.root = root
-      packed.path = path
+      packed._path = path
+      Object.defineProperty(packed, 'path', {
+        get () {
+          return path.map(v => v.key)
+        },
+        enumerable: true
+      })
       packed.on('change', () => {
         if (root.observer == null) return
         root.observer.value = ({ data: packed, type: MUTATION_TYPE.UPDATE })
@@ -298,7 +304,7 @@ function edata (config = {}) {
 
       const target = isArray(source) ? [] : isPOJO(source) ? {} : source
       packed.value = (deepIt(target, source, (a, b, key, path) => {
-        const _path = path.concat(key)
+        const _path = path.concat({ key })
         const bval = b[key]
         if (bval === undefined) a[key] = wrapper()
         else if (shouldNotDig(bval)) a[key] = wrapper(bval)
@@ -349,7 +355,7 @@ function edata (config = {}) {
         if (!isPrimitive2(bval) && isWrapper(aval) && !isPrimitive(aval.value)) {
           const prev = _cache.find(function (v) { return v[0] === bval })
           if (prev == null) {
-            const _path = path.concat(key)
+            const _path = path.concat({ key })
             _cache.push([bval, a, key])
             deepIt(aval.value, bval, callback, _path)
           } else {
@@ -432,11 +438,11 @@ function edata (config = {}) {
       let i; let len; let t; let nextT; let p; let n = obj.value
 
       if (!path.length) {
-        obj.value = (createWrap(func(obj), obj.path.slice()).value)
+        obj.value = (createWrap(func(obj), obj._path.slice()).value)
         value = obj
         action = MUTATION_TYPE.UPDATE
       } else {
-        const _path = path.map(v => v[1])
+        const _path = path.map(v => ({ key: v[1] }))
         for (i = 0, len = path.length - 1; i < len; i++) {
           [t, p] = path[i]
           ;[nextT] = path[i + 1]
@@ -451,11 +457,11 @@ function edata (config = {}) {
         }
         [t, p] = path[i]
         if (isWrapper(n[p])) {
-          n[p].value = (createWrap(func(n[p]), obj.path.concat(_path)).value)
+          n[p].value = (createWrap(func(n[p]), obj._path.concat(_path)).value)
           value = n[p]
           action = MUTATION_TYPE.UPDATE
         } else {
-          value = createWrap(func(n[p], true), obj.path.concat(_path))
+          value = createWrap(func(n[p], true), obj._path.concat(_path))
           if (isPrimitive(descriptor)) {
             // Maybe Throw:
             // Cannot create property 'z' on number '10'
