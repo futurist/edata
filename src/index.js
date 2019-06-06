@@ -31,7 +31,7 @@ export class EdataBaseClass extends EventEmitter {
 const { assign, keys, getPrototypeOf } = Object
 const { toString, hasOwnProperty } = Object.prototype
 const { isArray } = Array
-const arrayKeyRegEx = /^\[(\w+)\]$/
+const arrayKeyRegEx = /^\[(\d+)\]$/
 const MUTATION_TYPE = {
   CREATE: 'create',
   ADD: 'add',
@@ -275,6 +275,8 @@ function edata (config = {}) {
       if (isArray(packed.value)) {
         packed.push = push
         packed.pop = pop
+        packed.shift = shift
+        packed.unshift = unshift
       }
       plugins.forEach(plugin => {
         plugin(packed, {
@@ -515,6 +517,25 @@ function edata (config = {}) {
       let val = this.unset(len - 1)
       this.value.pop()
       return val
+    }
+
+    function shift () {
+      const { value } = this
+      let val = value.shift()
+      value.forEach(item => {
+        item._path[item._path.length - 1].key--
+      })
+      return val
+    }
+
+    function unshift (...values) {
+      const { value, _path } = this
+      const ret = value.unshift(...values.map((v, i) => createWrap(v, _path.concat({ key: i }))))
+      const len = values.length
+      value.forEach(item => {
+        item._path[item._path.length - 1].key += len
+      })
+      return ret
     }
 
     function unwrap (path, config = {}) {
