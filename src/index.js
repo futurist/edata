@@ -521,7 +521,8 @@ function edata (config = {}) {
 
     function shift () {
       const { value } = this
-      let val = value.shift()
+      let val = this.unset(0)
+      value.shift()
       value.forEach(item => {
         item._path[item._path.length - 1].key--
       })
@@ -529,13 +530,15 @@ function edata (config = {}) {
     }
 
     function unshift (...values) {
-      const { value, _path } = this
-      const ret = value.unshift(...values.map((v, i) => createWrap(v, _path.concat({ key: i }))))
+      const { value } = this
+      const length = value.unshift(...values)
       const len = values.length
-      value.forEach(item => {
-        item._path[item._path.length - 1].key += len
+      value.forEach((item, i) => {
+        i < len
+          ? this.set(i, item)
+          : item._path[item._path.length - 1].key += len
       })
-      return ret
+      return length
     }
 
     function unwrap (path, config = {}) {
