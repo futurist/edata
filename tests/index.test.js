@@ -126,16 +126,18 @@ it('array test', () => {
   c.set(_c)
   it(spy.callCount).equals(11)
   it(x.unwrap()).deepEquals({ a: { b: [] }, c: [ { yy: 2 }, { xx: 10 } ], y: [10] })
-  it(x.get('c').shift().unwrap()).deepEquals({ yy: 2 })
+  it(x.get('c').shift()).deepEquals({ yy: 2 })
+  it(spy.callCount).equals(12)
   it(x.get('c.0').path).deepEquals(['c', 0])
   it(x.get('c').unshift(10)).equals(2)
+  it(spy.callCount).equals(13)
   it(x.get('c.1').unwrap()).deepEquals({ xx: 10 })
   it(x.get('c.1').path).deepEquals(['c', 1])
 })
 
 it('', () => {
-  var root = edata()({ d: [{ v: 10 }] })
-  it(root.get('d').pop()).deepEquals({ v: 10 })
+  var root = edata()({ d: [{ v: { y: 10 } }] })
+  it(root.get('d').pop()).deepEquals({ v: { y: 10 } })
   it(root.unwrap()).deepEquals({ d: [] })
 })
 
