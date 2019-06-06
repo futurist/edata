@@ -135,9 +135,14 @@ it('array test', () => {
   it(x.get('c.1').path).deepEquals(['c', 1])
 })
 
-it('', () => {
+it.only('array methods test', () => {
+  var spy = it.spy()
   var root = edata()({ d: [{ v: { y: 10 } }] })
+  var s = root.slice('d.0')
+  s.observer.map(spy)
   it(root.get('d').pop()).deepEquals({ v: { y: 10 } })
+  it(spy.callCount).equals(1)
+  it(spy.args[0].type).equals('delete')
   it(root.unwrap()).deepEquals({ d: [] })
 })
 
