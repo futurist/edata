@@ -33,7 +33,7 @@
 
 ```js
 import edata, {EdataBaseClass} from 'edata'
-const root = edata()(initData)
+const root = edata(initData)
 ```
 
 > The lib expose a default `edata` function to use
@@ -48,7 +48,7 @@ class MyBaseClass extends EdataBaseClass {
         // do sth.
     }
 }
-const root = edata({ baseClass: MyBaseClass })(initData);
+const root = edata(initData, { baseClass: MyBaseClass });
 root.my_method();
 ```
 
@@ -56,7 +56,7 @@ root.my_method();
 
 ```js
 const edata = require('edata').default
-const root = edata()(initData)
+const root = edata(initData)
 ```
 
 *Notice*
@@ -68,7 +68,7 @@ If you need to use `class` without transpile, you should import `edata/dist/node
 #### - initialize
 
 ```js
-var root = edata(options: object)(initData: any)
+var root = edata(initData: any, options?: object)
 ```
 
 A `edata` is an `edata` with some helper methods, like `get`, `set` etc., so
@@ -90,12 +90,10 @@ edata = EventEmitter + '.value' + '.get' + '.set' ...
 
 ```js
 import edata from 'edata'
-var edataFactory = edata({
+var root = edata(initData, {
     baseClass: MyBaseClass
 })
-const root1 = edataFactory(data1)
-const root2 = edataFactory(data2)
-root1.on('change', onChangeHandler)
+root.on('change', onChangeHandler)
 ...
 ```
 
@@ -220,7 +218,7 @@ edata.of(value: any)
 
 > Wrap value into an edata.
 
-This is important for performance when `.unwrap` for large deep tree, unwrap will only unwrap outer level of `edata(edata)` structure, and will not going deep for better performance, so `edata.of(value)` is made atom.
+This is important for performance when `.unwrap` for large deep tree, unwrap will only unwrap outer level of `edata[edata]` structure, and will not going deep for better performance, so `edata.of(value)` is made atom.
 
 *return: edata*
 
@@ -314,7 +312,7 @@ edata.setComputed(path: string | string[], edataArray: any[], combineFunc: (args
 *return: {function} Disposer to end the computation*
 
 ```js
-const root = edata()({
+const root = edata({
   firstName: 'Hello',
   lastName: 'World'
 })
@@ -353,7 +351,7 @@ edata_array.pop()
 *return: **unwrapped data** in last array element*
 
 ```js
-var root = edata()({ d: [{ v: 10 }] })
+var root = edata({ d: [{ v: 10 }] })
 assert.deepStrictEqual(root.get('d').pop(), { v: 10 })
 assert.deepStrictEqual(root.unwrap(), { d: [] })
 ```
@@ -368,7 +366,7 @@ config:
 
 ```js
 import setMany from 'edata/plugins/set-many'
-edata({
+edata(data, {
     plugins: [
         setMany
     ]
@@ -405,7 +403,7 @@ config:
 
 ```js
 import actions from 'edata/plugins/actions'
-edata({
+edata(data, {
     plugins: [
         actions
     ]

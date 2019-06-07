@@ -39,7 +39,7 @@ import edata from 'edata'
 **Below can give you a quick idea of edata:**
 
 ```js
-var root = edata()({a: {b: {c: {}}}})
+var root = edata({a: {b: {c: {}}}})
 // plain_object ---> edata
 ```
 
@@ -49,7 +49,7 @@ var root = edata()({a: {b: {c: {}}}})
 
 ```js
 import edata from 'edata'
-const root = edata({ /* options */ })({
+const root = edata({
     age: 20,
     firstName: 'Hello',
     lastName: 'World',
@@ -65,7 +65,7 @@ root.get('address.city').value // Moon
 
 **Plain object wrapped into edata:**
 
-> edata = EventEmitter(object)
+> edata = new EventEmitter(object)
 
 so use `edata.on` can watch changes, use `edata.value`(getter/setter) to get nested edata.
 
@@ -159,7 +159,7 @@ root.observer.off('change', onDataChange)
 You can define data relations using `setComputed`, as below:
 
 ```js
-const root = edata()({
+const root = edata({
   firstName: 'Hello',
   lastName: 'World'
 })
@@ -179,7 +179,7 @@ The pros is you can use `edata.set()` instead of `this.setState`:
 
 ```js
 import edata from 'edata'
-const root = edata()({user: {name: 'earth'}})
+const root = edata({user: {name: 'earth'}})
 
 class App extends React.Component {
     constructor(props){

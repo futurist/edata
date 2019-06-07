@@ -21,10 +21,9 @@ class TestBaseClass extends EdataBaseClass {
 
 /* eslint no-redeclare: 0 */
 it('basic', () => {
-  var w = edata({
+  var d = edata({ a: 1, b: { c: 2 } }, {
     baseClass: TestBaseClass
   })
-  var d = w({ a: 1, b: { c: 2 } })
   it(isWrapper(d)).equals(true)
   // event
   d.value.a.on('change', e => {
@@ -45,21 +44,19 @@ it('basic', () => {
 })
 
 it('root test', () => {
-  var w = edata({
+  var d = edata({ a: 1, b: { c: 2 } }, {
     baseClass: TestBaseClass
   })
-  var d = w({ a: 1, b: { c: 2 } })
   it(d.root).equals(d)
   it(d.value.b.value.c.root).equals(d)
 })
 
 it('root unwrap', () => {
-  var w = edata({
-    baseClass: TestBaseClass
-  })
   var data = { a: { b: { c: 2 } } }
   data.a.b.x = data.a
-  var d = w(data)
+  var d = edata(data, {
+    baseClass: TestBaseClass
+  })
   it(d.unwrap('a.b', { json: true })).deepEquals({ c: 2, x: {} })
   it(d.unwrap('a.b.c')).deepEquals(2)
   it(d.unwrap('a.b.c.d')).deepEquals(undefined)
@@ -69,12 +66,12 @@ it('root unwrap', () => {
 
 it('not dive into stream', () => {
   var d = edata({
-    baseClass: TestBaseClass
-  })({
     a: 1,
     b: new TestBaseClass({
       x: 2, y: 3
     })
+  }, {
+    baseClass: TestBaseClass
   })
 
   it(d.value.b.value.value).deepEquals({
@@ -85,9 +82,9 @@ it('not dive into stream', () => {
 
 it('array test', () => {
   var spy = it.spy()
-  var x = edata({
+  var x = edata({ a: { b: [] } }, {
     baseClass: TestBaseClass
-  })({ a: { b: [] } })
+  })
   // x.value.a.value = (x.value.a.value) // give it a change first to test map
   x.observer.map(spy)
 
@@ -144,7 +141,7 @@ it('array test', () => {
 it('array methods test', () => {
   var spy = it.spy()
   var spyRoot = it.spy()
-  var root = edata()({ d: [{ v: { y: 10 } }] })
+  var root = edata({ d: [{ v: { y: 10 } }] })
   root.observer.map(spyRoot)
   var s = root.cut('d.0')
   s.observer.map(spy)
@@ -188,18 +185,18 @@ it('array methods test', () => {
 
 it('single unwrap', () => {
   var spy = it.spy()
-  var x = edata({
+  var x = edata({ a: { b: new TestBaseClass(10) } }, {
     baseClass: TestBaseClass
-  })({ a: { b: new TestBaseClass(10) } })
+  })
   x.observer.map(spy)
   it(x.value.a.unwrap()).deepEquals({ b: 10 })
 })
 
 it('set test', () => {
   var spy = it.spy()
-  var d = edata({
+  var d = edata({}, {
     baseClass: TestBaseClass
-  })({})
+  })
   d.observer.map(spy)
   it(spy.callCount).equals(0)
   d.set('x.y.z', 10)
@@ -221,10 +218,9 @@ it('object test', () => {
   }
 
   var spy = it.spy()
-  var w = edata({
+  var d = edata(x, {
     baseClass: TestBaseClass
   })
-  var d = w(x)
   d.observer.map(spy)
   it(spy.callCount).equals(0)
 
@@ -355,10 +351,9 @@ it('circle object test', () => {
   xa.a = x
 
   var spy = it.spy()
-  var w = edata({
+  var d = edata(x, {
     baseClass: TestBaseClass
   })
-  var d = w(x)
   d.observer.map(spy)
   it(spy.callCount).equals(0)
 
@@ -385,11 +380,10 @@ it('circle object test', () => {
 
 it('getset', () => {
   var spy = it.spy()
-  var w = edata({
-    baseClass: TestBaseClass
-  })
-  var d = w({
+  var d = edata({
     a: 1, b: { c: 2 }
+  }, {
+    baseClass: TestBaseClass
   })
   d.observer.map(spy)
   var r = d.getset('b.c', v => {
@@ -413,11 +407,10 @@ it('getset', () => {
 
 it('set descriptor', () => {
   var spy = it.spy()
-  var w = edata({
-    baseClass: TestBaseClass
-  })
-  var d = w({
+  var d = edata({
     a: 1, b: { c: 2 }
+  }, {
+    baseClass: TestBaseClass
   })
   d.observer.map(spy)
   var r = d.set('b.x', 3, {})
@@ -441,11 +434,10 @@ it('set descriptor', () => {
 
 it('model cut', () => {
   var spy = it.spy()
-  var w = edata({
-    baseClass: TestBaseClass
-  })
-  var d = w({
+  var d = edata({
     a: 1, b: { c: 2 }
+  }, {
+    baseClass: TestBaseClass
   })
   var unmap1 = d.observer.map(spy)
   const values = [
@@ -482,11 +474,10 @@ it('model cut', () => {
 
 it('multiple cut', () => {
   var spy = it.spy()
-  var w = edata({
-    baseClass: TestBaseClass
-  })
-  var d = w({
+  var d = edata({
     a: 1, b: { c: 2 }
+  }, {
+    baseClass: TestBaseClass
   })
   var x = d.cut('b')
   var s1 = x.observer.map(spy)
@@ -508,11 +499,11 @@ it('multiple cut', () => {
 it('nested getset', () => {
   var spy = it.spy()
   var d = edata({
-    baseClass: TestBaseClass
-  })({
     air: {
       value: 23, unit: 'F'
     }
+  }, {
+    baseClass: TestBaseClass
   })
   var air = d.cut('air')
   air.observer.map(spy)
@@ -533,9 +524,9 @@ it('add intermediate object when set', () => {
     ['update', ['a'], 1],
     ['update', ['a'], 2]
   ]
-  var d = edata({
+  var d = edata({}, {
     baseClass: TestBaseClass
-  })({})
+  })
   d.observer.map(({ type, path, data }) => {
     const [_type, _path, _value] = results.shift()
     it(type).deepEquals(_type)
@@ -548,12 +539,12 @@ it('add intermediate object when set', () => {
 })
 
 it('setMany', () => {
-  var d = edata({
+  var d = edata({}, {
     baseClass: TestBaseClass,
     plugins: [
       require('../plugins/set-many').default
     ]
-  })({})
+  })
   d.setMany({
     'a.b': 1,
     'x': 2
@@ -584,10 +575,10 @@ it('setMany', () => {
 it('hold change', () => {
   var spy = it.spy()
   var root = edata({
-    baseClass: TestBaseClass
-  })({
     a: { b: 1 },
     x: 2
+  }, {
+    baseClass: TestBaseClass
   })
   var d = root.cut('a')
   d.observer.map(spy)
@@ -607,10 +598,10 @@ it('hold change', () => {
 it('skip change', () => {
   var spy = it.spy()
   var d = edata({
-    baseClass: TestBaseClass
-  })({
     a: { b: 1 },
     x: 2
+  }, {
+    baseClass: TestBaseClass
   })
   // d = d.cut('a')
   d.observer.map(spy)
@@ -645,6 +636,21 @@ it('unwrap map', () => {
 
   const d = edata(
     {
+      store: {
+        [c.displayName]: new TestBaseClass(c.store)
+      },
+      api: {
+        getOdps: {
+          url: 'http://www.baidu.com',
+          method: 'get'
+        },
+        postOdps: {
+          url: 'http://www.baidu.com',
+          method: 'post'
+        }
+      }
+    },
+    {
       unwrapConfig: packer => {
         // console.log(obj.path)
         const { path } = packer || {}
@@ -665,21 +671,7 @@ it('unwrap map', () => {
         }
       }
     }
-  )({
-    store: {
-      [c.displayName]: new TestBaseClass(c.store)
-    },
-    api: {
-      getOdps: {
-        url: 'http://www.baidu.com',
-        method: 'get'
-      },
-      postOdps: {
-        url: 'http://www.baidu.com',
-        method: 'post'
-      }
-    }
-  })
+  )
   const result = d.unwrap('api.getOdps')
   it(typeof result.then).equals('function')
   result.then(val => {
@@ -691,6 +683,7 @@ it('unwrap map', () => {
 
 it('options.plugins', () => {
   const d = edata(
+    { x: 1 },
     {
       plugins: [
         obj => {
@@ -700,7 +693,7 @@ it('options.plugins', () => {
         }
       ]
     }
-  )({ x: 1 })
+  )
   d.get('x').add(2)
   it(d.unwrap('x')).equals(3)
 })
@@ -713,7 +706,7 @@ it('should not dig into non-Array/POJO', () => {
       }
     }
   }
-  const d = edata()({
+  const d = edata({
     x: 1,
     b: new MyClass()
   })
@@ -723,13 +716,12 @@ it('should not dig into non-Array/POJO', () => {
 
 it('plugins - combine', () => {
   var spy = it.spy()
-  var d = edata({
+  var c = edata({ a: 1, b: { c: 2 } }, {
     baseClass: TestBaseClass,
     plugins: [
       // require('../src/plugins/combine')
     ]
   })
-  var c = d({ a: 1, b: { c: 2 } })
   var t = new TestBaseClass(0)
   var combined = c.combine(['a', 'b.c', t])
   combined.on('change', ([a1, a2, a3]) => c.set('x', a1 + a2 + a3))
@@ -749,7 +741,7 @@ it('plugins - combine', () => {
 })
 
 it('setComputed', () => {
-  const root = edata()({
+  const root = edata({
     firstName: 'Hello',
     lastName: 'World'
   })
@@ -767,10 +759,7 @@ it('setComputed', () => {
 })
 
 it('context', () => {
-  var d = edata({
-    baseClass: TestBaseClass
-  })
-  var c = d({
+  var c = edata({
     'abc': {
       'def': {
         'def': {
@@ -780,6 +769,8 @@ it('context', () => {
         }
       }
     }
+  }, {
+    baseClass: TestBaseClass
   })
   const data = c.get('abc.def.def.bc.data')
   const model1 = c.cut('abc.def')
@@ -788,10 +779,7 @@ it('context', () => {
 })
 
 it('closest', () => {
-  var d = edata({
-    baseClass: TestBaseClass
-  })
-  var c = d({
+  var c = edata({
     'abc': {
       'def': {
         'def': {
@@ -804,6 +792,8 @@ it('closest', () => {
     'uvw': {
       'xyz': 234
     }
+  }, {
+    baseClass: TestBaseClass
   })
   const data = c.get('abc.def.def.bc.data')
   // find root
@@ -823,9 +813,9 @@ it('closest', () => {
 it('big json', () => {
   var json = require('./big.json')
   console.time('big_json')
-  var d = edata({
+  var d = edata(json, {
     baseClass: TestBaseClass
-  })(json)
+  })
   d.unwrap()
   console.timeEnd('big_json')
 })
