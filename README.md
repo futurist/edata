@@ -184,28 +184,28 @@ const root = edata({user: {name: 'earth'}})
 class App extends React.Component {
     constructor(props){
         super(props)
-        const {edata} = this.props
-        this.state = edata.unwrap()
+        const {model} = this.props
+        this.state = model.unwrap()
         // state: {name: 'earth'}
-        this.stop = edata.observer.map(()=>{
-            this.setState(edata.unwrap())
+        this.stop = model.observer.map(()=>{
+            this.setState(model.unwrap())
         })
     }
     
     render(){
-        const {edata} = this.props
-        const name = edata.unwrap('name')
+        const {model} = this.props
+        const name = model.unwrap('name')
         return <div>
             <h3>Name: {name}</h3>
             <input
               value={name}
-              onChange={e=>{edata.set('name', e.target.value)}}
+              onChange={e=>{model.set('name', e.target.value)}}
             />
         </div>
     }
 }
 
-ReactDOM.render(<App edata={root.slice('user')} />, app)
+ReactDOM.render(<App edata={root.cut('user')} />, app)
 ```
 
 You can play with the [demo here](https://flems.io/#0=N4IgZglgNgpgziAXAbVAOwIYFsZJAOgAsAXLKEAGhAGMB7NYmBvAHgBMIA3AAgjYF4AOiAwAHUcIB8LAPQdOkkAF8K6bLkQEAVgip0GTYnghZRtAE7FuMNhmIZuYc7SzcA5DbsY3gtPrhWzrRW-Na29gAUAJQRwACucDDmiNzAmDgpHhiWhG5KSlG+vtRQGHBw3ACC4tYAHoxobBUASjAY1MT4AMIuZmiGqb7cw9z+xOZxHRYRos6icFHAQyMrcHGiSTNzC8srw2OpnvZK3KHEhBBw+LO087t755f4AXYwp2Fe+HFoAO7mYtF7isZDJuC9GCk0upMm0cnkgSNHlcArd3kcMPhaAAjRLmThJfBYAHRfiSJZoPaU7hI54wYgAZXsjAi6K+v3+omihQpVIK9yU93u5iYbE2iwR+3oAUO4QwJzOFyuNzuPMpB3Sb1CrO+fwBbg1bm5VO4wuIcXMFPYXEkEr2LEIAGZJAA5aGpDVKWSOm2q43cFgQNCiOLEW2UzgYKBxGD8KE4AW+v3cehdQgYNAAcxjwBjZNZiWIEX16jcFGs+Hs5iznQjUZgUXyYZGMh9xtk8lbIwTCd8rXaxAAIgB5ACy+GFjU2LGqog+9ljQU6cCgEGoMCLCSShpOLbLYlEUUoNF60CSeCxGCxMHIVESsA6ECleAAjAAWRDPh3KVQgDV4fDUOUR76A0RiaMoAC6VArmgADWCAoGoOB4MK-b4KK+JQLcOAMPgOhHua5CaCQxDzIgILfKIsEZgBLgyKhHQyHEWBsPRbQdOhMCYdhhh4boIDEAAnhseBwNQ5gQKIRgqEhGggAxxAALRsC4nHcaIOGdPhVCEXgJFkRRQbUbRWBsf2yl0cxrEKRZWBqdePG4dpAnCXJYkSVJkFKEAA)
