@@ -270,6 +270,11 @@ function edata (config = {}) {
         packed.pop = pop
         packed.shift = shift
         packed.unshift = unshift
+        packed.copyWithin = copyWithin
+        packed.fill = fill
+        packed.reverse = reverse
+        packed.sort = sort
+        packed.splice = splice
       }
       plugins.forEach(plugin => {
         plugin(packed, {
@@ -500,6 +505,76 @@ function edata (config = {}) {
         : deleteVal
     }
 
+    // Arrray Mutator methods
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/prototype#Mutator_methods
+    // copyWithin()
+    // fill()
+    // pop()
+    // push()
+    // reverse()
+    // shift()
+    // sort()
+    // splice()
+    // unshift()
+
+    function copyWithin (target, start, end) {
+      const { value } = this
+      const copyArr = value.slice(start, end)
+      const fromIndex = target
+      const toIndex = target + copyArr.length
+      value.slice(fromIndex, toIndex).forEach((item, i) => {
+        this.set(i, copyArr[i].value)
+      })
+      return this
+    }
+
+    function fill (value, start, end) {
+      const copyArr = this.value.slice(start, end)
+      copyArr.forEach(item => {
+        item.set(value)
+      })
+      return this
+    }
+
+    function reverse () {
+      const { value } = this
+      value.reverse().forEach((item, i) => {
+        item._path[item._path.length - 1].key = i + ''
+        item.set(item.value)
+      })
+      return this
+    }
+
+    function sort (compareFunction) {
+      const { value } = this
+      value.sort(compareFunction).forEach((item, i) => {
+        item._path[item._path.length - 1].key = i + ''
+        item.set(item.value)
+      })
+      return this
+    }
+
+    function splice (start, deleteCount, ...args) {
+      const { value } = this
+      const ret = []
+      for (let i = start; i < start + deleteCount; i++) {
+        ret.push(this.unset(i))
+      }
+      value.splice(start, deleteCount, ...args)
+      args.forEach((val, i) => {
+        this.set(start + i, val)
+      })
+      const delta = args.length - deleteCount
+      if (delta) {
+        for (let i = start + args.length; i < value.length; i++) {
+          const item = value[i]
+          const path = item._path[item._path.length - 1]
+          path.key = +path.key + delta + ''
+        }
+      }
+      return ret
+    }
+
     function push (value) {
       let len = this.value.length
       return this.set(len, value)
@@ -517,7 +592,8 @@ function edata (config = {}) {
       let val = this.unset(0)
       value.shift()
       value.forEach(item => {
-        item._path[item._path.length - 1].key--
+        const path = item._path[item._path.length - 1]
+        path.key = +path.key - 1 + ''
       })
       return val
     }
@@ -527,9 +603,12 @@ function edata (config = {}) {
       const length = value.unshift(...values)
       const len = values.length
       value.forEach((item, i) => {
-        i < len
-          ? this.set(i, item)
-          : item._path[item._path.length - 1].key += len
+        if (i < len) {
+          this.set(i, item)
+        } else {
+          const path = item._path[item._path.length - 1]
+          path.key = +path.key + len + ''
+        }
       })
       return length
     }
