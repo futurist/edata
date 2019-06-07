@@ -2,6 +2,7 @@
 
 import EventEmitter from 'es-mitt'
 import pluginCombine from './plugins/combine'
+import { stringToPath } from './utils.mjs'
 export default edata
 
 export class EdataBaseClass extends EventEmitter {
@@ -31,7 +32,6 @@ export class EdataBaseClass extends EventEmitter {
 const { assign, keys, getPrototypeOf } = Object
 const { toString, hasOwnProperty } = Object.prototype
 const { isArray } = Array
-const arrayKeyRegEx = /^\[(\d+)\]$/
 const MUTATION_TYPE = {
   CREATE: 'create',
   ADD: 'add',
@@ -62,14 +62,7 @@ function isPrimitive (val) {
 }
 
 function getPath (path) {
-  if (typeof path === 'string') path = path.split('.')
-  return (isArray(path) ? path : [path]).map(getPathType)
-}
-
-function getPathType (p) {
-  if (isArray(p)) return p
-  const match = arrayKeyRegEx.exec(p)
-  return match != null ? ['array', match[1]] : ['', p]
+  return isArray(path) ? path : stringToPath(String(path))
 }
 
 function edata (config = {}) {
@@ -437,7 +430,7 @@ function edata (config = {}) {
 
       let value, action
       /* eslint-disable-next-line no-unused-vars */
-      let i; let len; let t; let nextT; let p; let n = obj.value
+      let i; let len; let t; let nextIsArray; let p; let n = obj.value
 
       if (!path.length) {
         obj.value = (createWrap(func(obj), obj._path.slice()).value)
@@ -447,10 +440,10 @@ function edata (config = {}) {
         const _path = path.map(v => ({ key: v[1] }))
         for (i = 0, len = path.length - 1; i < len; i++) {
           [t, p] = path[i]
-          ;[nextT] = path[i + 1]
+          ;[nextIsArray] = path[i + 1]
           if (!isWrapper(n[p])) {
             n[p] = bindMethods(
-              wrapper(nextT === 'array' ? [] : {}),
+              wrapper(nextIsArray ? [] : {}),
               _path.slice(0, i + 1),
               MUTATION_TYPE.CREATE
             )
