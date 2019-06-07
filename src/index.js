@@ -195,7 +195,7 @@ function edata (config = {}) {
     let _cache = null
     root = createWrap(source, [])
 
-    function slice (path, from, filter) {
+    function cut (path, from, filter) {
       const obj = this
       let targetObj = obj.get(path)
       if (targetObj == null) {
@@ -256,7 +256,7 @@ function edata (config = {}) {
         type
       }
       packed.of = wrapper
-      packed.slice = slice
+      packed.cut = cut
       packed.closest = closest
       packed.context = context
       packed.get = get
@@ -379,7 +379,9 @@ function edata (config = {}) {
     }
 
     function closest (path) {
-      if (!path) return root
+      if (path == null) {
+        path = /./
+      }
       let lastPos = -1
       const obj = this
       const reg = new RegExp(path instanceof RegExp ? path : '\\b' + path + '\\b', 'g')
