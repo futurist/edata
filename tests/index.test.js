@@ -6,7 +6,7 @@ function isWrapper (s) { return s instanceof EdataBaseClass }
 
 function ensureArrayPath (d) {
   d.value.forEach((v, i) => {
-    it(d.get(i).path.pop()).deepEquals(i + '')
+    it(d.get(i).path.pop()).deepEquals(i)
   })
 }
 
@@ -134,11 +134,11 @@ it('array test', () => {
   it(x.unwrap()).deepEquals({ a: { b: [] }, c: [ { yy: 2 }, { xx: 10 } ], y: [10] })
   it(x.get('c').shift()).deepEquals({ yy: 2 })
   it(spy.callCount).equals(12)
-  it(x.get('c.0').path).deepEquals(['c', '0'])
+  it(x.get('c.0').path).deepEquals(['c', 0])
   it(x.get('c').unshift(10)).equals(2)
   it(spy.callCount).equals(13)
   it(x.get('c.1').unwrap()).deepEquals({ xx: 10 })
-  it(x.get('c.1').path).deepEquals(['c', '1'])
+  it(x.get('c.1').path).deepEquals(['c', 1])
 })
 
 it('array methods test', () => {

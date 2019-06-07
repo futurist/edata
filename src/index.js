@@ -62,7 +62,11 @@ function isPrimitive (val) {
 }
 
 function getPath (path) {
-  return isArray(path) ? path : stringToPath(String(path))
+  return isArray(path)
+    ? path
+    : typeof path === 'number'
+      ? [[true, path]]
+      : stringToPath(String(path))
 }
 
 function edata (config = {}) {
@@ -541,7 +545,7 @@ function edata (config = {}) {
     function reverse () {
       const { value } = this
       value.reverse().forEach((item, i) => {
-        item._path[item._path.length - 1].key = i + ''
+        item._path[item._path.length - 1].key = i
         item.set(item.value)
       })
       return this
@@ -550,7 +554,7 @@ function edata (config = {}) {
     function sort (compareFunction) {
       const { value } = this
       value.sort(compareFunction).forEach((item, i) => {
-        item._path[item._path.length - 1].key = i + ''
+        item._path[item._path.length - 1].key = i
         item.set(item.value)
       })
       return this
@@ -571,7 +575,7 @@ function edata (config = {}) {
         for (let i = start + args.length; i < value.length; i++) {
           const item = value[i]
           const path = item._path[item._path.length - 1]
-          path.key = +path.key + delta + ''
+          path.key = +path.key + delta
         }
       }
       return ret
@@ -595,7 +599,7 @@ function edata (config = {}) {
       value.shift()
       value.forEach(item => {
         const path = item._path[item._path.length - 1]
-        path.key = +path.key - 1 + ''
+        path.key = +path.key - 1
       })
       return val
     }
@@ -609,7 +613,7 @@ function edata (config = {}) {
           this.set(i, item)
         } else {
           const path = item._path[item._path.length - 1]
-          path.key = +path.key + len + ''
+          path.key = +path.key + len
         }
       })
       return length
