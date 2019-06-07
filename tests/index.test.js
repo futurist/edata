@@ -135,7 +135,7 @@ it('array test', () => {
   it(x.get('c.1').path).deepEquals(['c', 1])
 })
 
-it.only('array methods test', () => {
+it('array methods test', () => {
   var spy = it.spy()
   var root = edata()({ d: [{ v: { y: 10 } }] })
   var s = root.slice('d.0')
