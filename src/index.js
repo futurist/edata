@@ -69,7 +69,7 @@ function getPath (path) {
       : stringToPath(String(path))
 }
 
-function edata (config = {}) {
+function edata (initData, config = {}) {
   let {
     baseClass: BaseClass,
     unwrapConfig = null,
@@ -636,7 +636,7 @@ function edata (config = {}) {
 
     return root
   }
-  return wrapSource
+  return wrapSource(initData)
 }
 
 edata.version = 'VERSION'

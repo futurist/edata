@@ -41,11 +41,7 @@ declare interface IOptions {
     plugins: Array<(packer: edata) => void>
 }
 
-declare function edataConstructor (options?: Partial<IOptions>): edataFactory;
-
-declare interface edataFactory {
-    (data: any): edataRoot;
-}
+declare function edataConstructor (initData: any, options?: Partial<IOptions>): edataRoot;
 
 declare interface IUnwrapConfig {
     json?: boolean;
