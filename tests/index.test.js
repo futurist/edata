@@ -4,6 +4,12 @@ let { default: edata, EdataBaseClass } = require('../dist/node')
 let { keys } = Object
 function isWrapper (s) { return s instanceof EdataBaseClass }
 
+function ensureArrayPath (d) {
+  d.value.forEach((v, i) => {
+    it(d.get(i).path.pop()).deepEquals(i + '')
+  })
+}
+
 class TestBaseClass extends EdataBaseClass {
   // map (fn) {
   //   this.on('change', fn)
@@ -128,22 +134,56 @@ it('array test', () => {
   it(x.unwrap()).deepEquals({ a: { b: [] }, c: [ { yy: 2 }, { xx: 10 } ], y: [10] })
   it(x.get('c').shift()).deepEquals({ yy: 2 })
   it(spy.callCount).equals(12)
-  it(x.get('c.0').path).deepEquals(['c', 0])
+  it(x.get('c.0').path).deepEquals(['c', '0'])
   it(x.get('c').unshift(10)).equals(2)
   it(spy.callCount).equals(13)
   it(x.get('c.1').unwrap()).deepEquals({ xx: 10 })
-  it(x.get('c.1').path).deepEquals(['c', 1])
+  it(x.get('c.1').path).deepEquals(['c', '1'])
 })
 
 it('array methods test', () => {
   var spy = it.spy()
+  var spyRoot = it.spy()
   var root = edata()({ d: [{ v: { y: 10 } }] })
+  root.observer.map(spyRoot)
   var s = root.slice('d.0')
   s.observer.map(spy)
-  it(root.get('d').pop()).deepEquals({ v: { y: 10 } })
+  const d = root.get('d')
+
+  it(d.pop()).deepEquals({ v: { y: 10 } })
   it(spy.callCount).equals(1)
   it(spy.args[0].type).equals('delete')
   it(root.unwrap()).deepEquals({ d: [] })
+
+  it(d.splice(0, 0, { x: 2 }, { x: 1 }, { x: 3 })).deepEquals([])
+  it(spyRoot.callCount).equals(4)
+  ensureArrayPath(d)
+
+  it(d.splice(1, 1, { x: 4 }, { x: 5 })).deepEquals([{ x: 1 }])
+  it(spyRoot.callCount).equals(7)
+  ensureArrayPath(d)
+  it(d.unwrap()).deepEquals([{ x: 2 }, { x: 4 }, { x: 5 }, { x: 3 }])
+
+  d.sort((a, b) => { return a.unwrap('x') - b.unwrap('x') })
+  it(spyRoot.callCount).equals(11)
+  ensureArrayPath(d)
+  it(d.unwrap()).deepEquals([{ x: 2 }, { x: 3 }, { x: 4 }, { x: 5 }])
+  ensureArrayPath(d)
+
+  d.fill({ x: 10 }, 2)
+  it(spyRoot.callCount).equals(13)
+  ensureArrayPath(d)
+  it(d.unwrap()).deepEquals([{ x: 2 }, { x: 3 }, { x: 10 }, { x: 10 }])
+
+  d.reverse()
+  it(spyRoot.callCount).equals(17)
+  ensureArrayPath(d)
+  it(d.unwrap()).deepEquals([{ x: 10 }, { x: 10 }, { x: 3 }, { x: 2 }])
+
+  d.copyWithin(0, 2)
+  it(spyRoot.callCount).equals(19)
+  ensureArrayPath(d)
+  it(d.unwrap()).deepEquals([{ x: 3 }, { x: 2 }, { x: 3 }, { x: 2 }])
 })
 
 it('single unwrap', () => {
