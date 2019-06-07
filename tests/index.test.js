@@ -821,10 +821,11 @@ it('closest', () => {
 })
 
 it('big json', () => {
+  var json = require('./big.json')
+  console.time('big_json')
   var d = edata({
     baseClass: TestBaseClass
-  })(require('./big.json'))
-  console.time('big_json')
+  })(json)
   d.unwrap()
   console.timeEnd('big_json')
 })
