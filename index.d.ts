@@ -87,27 +87,27 @@ declare interface edata extends EdataBaseClass {
     of(value: any): EdataBaseClass;
     /**
      * > get nested edata from path, and attach a `observer` edata object to observe scope mutations that the `root.path` starts with path.
-     * The `edata.observer` edata object's value has `path` property to reflect the sub path of the sliced data.
+     * The `edata.observer` edata object's value has `path` property to reflect the sub path of the cut data.
      * 
      * ```js
-     * var xy = root.slice('x.y')
+     * var xy = root.cut('x.y')
      * xy.observer.on('change', ({data, type, path})=>console.log(type, path))
      * xy.set('z', 1)
      * // x.y changed! ['z']
      * ```
-     * @param path {string|string[]} The path to edata to be sliced
-     * @param from {edata} (optional) The target edata root to be sliced
-     * @param filter {Function} (optional) The filter to apply when sliced
+     * @param path {string|string[]} The path to edata to be cut
+     * @param from {edata} (optional) The target edata root to be cut
+     * @param filter {Function} (optional) The filter to apply when cut
      * @returns {edata} which have a `.observer` edata object
      */
-    slice(
+    cut(
         path: string | string[],
         from?: edata,
         filter?: (data: IObserverValue) => boolean,
     ): edataRoot | undefined;
     /**
-     * > Find `edata` up from **context parent**, which has been `.slice()`d and has `observer` on it.
-     * @returns {edataRoot} Closest sliced `edata` or `root`
+     * > Find `edata` up from **context parent**, which has been `.cut()`d and has `observer` on it.
+     * @returns {edataRoot} Closest cut `edata` or `root`
      */
     context(): edataRoot;
     /**
