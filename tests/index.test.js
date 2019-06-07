@@ -146,7 +146,7 @@ it('array methods test', () => {
   var spyRoot = it.spy()
   var root = edata()({ d: [{ v: { y: 10 } }] })
   root.observer.map(spyRoot)
-  var s = root.slice('d.0')
+  var s = root.cut('d.0')
   s.observer.map(spy)
   const d = root.get('d')
 
@@ -439,7 +439,7 @@ it('set descriptor', () => {
   })
 })
 
-it('model slice', () => {
+it('model cut', () => {
   var spy = it.spy()
   var w = edata({
     baseClass: TestBaseClass
@@ -460,9 +460,9 @@ it('model slice', () => {
     it(type).equals(_type)
     it(path).deepEquals(_path)
   })
-  var bc = d.slice('b.c')
+  var bc = d.cut('b.c')
   var disposer = bc.observer.map(spy)
-  d.slice('b').observer.map(({ data, path }) => {
+  d.cut('b').observer.map(({ data, path }) => {
     it(path).deepEquals(['c'])
   })
   d.set('b.c', 3)
@@ -476,11 +476,11 @@ it('model slice', () => {
   it(d.get('a').observer).equals(undefined)
   it(isWrapper(d.get('b').observer)).equals(true)
 
-  // slice non-exist path
-  it(d.slice('x.y').unwrap()).deepEquals({})
+  // cut non-exist path
+  it(d.cut('x.y').unwrap()).deepEquals({})
 })
 
-it('multiple slice', () => {
+it('multiple cut', () => {
   var spy = it.spy()
   var w = edata({
     baseClass: TestBaseClass
@@ -488,9 +488,9 @@ it('multiple slice', () => {
   var d = w({
     a: 1, b: { c: 2 }
   })
-  var x = d.slice('b')
+  var x = d.cut('b')
   var s1 = x.observer.map(spy)
-  var y = d.slice('b')
+  var y = d.cut('b')
   var s2 = y.observer.map(spy)
   it(x.observer).equals(y.observer)
   d.set('b.c', 10)
@@ -514,7 +514,7 @@ it('nested getset', () => {
       value: 23, unit: 'F'
     }
   })
-  var air = d.slice('air')
+  var air = d.cut('air')
   air.observer.map(spy)
   air.getset('value', v => v.value + 1)
   it(spy.callCount).equals(1)
@@ -589,7 +589,7 @@ it('hold change', () => {
     a: { b: 1 },
     x: 2
   })
-  var d = root.slice('a')
+  var d = root.cut('a')
   d.observer.map(spy)
   d.observer.hold = (true)
   d.set('x', 3)
@@ -612,7 +612,7 @@ it('skip change', () => {
     a: { b: 1 },
     x: 2
   })
-  // d = d.slice('a')
+  // d = d.cut('a')
   d.observer.map(spy)
   d.observer.skip = (true)
   d.set('x', 3)
@@ -782,8 +782,8 @@ it('context', () => {
     }
   })
   const data = c.get('abc.def.def.bc.data')
-  const model1 = c.slice('abc.def')
-  const model2 = c.slice('abc.def.def')
+  const model1 = c.cut('abc.def')
+  const model2 = c.cut('abc.def.def')
   it(data.context()).deepEquals(model2)
 })
 
@@ -807,7 +807,8 @@ it('closest', () => {
   })
   const data = c.get('abc.def.def.bc.data')
   // find root
-  it(data.closest('')).equals(c)
+  it(data.closest('')).equals(c.get('abc.def.def.bc'))
+  it(data.closest()).equals(c.get('abc.def.def.bc'))
   // find parent
   it(data.closest(/./).path.join('.')).equals('abc.def.def.bc')
   it(data.closest('bc').path.join('.')).equals('abc.def.def.bc')

@@ -11,7 +11,7 @@
     + [- .unset](#--unset)
     + [- .unwrap](#--unwrap)
     + [- .of](#--of)
-    + [- .slice](#--slice)
+    + [- .cut](#--cut)
     + [- .context](#--context)
     + [- .closest](#--closest)
     + [- .combine](#--combine)
@@ -231,20 +231,20 @@ d.unwrap('a.b') // {x: {y: 10}}
 ```
 
 
-#### - .slice
+#### - .cut
 
 ```js
-edata.slice(path: string|string[], from = root, filter?: ({data, type, path}):boolean)
+edata.cut(path: string|string[], from = root, filter?: ({data, type, path}):boolean)
 ```
 
 > get nested edata from path, and attach a `observer` edata object to observe scope mutations that the `root.path` starts with path.
 
 *return: `edata`, which have a `.observer` edata object*
 
-The `edata.observer` edata object's value has `path` property to reflect the sub path of the sliced data.
+The `edata.observer` edata object's value has `path` property to reflect the sub path of the cut data.
 
 ```js
-var xy = root.slice('x.y')
+var xy = root.cut('x.y')
 xy.observer.on('change', ({data, type, path})=>console.log(type, path))
 xy.set('z', 1)
 // x.y changed! ['z']
@@ -256,12 +256,12 @@ xy.set('z', 1)
 edata.context()
 ```
 
-> Find `edata` up from **context parent**, which has been `.slice()`d and has `observer` on it.
+> Find `edata` up from **context parent**, which has been `.cut()`d and has `observer` on it.
 
-*return: closest sliced `edata` or `root`*
+*return: closest cut `edata` or `root`*
 
 ```js
-var xy = root.slice('x.y')
+var xy = root.cut('x.y')
 assert.equal(xy.get('x.y.z').context(), xy)
 ```
 
@@ -273,15 +273,14 @@ edata.closest(path: string|string[])
 
 > Find `edata` up from **closest parent**, with matching path using `RegExp` or string.
 
-Passing `""` will return `root model`.
-
-Passing `/./` will return `parent edata`.
+Empty `path` (`null` or `undefined`) will return `parent edata`.
 
 *return: `edata` or `undefined` if not find*
 
 ```js
 var xy = root.get('x.y')
 var x = xy.closest('x')  // get closest x
+var parent = xy.closest()  // get parent of x
 ```
 
 
