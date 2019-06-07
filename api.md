@@ -16,7 +16,7 @@
     + [- .closest](#--closest)
     + [- .combine](#--combine)
     + [- .setComputed](#--setcomputed)
-    + [- .pop](#--pop)
+    + [- ArrayEdata](#--arrayedata)
 - [plugins](#plugins)
   * [`plugins/set-many`](#pluginsset-many)
     + [- .setMany](#--setmany)
@@ -328,7 +328,21 @@ root.set('firstName', 'Green')
 assert.equal(root.unwrap('fullName'), 'Green World')
 ```
 
-#### - .pop
+#### - ArrayEdata
+
+If edata has array value, then below additional mutator methods exists, to keep `.path` updated when array elements changed.
+
+- `.copyWithin()`
+- `.fill()`
+- `.pop()`
+- `.push()`
+- `.reverse()`
+- `.shift()`
+- `.sort()`
+- `.splice()`
+- `.unshift()`
+
+Example for `.pop()`:
 
 ```js
 edata_array.pop()
