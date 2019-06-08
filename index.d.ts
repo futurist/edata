@@ -216,6 +216,16 @@ declare interface edataRoot extends edata {
 
 export default edataConstructor;
 export {
-    EdataBaseClass
+    EdataBaseClass,
+    edataRoot,
+    edata,
+    IObserverValue,
+    IUnwrapConfig,
+    MUTATION_TYPE,
+    IDisposer,
+    ObserverClass,
+    edataConstructor,
+    edataCombined,
+    IOptions
 };
 
