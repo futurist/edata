@@ -134,17 +134,17 @@ declare interface edata extends EdataBaseClass {
     set(path: string | string[], value: any, descriptor?: object): edata;
     /**
      * > Combine array of source edata into one target edata, any change of source will emit change event of target
-     * @param edataArray {edata[] | string[]} The edata array, can be path string
+     * @param arrayOfEdata {edata[] | string[]} The edata array, can be path string
      * @returns {edata} The combined target edata
      */
-    combine(edataArray: string[] | edata[]): edataCombined;
+    combine(arrayOfEdata: string[] | edata[]): edataCombined;
     /**
-     * > Set target path from edataArray changes, using return value of combineFunc
-     * @param path {string|string[]} Target path to update when edataArray changed
-     * @param edataArray {string[]} Source path to observe for change
+     * > Set target path from arrayOfEdata changes, using return value of combineFunc
+     * @param path {string|string[]} Target path to update when arrayOfEdata changed
+     * @param arrayOfEdata {string[]} Source path to observe for change
      * @param combineFunc {Function} Computation function to set to target path
      */
-    setComputed(path: string | string[], edataArray: any[], combineFunc: (args: edata[])=>void): IDisposer;
+    setComputed(path: string | string[], arrayOfEdata: any[], combineFunc: (args: edata[])=>void): IDisposer;
     // setMany(kvMap: object, descriptors?: object): object;
     /**
      * > Like `set`, but value is from a function, it let you set `value` based on previous value, the `descriptor` only applied when `empty` is `true`.
@@ -191,6 +191,70 @@ declare interface edata extends EdataBaseClass {
     [pluginMethods: string]: any;
 }
 
+declare interface edataArray<T> extends edata {
+    /**
+     * Returns the this object after filling the section identified by start and end with value
+     * @param value value to fill array section with
+     * @param start index to start filling the array at. If start is negative, it is treated as
+     * length+start where length is the length of the array.
+     * @param end index to stop filling the array at. If end is negative, it is treated as
+     * length+end.
+     */
+    fill(value: T, start?: number, end?: number): this;
+
+    /**
+     * Returns the this object after copying a section of the array identified by start and end
+     * to the same array starting at position target
+     * @param target If target is negative, it is treated as length+target where length is the
+     * length of the array.
+     * @param start If start is negative, it is treated as length+start. If end is negative, it
+     * is treated as length+end.
+     * @param end If not specified, length of the this object is used as its default value.
+     */
+    copyWithin(target: number, start: number, end?: number): this;
+
+    /**
+      * Removes the last element from an array and returns it.
+      */
+     pop(): T | undefined;
+     /**
+       * Appends new elements to an array, and returns the new length of the array.
+       * @param items New elements of the Array.
+       */
+     push(...items: T[]): number;
+     /**
+       * Reverses the elements in an Array.
+       */
+     reverse(): T[];
+     /**
+       * Removes the first element from an array and returns it.
+       */
+     shift(): T | undefined;
+     /**
+       * Sorts an array.
+       * @param compareFn The name of the function used to determine the order of the elements. If omitted, the elements are sorted in ascending, ASCII character order.
+       */
+     sort(compareFn?: (a: T, b: T) => number): this;
+     /**
+       * Removes elements from an array and, if necessary, inserts new elements in their place, returning the deleted elements.
+       * @param start The zero-based location in the array from which to start removing elements.
+       * @param deleteCount The number of elements to remove.
+       */
+     splice(start: number, deleteCount?: number): T[];
+     /**
+       * Removes elements from an array and, if necessary, inserts new elements in their place, returning the deleted elements.
+       * @param start The zero-based location in the array from which to start removing elements.
+       * @param deleteCount The number of elements to remove.
+       * @param items Elements to insert into the array in place of the deleted elements.
+       */
+     splice(start: number, deleteCount: number, ...items: T[]): T[];
+     /**
+       * Inserts new elements at the start of an array.
+       * @param items  Elements to insert at the start of the Array.
+       */
+     unshift(...items: T[]): number;
+}
+
 declare interface edataCombined extends edata {
     /**
      * Check the source edata array for change now
@@ -226,6 +290,7 @@ export {
     ObserverClass,
     edataConstructor,
     edataCombined,
-    IOptions
+    IOptions,
+    edataArray
 };
 
