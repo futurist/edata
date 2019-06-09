@@ -3,7 +3,7 @@
 import EventEmitter from 'es-mitt'
 import pluginCombine from './plugins/combine'
 import { stringToPath } from './utils.mjs'
-import { tco } from './tco'
+// import { tco } from './tco'
 export default edata
 
 export class EdataBaseClass extends EventEmitter {
@@ -203,38 +203,23 @@ function edata (initData, config = {}) {
       _cache = isArray(_cache) ? _cache : []
       path = isArray(path) ? path : []
       if (shouldNotDig(b)) return bindMethods(wrapper(a), path)
-      var stack = [[ a, b, path ]]
-      do {
-        keys(b).some(key => {
-          // return false stop the iteration
-          const ret = callback(a, b, key, path, _cache)
-          if (ret === false) return true
-          const aval = a[key]
-          const bval = b[key]
-          if (!isPrimitive2(bval) && isWrapper(aval) && !isPrimitive(aval.value)) {
-            const prev = _cache.find(function (v) { return v[0] === bval })
-            if (prev == null) {
-              const _path = path.concat({ key })
-              _cache.push([bval, a, key])
-              // deepIt(aval.value, bval, callback, _path)
-              stack.push([aval.value, bval, _path])
-            } else {
-            // recursive found
-            }
-          }
-        })
-        while (stack.length > 0) {
-          [a, b, path] = stack.pop()
-          if (shouldNotDig(b)) {
-            bindMethods(wrapper(a), path)
+      keys(b).some(key => {
+        // return false stop the iteration
+        const ret = callback(a, b, key, path, _cache)
+        if (ret === false) return true
+        const aval = a[key]
+        const bval = b[key]
+        if (!isPrimitive2(bval) && isWrapper(aval) && !isPrimitive(aval.value)) {
+          const prev = _cache.find(function (v) { return v[0] === bval })
+          if (prev == null) {
+            const _path = path.concat({ key })
+            _cache.push([bval, a, key])
+            deepIt(aval.value, bval, callback, _path)
           } else {
-            break
+            // recursive found
           }
         }
-        if (stack.length === 0) {
-          break
-        }
-      } while (true)
+      })
       return a
     }
 
