@@ -3,6 +3,7 @@
 import EventEmitter from 'es-mitt'
 import pluginCombine from './plugins/combine'
 import { stringToPath } from './utils.mjs'
+import { tco } from './tco'
 export default edata
 
 export class EdataBaseClass extends EventEmitter {
@@ -196,7 +197,47 @@ function edata (initData, config = {}) {
 
   const wrapSource = source => {
     let root
+
     let _cache = null
+    function deepIt (a, b, callback, path) {
+      _cache = isArray(_cache) ? _cache : []
+      path = isArray(path) ? path : []
+      if (shouldNotDig(b)) return bindMethods(wrapper(a), path)
+      var stack = [[ a, b, path ]]
+      do {
+        keys(b).some(key => {
+          // return false stop the iteration
+          const ret = callback(a, b, key, path, _cache)
+          if (ret === false) return true
+          const aval = a[key]
+          const bval = b[key]
+          if (!isPrimitive2(bval) && isWrapper(aval) && !isPrimitive(aval.value)) {
+            const prev = _cache.find(function (v) { return v[0] === bval })
+            if (prev == null) {
+              const _path = path.concat({ key })
+              _cache.push([bval, a, key])
+              // deepIt(aval.value, bval, callback, _path)
+              stack.push([aval.value, bval, _path])
+            } else {
+            // recursive found
+            }
+          }
+        })
+        while (stack.length > 0) {
+          [a, b, path] = stack.pop()
+          if (shouldNotDig(b)) {
+            bindMethods(wrapper(a), path)
+          } else {
+            break
+          }
+        }
+        if (stack.length === 0) {
+          break
+        }
+      } while (true)
+      return a
+    }
+
     root = createWrap(source, [])
 
     function cut (path, from, filter) {
@@ -342,32 +383,6 @@ function edata (initData, config = {}) {
       }
       root.observer.skip = (skip)
       return ret
-    }
-
-    function deepIt (a, b, callback, path) {
-      _cache = isArray(_cache) ? _cache : []
-      path = isArray(path) ? path : []
-      if (shouldNotDig(b)) return bindMethods(wrapper(a), path)
-      for (let key in b) {
-        if (!hasOwnProperty.call(b, key)) continue
-        // return false stop the iteration
-        const ret = callback(a, b, key, path, _cache)
-        if (ret === false) break
-        else if (ret === 0) continue
-        const aval = a[key]
-        const bval = b[key]
-        if (!isPrimitive2(bval) && isWrapper(aval) && !isPrimitive(aval.value)) {
-          const prev = _cache.find(function (v) { return v[0] === bval })
-          if (prev == null) {
-            const _path = path.concat({ key })
-            _cache.push([bval, a, key])
-            deepIt(aval.value, bval, callback, _path)
-          } else {
-            // recursive found
-          }
-        }
-      }
-      return a
     }
 
     function context () {

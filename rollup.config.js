@@ -13,7 +13,7 @@ let replacePlugin = replace({
 
 let config = [
   {
-    input: './src/index.js',
+    input: './src/index.mjs',
     plugins: [
       replacePlugin,
       resolve({
@@ -29,7 +29,7 @@ let config = [
   },
 
   {
-    input: './src/index.js',
+    input: './src/index.mjs',
     plugins: [
       replacePlugin,
       resolve({
@@ -43,7 +43,7 @@ let config = [
   },
 
   {
-    input: './src/index.js',
+    input: './src/index.mjs',
     plugins: [
       replacePlugin,
       resolve({
