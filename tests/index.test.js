@@ -843,6 +843,7 @@ it('deep nested', () => {
   var list = newList(count)
   // contains(list)
   let d = edata(list)
+  d.unwrap()
   console.timeEnd('CreateList')
 })
 
