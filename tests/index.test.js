@@ -1,4 +1,7 @@
 /* eslint-disable no-unused-vars */
+'use strict'
+
+let path = require('path')
 let it = require('ospec')
 let { default: edata, EdataBaseClass } = require('../dist/node')
 let { keys } = Object
@@ -820,7 +823,29 @@ it('big json', () => {
   console.timeEnd('big_json')
 })
 
+it('deep nested', () => {
+  var val
+  function newList (count) {
+    let head = { value: count, next: null }
+    while (--count) { head = { value: count, next: head } }
+    return head
+  }
+
+  function contains (list, x) {
+    if (!list) { return false }
+    if (list.value == x) { return true }
+    return contains(list.next, x)
+  }
+
+  console.time('ss')
+  var count = 1000
+  var list = newList(count)
+  // contains(list)
+  let d = edata(list)
+  console.timeEnd('ss')
+})
+
 // run if not from cli
-if (require.main === module) {
+if (process.argv.pop() === __filename) {
   it.run()
 }
