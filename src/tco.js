@@ -14,12 +14,16 @@ export const tco = (function () {
         var nf = f; var na = arguments
         while (1) {
           var r = nf.apply(null, na)
-          if (typeof r[0] === 'function') {
+          if (r[0]) {
             if (typeof r[0].tco === 'function') {
               nf = r[0].tco
               na = r[1]
             } else {
-              return r[0].apply(null, r[1])
+              if (Array.isArray(r[0])) {
+                return new r[0][0](r[1])
+              } else {
+                return r[0].apply(null, r[1])
+              }
             }
           } else if (r[0] == null) {
             let fns = r[2]

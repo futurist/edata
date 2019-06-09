@@ -837,12 +837,13 @@ it('deep nested', () => {
     return contains(list.next, x)
   }
 
-  console.time('ss')
-  var count = 1000
+  console.time('CreateList')
+  // v0.8.2 safe: count = 885
+  var count = 1100
   var list = newList(count)
   // contains(list)
   let d = edata(list)
-  console.timeEnd('ss')
+  console.timeEnd('CreateList')
 })
 
 // run if not from cli
