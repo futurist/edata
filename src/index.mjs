@@ -205,10 +205,12 @@ function edata (initData, config = {}) {
       _cache = isArray(_cache) ? _cache : []
       path = isArray(path) ? path : []
       if (shouldNotDig(b)) return bindMethods(wrapper(a), path)
-      keys(b).some(key => {
+      for (let key in b) {
+        if (!hasOwnProperty.call(b, key)) continue
         // return false stop the iteration
         const ret = callback(a, b, key, path, _cache)
-        if (ret === false) return true
+        if (ret === false) break
+        else if (ret === 0) continue
         const aval = a[key]
         const bval = b[key]
         if (!isPrimitive2(bval) && isWrapper(aval) && !isPrimitive(aval.value)) {
@@ -221,7 +223,7 @@ function edata (initData, config = {}) {
             // recursive found
           }
         }
-      })
+      }
       return a
     }
 
