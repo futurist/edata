@@ -436,13 +436,14 @@ function edata (initData, config = {}) {
 
     function getset (path, func, descriptor) {
       let obj = this
+      if (!isWrapper(obj)) return obj
+
       if (arguments.length <= 1 && isFunction(path)) {
         func = path
         path = []
       }
 
       path = getPath(path)
-      if (!isWrapper(obj)) return obj
 
       let value, action
       /* eslint-disable-next-line no-unused-vars */
