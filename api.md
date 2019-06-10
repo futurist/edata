@@ -418,19 +418,18 @@ will expose:
 edata.dispatch(action: object)
 ```
 
-> action is of shape: `{type, path, value}`, type can be `add/change/delete`, which will be converted to command `set/set/unset` accordingly.
+> action is of shape: `{type, data}`, type can be `set:lodash_path/unset:lodash_path`, which will be converted to command `set/unset` accordingly.
 
-**Notice**: this method will not emit `change` event on `root.observer`.
+When `dispatch` an action, the `observer` change event have `meta.isAction = true`.
 
 ```js
 root.unwrap() // {x:20, y:30}
 root.dispatch({
-    type: 'add',
-    path: 'a.b',
-    value: 'hey!'
+    type: 'set:a.b',
+    data: 'hey!'
 })
 root.unwrap() // {x:20, y:30, a: {b: 'hey!'}}
 ```
 
-You may record `change` event of `root.observer` as a source of actions.
+**Notice**: You may record `change` event of `root.observer` as a source of actions, but you should check `meta.isAction` to prevent loops.
 
