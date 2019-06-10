@@ -38,7 +38,7 @@ declare class ObserverClass<T = any> extends EdataBaseClass<T> {
 declare interface IOptions {
     baseClass: EdataBaseClass;
     unwrapConfig: IUnwrapConfig;
-    plugins: Array<(packer: edata) => void>
+    plugins: Array<(edata: any, util?: any) => void>
 }
 
 declare function edataConstructor (initData: any, options?: Partial<IOptions>): edataRoot;
