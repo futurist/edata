@@ -85,6 +85,7 @@ function edata (initData, config = {}) {
       this._packed = packed
       this._skip = false
       this._hold = false
+      this.meta = {}
       this.count = 0
     }
     get skip () {
@@ -107,17 +108,18 @@ function edata (initData, config = {}) {
       }
       this.emit('hold', _hold)
     }
-    set value ({ data, type, meta }) {
+    set value ({ data, type, meta, changeArgs }) {
       const { root } = this._packed
       if (!root || root.observer.skip || this.skip) return
       this.count++
-      if (meta == null) {
-        meta = { path: data.path }
+      if (changeArgs == null) {
+        changeArgs = { path: data.path }
       }
+      const baseVal = { data, type, meta: { ...this.meta, ...meta } }
       if (this.hold) {
-        this.changeStack.push(assign({ data, type }, meta))
+        this.changeStack.push(baseVal)
       } else {
-        this._value = (assign({ data, type }, meta))
+        this._value = (assign(baseVal, changeArgs))
         this.emit('change', this._value)
       }
     }
@@ -239,12 +241,13 @@ function edata (initData, config = {}) {
       if (!isFunction(filter)) {
         filter = (arg) => arg.path.join().indexOf(arg.subPath.join()) === 0
       }
-      targetRoot.observer.on('change', ({ data, type, path }) => {
+      targetRoot.observer.on('change', ({ data, type, meta, path }) => {
         if (filter({ data, type, path, subPath })) {
           observer.value = {
             data,
             type,
-            meta: {
+            meta,
+            changeArgs: {
               path: data.path.slice(subPath.length)
             }
           }

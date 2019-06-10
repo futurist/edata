@@ -11,20 +11,21 @@
     Object.defineProperty(exports, "__esModule", { value: true });
     function default_1(root, util) {
         function dispatch(action) {
-            // action: {path: 'a.b', type: 'add', value: 'value'}
-            var path = action.path, type = action.type, value = action.value;
-            var skip = root.observer.skip;
-            root.observer.skip = true;
-            switch (type) {
-                case 'add':
-                case 'update':
-                    root.set(path, value);
+            // action: {type: 'set:a.b', data: 'data'}
+            var type = action.type, data = action.data;
+            var colon = type.indexOf(':');
+            var mutation = type.substring(0, colon);
+            var path = type.substring(colon + 1);
+            root.observer.meta.isAction = true;
+            switch (mutation) {
+                case 'set':
+                    root.set(path, data);
                     break;
-                case 'delete':
+                case 'unset':
                     root.unset(path);
                     break;
             }
-            root.observer.skip = skip;
+            root.observer.meta.isAction = false;
         }
         root.dispatch = dispatch;
     }

@@ -761,6 +761,35 @@ it('setComputed', () => {
   it(root.unwrap('fullName')).equals('Green World')
 })
 
+it('plugins - action', () => {
+  var spy = it.spy()
+  var spyB = it.spy()
+  var c = edata({ a: 1, b: { c: 2 } }, {
+    plugins: [
+      require('../plugins/actions').default
+    ]
+  })
+  c.observer.map(e => {
+    it(e.meta.isAction).equals(true)
+    spy()
+  })
+  var b = c.cut('b')
+  b.observer.map(e => {
+    it(e.meta.isAction).equals(true)
+    spyB()
+  })
+
+  c.dispatch({ type: 'unset:b.c' })
+  it(c.unwrap()).deepEquals({ a: 1, b: { } })
+  it(spy.callCount).equals(1)
+  it(spyB.callCount).equals(1)
+
+  c.dispatch({ type: 'set:b.c', data: 3 })
+  it(c.unwrap()).deepEquals({ a: 1, b: { c: 3 } })
+  it(spy.callCount).equals(2)
+  it(spyB.callCount).equals(2)
+})
+
 it('context', () => {
   var c = edata({
     'abc': {
