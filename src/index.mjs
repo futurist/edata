@@ -347,7 +347,7 @@ function edata (initData, config = {}) {
           const prev = _cache.find(function (v) { return v[0] === bval })
           if (prev == null) {
             _cache.push([bval, a, key])
-            a[key] = createWrap(bval, _path, _cache)
+            a[key] = createWrap(bval, _path)
           } else {
             prev.push(() => {
               /* eslint-disable-next-line no-unused-vars */
