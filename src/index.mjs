@@ -527,14 +527,18 @@ function edata (initData, config = {}) {
         : deleteVal
     }
 
-    function proxy (path) {
+    function proxy (path, config) {
+      if (arguments.length === 1 && isPOJO(path)) {
+        config = path
+        path = null
+      }
       const obj = path != null
         ? this.get(path)
         : this
-      return obj == null ? obj : observe(obj)
+      return obj == null ? obj : observe(obj, { ...config })
     }
 
-    function observe (edata) {
+    function observe (edata, config) {
       function buildProxy (o) {
         const oIsEdata = isWrapper(o)
         return new Proxy(oIsEdata ? o.value : o, {
@@ -570,7 +574,7 @@ function edata (initData, config = {}) {
             let out
             if (property in target) {
               out = target[property]
-            } else if (oIsEdata) {
+            } else if (oIsEdata && config.autoCreate) {
               // it's edata
               out = o.set(property, {})
             } else {
@@ -716,11 +720,10 @@ function edata (initData, config = {}) {
       const obj = path != null
         ? this.get(path)
         : this
-      return _unwrap(obj, Object.assign(
-        {},
-        isFunction(unwrapConfig) && unwrapConfig(obj),
-        config
-      ))
+      return _unwrap(obj, {
+        ...isFunction(unwrapConfig) && unwrapConfig(obj),
+        ...config
+      })
     }
 
     return root

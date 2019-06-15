@@ -14,8 +14,8 @@
     "types": "cp index.d.ts dist/cjs.d.ts && cp index.d.ts dist/node.d.ts && cp index.d.ts dist/es.d.ts",
     "build": "tsc && rollup -c && npm run types",
     "doc": "markdown-toc -i api.md && markdown-toc -i README.md",
-    "preversion": "npm run test",
-    "version": "npm run build && npm run doc",
+    "preversion": "npm run test && npm run doc",
+    "version": "npm run build",
     "postversion": "git push --follow-tags"
   },
   "files": [
