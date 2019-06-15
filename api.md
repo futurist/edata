@@ -174,7 +174,7 @@ z.value  // 11
 #### - .unset
 
 ```js
-edata.unset(path: string|string[])
+edata.unset(path?: string|string[])
 ```
 
 > delete `edata` or `value` in `path`
@@ -185,6 +185,24 @@ edata.unset(path: string|string[])
 var z = root.unset('x.b')
 z // 5
 ```
+
+#### - .proxy
+
+```js
+edata.proxy(path?: string|string[])
+```
+
+> Proxy .get/.set/.unset methods, and use plain property to get/set/delete
+
+*return: The proxy object, with `__edata__` pointed to edata in each level, and `__target__` pointed to the target object.
+
+```js
+var b = root.proxy('x.b')
+b.x.y = 10 // 10
+delete b.x.y
+```
+
+Above code will emit `change` event of `root.observer`.
 
 #### - .unwrap
 

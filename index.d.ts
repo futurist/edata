@@ -111,13 +111,13 @@ declare interface edata extends EdataBaseClass {
      * @param path {string|string[]|RegExp} The target path segment
      * @returns {edata} The matching edata as closest
      */
-    closest(path: string | string[]): edata | undefined;
+    closest(path?: string | string[]): edata | undefined;
     /**
      * > Get nested edata from path, path is array of string or dot(`"."`) seperated string.
      * @param path {string|string[]} The path to get edata
      * @returns  edata at `path`
      */
-    get(path: string | string[]): edata | undefined;
+    get(path?: string | string[]): edata | undefined;
     /**
      * > Set value into nested edata.
      * @param value {any} Set value to edata
@@ -162,8 +162,15 @@ declare interface edata extends EdataBaseClass {
     /**
      * > Delete `edata` or `value` in `path`
      * @param path {string | string[]} The target path to be deleted
+     * @returns {any} The unset data unwrapped
      */
-    unset(path: string | string[]): any;
+    unset(path?: string | string[]): any;
+    /**
+     * > Proxy .get/.set/.unset methods, and use plain property to get/set/delete
+     * @param path {string | string[]} The target path to be the root of proxy
+     * @returns {any} The proxy object, with __edata__ pointed to edata in each level
+     */
+    proxy(path?: string | string[]): any;
     /**
      * > unwrap data and nested data while keep data structure, any level of `wrapper` will be stripped.
      * If set `config` arg with `{json: true}`, then any circular referenced data will be set `undefined`, suitable for `JSON.stringify`.
