@@ -891,7 +891,7 @@ it('deep nested', () => {
   console.timeEnd('CreateList')
 })
 
-it.only('.proxy', () => {
+it('.proxy', () => {
   var d = edata({
     obj: { y: { z: 10 } },
     arr: [{ id: 1 }, { id: 2 }]
