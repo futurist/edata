@@ -9,6 +9,7 @@
     + [- .set](#--set)
     + [- .getset](#--getset)
     + [- .unset](#--unset)
+    + [- .proxy](#--proxy)
     + [- .unwrap](#--unwrap)
     + [- .of](#--of)
     + [- .cut](#--cut)
