@@ -64,7 +64,10 @@ function isPrimitive (val) {
 
 function getPath (path) {
   return isArray(path)
-    ? path
+    ? path.map(p => isArray(p)
+      ? p
+      : (typeof p === 'number' ? [true, p] : [false, p])
+    )
     : typeof path === 'number'
       ? [[true, path]]
       : stringToPath(String(path))
@@ -495,11 +498,17 @@ function edata (initData, config = {}) {
     }
 
     function unset (path) {
-      let obj = this
-
-      path = getPath(path)
+      let obj = this;
+      if (!isWrapper(obj)) return
+      if (path == null) {
+        const p = getPath(obj.path)
+        path = [p.pop()]
+        obj = root.get(p);
+        // console.log(333, obj);
+      } else {
+        path = getPath(path);
+      }
       let len = path.length
-      if (!isWrapper(obj) || !len) return
       let val = obj.get(path.slice(0, -1))
       if (val == null) return
       let parent = val.value

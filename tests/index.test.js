@@ -54,6 +54,21 @@ it('root test', () => {
   it(d.value.b.value.c.root).equals(d)
 })
 
+it('unset null test', () => {
+  var d = edata({ a: 1, b: { c: 2 } })
+  it(d.get('b').unset()).deepEquals({ c: 2 })
+  it(d.unwrap()).deepEquals({ a: 1 })
+})
+
+it('path as array test', () => {
+  var d = edata({ a: 1, b: { c: 2 } })
+  it(d.get(['b', 'c']).unwrap()).deepEquals(2)
+  d.set(['xx', 'yy', 0], { z: 1 })
+  it(d.get('xx').unwrap()).deepEquals({
+    yy: [{ z: 1 }]
+  })
+})
+
 it('root unwrap', () => {
   var data = { a: { b: { c: 2 } } }
   data.a.b.x = data.a
@@ -99,7 +114,7 @@ it('array test', () => {
   it(spy.callCount).equals(2)
   it(b.value[0].value.x.path.join()).equals('a,b,0,x')
 
-  var val = b.push({ x: 2 })
+  var val = b.get(b.push({ x: 2 }) - 1)
   it(spy.callCount).equals(3)
   it(val.path.join()).equals('a,b,1')
   it(val.value.x.value).deepEquals(2)
