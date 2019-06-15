@@ -301,6 +301,7 @@ function edata (initData, config = {}) {
       packed.set = set
       packed.getset = getset
       packed.unset = unset
+      packed.proxy = proxy
       packed.unwrap = unwrap
       packed.toJSON = () => packed.unwrap({ json: true })
       if (isArray(packed.value)) {
@@ -498,15 +499,15 @@ function edata (initData, config = {}) {
     }
 
     function unset (path) {
-      let obj = this;
+      let obj = this
       if (!isWrapper(obj)) return
       if (path == null) {
         const p = getPath(obj.path)
         path = [p.pop()]
-        obj = root.get(p);
+        obj = root.get(p)
         // console.log(333, obj);
       } else {
-        path = getPath(path);
+        path = getPath(path)
       }
       let len = path.length
       let val = obj.get(path.slice(0, -1))
@@ -524,6 +525,65 @@ function edata (initData, config = {}) {
       return isWrapper(deleteVal)
         ? deleteVal.unwrap()
         : deleteVal
+    }
+
+    function proxy () {
+      function observe (edata) {
+        function buildProxy (o) {
+          return new Proxy(isWrapper(o) ? o.value : o, {
+            deleteProperty (target, property) {
+              if (isWrapper(target[property])) {
+                target[property].unset()
+              } else if (isWrapper(o)) {
+                o.unset(property)
+              } else {
+                // fallback to normal proxy
+                return delete target[property]
+              }
+              return true
+            },
+            set (target, property, value) {
+              //   console.log(target, property, value)
+              if (isWrapper(target[property])) {
+                target[property].set(value)
+              } else if (isWrapper(o)) {
+                o.set(property, value)
+              } else {
+                // fallback to normal proxy
+                target[property] = value
+              }
+              return true
+            },
+            get (target, property) {
+              let out
+              if (property in target) {
+                out = target[property]
+              } else if (isWrapper(o)) {
+                out = o.set(property, {})
+              }
+              while (isWrapper(out)) out = out.value
+              // console.log(property, out, target, next, o)
+              if (typeof out === 'function') {
+                return function (...args) {
+                  const ret = typeof o[property] === 'function'
+                    ? o[property](...args)
+                    : out.apply(target, args)
+                  return buildNext(ret)
+                }
+              } else {
+                return buildNext(out)
+              }
+            }
+          })
+        }
+        function buildNext (value) {
+          return value instanceof Object
+            ? buildProxy(value)
+            : value
+        }
+        return buildProxy(edata)
+      }
+      return observe(this)
     }
 
     // Arrray Mutator methods
