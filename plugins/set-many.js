@@ -9,7 +9,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    function default_1(root, util) {
+    function default_1(root) {
         function setMany(kvMap, descriptors) {
             var _this = this;
             if (descriptors === void 0) { descriptors = {}; }
