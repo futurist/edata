@@ -9,7 +9,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    function default_1(root, util) {
+    function default_1(root) {
         function dispatch(action) {
             // action: {type: 'set:a.b', data: 'data'}
             var type = action.type, data = action.data;

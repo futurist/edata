@@ -4,7 +4,7 @@ interface PlainObject {
 
 type RootType = PlainObject;
 
-export default function (root: RootType, util: PlainObject) {
+export default function (root: RootType) {
   function setMany (this: any, kvMap: PlainObject, descriptors: PlainObject = {}) {
     const obj: any = Array.isArray(kvMap) ? [] : {}
     Object.keys(kvMap).forEach(key => {

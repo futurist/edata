@@ -5,7 +5,7 @@ interface PlainObject {
 
 type RootType = PlainObject;
 
-export default function (root: RootType, util: PlainObject) {
+export default function (root: RootType) {
     function dispatch(this: any, action: PlainObject) {
         // action: {type: 'set:a.b', data: 'data'}
         const { type, data } = action
