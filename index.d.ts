@@ -167,10 +167,13 @@ declare interface edata extends EdataBaseClass {
     unset(path?: string | string[]): any;
     /**
      * > Proxy .get/.set/.unset methods, and use plain property to get/set/delete
+     * `config.autoCreate` set to `true`, will auto create `{}` for non-exists paths.
+     * 
      * @param path {string | string[]} The target path to be the root of proxy
      * @returns {any} The proxy object, with __edata__ pointed to edata in each level
      */
-    proxy(path?: string | string[]): any;
+    proxy(path: string | string[], config?: {autoCreate?: boolean}): any;
+    proxy(config?: {autoCreate?: boolean}): any;
     /**
      * > unwrap data and nested data while keep data structure, any level of `wrapper` will be stripped.
      * If set `config` arg with `{json: true}`, then any circular referenced data will be set `undefined`, suitable for `JSON.stringify`.

@@ -190,12 +190,14 @@ z // 5
 #### - .proxy
 
 ```js
-edata.proxy(path?: string|string[])
+edata.proxy(path?: string|string[], config?: {autoCreate?: boolean})
 ```
 
 > Proxy .get/.set/.unset methods, and use plain property to get/set/delete
 
 *return: The proxy object, with `__edata__` pointed to edata in each level, and `__target__` pointed to the target object.
+
+`config.autoCreate` set to `true`, will auto create `{}` for non-exists paths.
 
 ```js
 var b = root.proxy('x.b')

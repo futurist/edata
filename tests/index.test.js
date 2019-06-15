@@ -891,7 +891,7 @@ it('deep nested', () => {
   console.timeEnd('CreateList')
 })
 
-it('.proxy', () => {
+it.only('.proxy', () => {
   var d = edata({
     obj: { y: { z: 10 } },
     arr: [{ id: 1 }, { id: 2 }]
@@ -902,8 +902,10 @@ it('.proxy', () => {
   // with path
   it(d.proxy('obj').y.z).equals(10)
   it(d.proxy('obj.y').z).equals(10)
+  // no auto create for non-exists
+  it(d.proxy().zz).equals(undefined)
 
-  var p = d.proxy()
+  var p = d.proxy({ autoCreate: true })
   it(p.obj.y.z).deepEquals(10)
   it(p.obj.y.__edata__.unwrap()).deepEquals({ z: 10 })
   // auto create
@@ -932,7 +934,6 @@ it('.proxy', () => {
   it(!!p.arr.__edata__).deepEquals(true)
   it(!!p.__edata__).deepEquals(true)
   it(spy.callCount).equals(7)
-
 })
 
 // run if not from cli
