@@ -891,6 +891,44 @@ it('deep nested', () => {
   console.timeEnd('CreateList')
 })
 
+it('.proxy', () => {
+  var d = edata({
+    obj: { y: { z: 10 } },
+    arr: [{ id: 1 }, { id: 2 }]
+  })
+  var spy = it.spy()
+  d.observer.map(spy)
+  var p = d.proxy()
+  it(p.obj.y.z).deepEquals(10)
+  it(p.obj.y.__edata__.unwrap()).deepEquals({ z: 10 })
+  // auto create
+  it(p.xx.yy.__target__).deepEquals({})
+  it(spy.callCount).equals(2) // created: xx and yy
+  // auto set
+  p.aa.bb = { x: 10 } // created: aa, bb
+  it(p.aa.bb.x).deepEquals(10)
+  it(spy.callCount).equals(4)
+  // array test
+  it(p.arr[0].id).equals(1)
+  it(p.arr[0].__edata__.toJSON()).deepEquals({ id: 1 })
+  it(p.arr[0].xx = 10).deepEquals(10)
+  // edata method
+  it(p.arr.push({ yy: 10 })).equals(3)
+  it(p.arr.pop().__target__).deepEquals({ yy: 10 })
+  it(p.arr.slice().__edata__).equals(undefined)
+  it(p.arr.slice().__target__.map(v => v.unwrap())).deepEquals([
+    { id: 1, xx: 10 },
+    { id: 2 }
+  ])
+  // should have __edata__
+  it(p.arr[0].xx.__target__).deepEquals(undefined)
+  it(p.arr[0].xx.__edata__).deepEquals(undefined)
+  it(!!p.arr[0].__edata__).deepEquals(true)
+  it(!!p.arr.__edata__).deepEquals(true)
+  it(!!p.__edata__).deepEquals(true)
+  it(spy.callCount).equals(7)
+})
+
 // run if not from cli
 if (process.argv.pop() === __filename) {
   it.run()
