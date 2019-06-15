@@ -527,72 +527,76 @@ function edata (initData, config = {}) {
         : deleteVal
     }
 
-    function proxy () {
-      function observe (edata) {
-        function buildProxy (o) {
-          const oIsEdata = isWrapper(o)
-          return new Proxy(oIsEdata ? o.value : o, {
-            deleteProperty (target, property) {
-              if (isWrapper(target[property])) {
-                target[property].unset()
-              } else if (oIsEdata) {
-                o.unset(property)
-              } else {
-                // fallback to normal proxy
-                return delete target[property]
-              }
-              return true
-            },
-            set (target, property, value) {
-              //   console.log(target, property, value)
-              if (isWrapper(target[property])) {
-                target[property].set(value)
-              } else if (oIsEdata) {
-                o.set(property, value)
-              } else {
-                // fallback to normal proxy
-                target[property] = value
-              }
-              return true
-            },
-            get (target, property) {
-              // Special properties
-              if (property === '__target__') return target
-              if (property === '__edata__' && oIsEdata) return o
+    function proxy (path) {
+      const obj = path != null
+        ? this.get(path)
+        : this
+      return obj == null ? obj : observe(obj)
+    }
 
-              // Begin check
-              let out
-              if (property in target) {
-                out = target[property]
-              } else if (oIsEdata) {
-                // it's edata
-                out = o.set(property, {})
-              } else {
-                // nothing find
-                return
-              }
-              let next = out
-              while (isWrapper(out)) out = out.value
-              if (typeof out === 'function') {
-                return function (...args) {
-                  const ret = typeof o[property] === 'function'
-                    ? o[property](...args)
-                    : out.apply(target, args)
-                  return ret instanceof Object
-                    ? buildProxy(ret)
-                    : ret
-                }
-              } else {
-                return out instanceof Object
-                  ? buildProxy(next)
-                  : out
-              }
+    function observe (edata) {
+      function buildProxy (o) {
+        const oIsEdata = isWrapper(o)
+        return new Proxy(oIsEdata ? o.value : o, {
+          deleteProperty (target, property) {
+            if (isWrapper(target[property])) {
+              target[property].unset()
+            } else if (oIsEdata) {
+              o.unset(property)
+            } else {
+              // fallback to normal proxy
+              return delete target[property]
             }
-          })
-        }
-        return buildProxy(edata)
+            return true
+          },
+          set (target, property, value) {
+            //   console.log(target, property, value)
+            if (isWrapper(target[property])) {
+              target[property].set(value)
+            } else if (oIsEdata) {
+              o.set(property, value)
+            } else {
+              // fallback to normal proxy
+              target[property] = value
+            }
+            return true
+          },
+          get (target, property) {
+            // Special properties
+            if (property === '__target__') return target
+            if (property === '__edata__' && oIsEdata) return o
+
+            // Begin check
+            let out
+            if (property in target) {
+              out = target[property]
+            } else if (oIsEdata) {
+              // it's edata
+              out = o.set(property, {})
+            } else {
+              // nothing find
+              return
+            }
+            let next = out
+            while (isWrapper(out)) out = out.value
+            if (typeof out === 'function') {
+              return function (...args) {
+                const ret = typeof o[property] === 'function'
+                  ? o[property](...args)
+                  : out.apply(target, args)
+                return ret instanceof Object
+                  ? buildProxy(ret)
+                  : ret
+              }
+            } else {
+              return out instanceof Object
+                ? buildProxy(next)
+                : out
+            }
+          }
+        })
       }
-      return observe(this)
+      return buildProxy(edata)
     }
 
     // Arrray Mutator methods

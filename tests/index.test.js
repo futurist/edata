@@ -898,6 +898,11 @@ it('.proxy', () => {
   })
   var spy = it.spy()
   d.observer.map(spy)
+
+  // with path
+  it(d.proxy('obj').y.z).equals(10)
+  it(d.proxy('obj.y').z).equals(10)
+
   var p = d.proxy()
   it(p.obj.y.z).deepEquals(10)
   it(p.obj.y.__edata__.unwrap()).deepEquals({ z: 10 })
@@ -927,6 +932,7 @@ it('.proxy', () => {
   it(!!p.arr.__edata__).deepEquals(true)
   it(!!p.__edata__).deepEquals(true)
   it(spy.callCount).equals(7)
+
 })
 
 // run if not from cli
