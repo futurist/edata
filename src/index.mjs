@@ -539,8 +539,13 @@ function edata (initData, config = {}) {
     }
 
     function observe (edata, config) {
-      function buildProxy (o) {
+      function buildProxy (o, thisObject) {
         const oIsEdata = isWrapper(o)
+        const isObject = o instanceof Object
+        if (!isObject || Object.isFrozen(o)) {
+          return o
+        }
+
         return new Proxy(oIsEdata ? o.value : o, {
           deleteProperty (target, property) {
             if (isWrapper(target[property])) {
@@ -570,6 +575,16 @@ function edata (initData, config = {}) {
             if (property === '__target__') return target
             if (property === '__edata__' && oIsEdata) return o
 
+            let shouldNotProxy = false
+            if (hasOwnProperty.call(target, property)) {
+              const desc = Object.getOwnPropertyDescriptor(target, property)
+              shouldNotProxy = !desc.configurable && !desc.writable
+              if (shouldNotProxy) {
+                // console.log('no proxy:', o, target, property)
+                return target[property]
+              }
+            }
+            
             // Begin check
             let out
             if (property in target) {
@@ -585,11 +600,16 @@ function edata (initData, config = {}) {
             while (isWrapper(out)) out = out.value
             if (typeof out === 'function') {
               return function (...args) {
-                const ret = typeof o[property] === 'function'
+                const ret = oIsEdata && typeof o[property] === 'function'
                   ? o[property](...args)
-                  : out.apply(target, args)
+                  : out.apply(thisObject || target, args)
+
+                let _this = ret
+                if (Array.isArray(ret)) {
+                  _this = ret.map(v => buildProxy(v))
+                }
                 return ret instanceof Object
-                  ? buildProxy(ret)
+                  ? buildProxy(ret, _this)
                   : ret
               }
             } else {
