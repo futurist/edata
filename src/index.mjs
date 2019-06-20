@@ -144,7 +144,7 @@ function edata (initData, config = {}) {
   }
 
   function shouldNotDig (val) {
-    return isPrimitive2(val) || !(isArray(val) || isPOJO(val))
+    return isPrimitive2(val) || !(isArray(val) || isPOJO(val) || Object.isFrozen(val))
   }
 
   function _checkCacheAndUnwrap (config, _cache, val, result, key) {
@@ -417,6 +417,7 @@ function edata (initData, config = {}) {
     }
 
     function get (path) {
+      if (path == null) return this
       let obj = this
       let n = obj
       path = getPath(path)
@@ -540,13 +541,21 @@ function edata (initData, config = {}) {
 
     function observe (edata, config) {
       function buildProxy (o, thisObject) {
-        const oIsEdata = isWrapper(o)
-        const isObject = o instanceof Object
-        if (!isObject || Object.isFrozen(o)) {
+        if (o != null && o.__target__) {
           return o
         }
 
-        return new Proxy(oIsEdata ? o.value : o, {
+        const oIsEdata = isWrapper(o)
+
+        let _target = o
+        while (isWrapper(_target)) _target = _target.value
+
+        const isObject = _target instanceof Object
+        if (!isObject || Object.isFrozen(_target)) {
+          return _target
+        }
+
+        return new Proxy(_target, {
           deleteProperty (target, property) {
             if (isWrapper(target[property])) {
               target[property].unset()
@@ -573,6 +582,7 @@ function edata (initData, config = {}) {
           get (target, property) {
             // Special properties
             if (property === '__target__') return target
+            if (property === '__isProxy__') return true
             if (property === '__edata__' && oIsEdata) return o
 
             let shouldNotProxy = false
@@ -584,7 +594,7 @@ function edata (initData, config = {}) {
                 return target[property]
               }
             }
-            
+
             // Begin check
             let out
             if (property in target) {
@@ -599,17 +609,19 @@ function edata (initData, config = {}) {
             let next = out
             while (isWrapper(out)) out = out.value
             if (typeof out === 'function') {
+              const isEdataMethod = oIsEdata && typeof o[property] === 'function' && property !== 'map'
               return function (...args) {
-                const ret = oIsEdata && typeof o[property] === 'function'
+                const ret = isEdataMethod
                   ? o[property](...args)
-                  : out.apply(thisObject || target, args)
+                  : out.apply(thisObject || (
+                    Array.isArray(target) ? target.map(v => buildProxy(v)) : target
+                  ), args)
 
-                let _this = ret
                 if (Array.isArray(ret)) {
-                  _this = ret.map(v => buildProxy(v))
+                  return ret
                 }
                 return ret instanceof Object
-                  ? buildProxy(ret, _this)
+                  ? buildProxy(ret)
                   : ret
               }
             } else {

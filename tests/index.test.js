@@ -164,7 +164,8 @@ it('array methods test', () => {
   var s = root.cut('d.0')
   s.observer.map(spy)
   const d = root.get('d')
-
+  it(d.cut()).equals(d)
+  it(isWrapper(d.cut().observer)).equals(true)
   it(d.pop()).deepEquals({ v: { y: 10 } })
   it(spy.callCount).equals(1)
   it(spy.args[0].type).equals('delete')
@@ -921,9 +922,15 @@ it('.proxy', () => {
   it(p.arr[0].xx = 10).deepEquals(10)
   // edata method
   it(p.arr.push({ yy: 10 })).equals(3)
+  it(p.arr[2].__isProxy__).equals(true)
+  it(p.arr[2].__edata__.unwrap()).deepEquals({ yy: 10 })
   it(p.arr.pop().__target__).deepEquals({ yy: 10 })
   it(p.arr.slice().__edata__).equals(undefined)
-  it(p.arr.slice().__target__.map(v => v.unwrap())).deepEquals([
+  it(p.arr.slice().map(v => v.__edata__.unwrap())).deepEquals([
+    { id: 1, xx: 10 },
+    { id: 2 }
+  ])
+  it(p.arr.map(v => v.__edata__.unwrap())).deepEquals([
     { id: 1, xx: 10 },
     { id: 2 }
   ])
@@ -934,6 +941,28 @@ it('.proxy', () => {
   it(!!p.arr.__edata__).deepEquals(true)
   it(!!p.__edata__).deepEquals(true)
   it(spy.callCount).equals(7)
+})
+
+it('.proxy frozen object', () => {
+  var obj = { x: {}, b: { c: 1 }, c: { seal: 1 } }
+  Object.defineProperty(obj.x, 'a', { value: 10 })
+  Object.freeze(obj.b)
+  Object.seal(obj.c)
+  var d = edata({ obj: new TestBaseClass(obj) })
+  it(d.proxy('obj').b).deepEquals({ c: 1 })
+  it(d.proxy('obj').b.c).equals(1)
+  it(d.proxy('obj').c.seal).equals(1)
+})
+
+it('.proxy with array methods', () => {
+  var obj = { x: [1, 2, 3] }
+  var d = edata(obj).proxy()
+  it(d.x[0]).equals(1)
+  var x = d.x.map(id => {
+    // console.log(id)
+    return Object.freeze({ id })
+  })
+  it(x[0].id).equals(1)
 })
 
 // run if not from cli
