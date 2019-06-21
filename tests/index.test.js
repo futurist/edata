@@ -499,10 +499,12 @@ it('multiple cut', () => {
     baseClass: TestBaseClass
   })
   var x = d.cut('b')
+  var xo = x.observer
   var s1 = x.observer.map(spy)
   var y = d.cut('b')
+  var yo = y.observer
   var s2 = y.observer.map(spy)
-  it(x.observer).equals(y.observer)
+  it(xo).equals(yo)
   d.set('b.c', 10)
   // all 2 change stream emit
   it(spy.callCount).equals(2)
@@ -511,6 +513,26 @@ it('multiple cut', () => {
   d.set('b.c', 11)
   it(spy.callCount).equals(3)
   s2(true)
+  d.set('b.c', 12)
+  it(spy.callCount).equals(3)
+  yo.destroy()
+  it(x.observer).equals(null)
+  it(y.observer).equals(null)
+})
+
+it('.watch', () => {
+  var spy = it.spy()
+  var d = edata({
+    a: 1, b: { c: 2 }
+  })
+  const unwatch1 = d.watch('b', spy)
+  const unwatch2 = d.watch('b', spy)
+  d.set('b.c', 10)
+  it(spy.callCount).equals(2)
+  unwatch1()
+  d.set('b.c', 11)
+  it(spy.callCount).equals(3)
+  unwatch2()
   d.set('b.c', 12)
   it(spy.callCount).equals(3)
 })
