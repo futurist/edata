@@ -22,7 +22,7 @@ export class EdataBaseClass extends EventEmitter {
   map (fn) {
     this.on('change', fn)
     return () => {
-      this.removeListener('change', fn)
+      this.off('change', fn)
     }
   }
   valueOf () {
@@ -232,11 +232,23 @@ function edata (initData, config = {}) {
 
     root = createWrap(source, [])
 
+    function watch (path, fn) {
+      if (isFunction(path)) {
+        fn = path
+        path = null
+      }
+      const { observer } = this.cut(path)
+      return observer.map(fn)
+    }
+
     function cut (path, from, filter) {
       const obj = this
       let targetObj = obj.get(path)
       if (targetObj == null) {
         targetObj = obj.set(path, {})
+      }
+      if (isWrapper(targetObj.observer)) {
+        return targetObj
       }
       const part = makeChange(targetObj)
       if (!isWrapper(part)) return part
@@ -246,7 +258,7 @@ function edata (initData, config = {}) {
       if (!isFunction(filter)) {
         filter = (arg) => arg.path.join().indexOf(arg.subPath.join()) === 0
       }
-      targetRoot.observer.on('change', ({ data, type, meta, path }) => {
+      const watchFn = ({ data, type, meta, path }) => {
         if (filter({ data, type, path, subPath })) {
           observer.value = {
             data,
@@ -257,12 +269,20 @@ function edata (initData, config = {}) {
             }
           }
         }
-      })
+      }
+      targetRoot.observer.on('change', watchFn)
+      observer.destroy = () => {
+        targetRoot.observer.off('change', watchFn)
+        part.observer.all = []
+        part.observer = null
+      }
       return part
     }
 
     function makeChange (packed) {
-      if (!isWrapper(packed)) return packed
+      if (!isWrapper(packed)) {
+        return packed
+      }
       const _change = new ObserverClass(packed)
       // const oldMap = _change.map
       // _change.map = function (fn) {
@@ -295,6 +315,7 @@ function edata (initData, config = {}) {
       }
       packed.of = wrapper
       packed.cut = cut
+      packed.watch = watch
       packed.closest = closest
       packed.context = context
       packed.get = get
