@@ -254,7 +254,8 @@ function edata (initData, config = {}) {
       if (!isWrapper(part)) return part
       const { observer } = part
       const targetRoot = from || root
-      const subPath = getPath(path).map(v => v[1])
+      const subPath = targetObj.path
+      // const subPath = getPath(path).map(v => v[1])
       if (!isFunction(filter)) {
         filter = (arg) => arg.path.join().indexOf(arg.subPath.join()) === 0
       }
