@@ -498,7 +498,8 @@ it('multiple cut', () => {
   }, {
     baseClass: TestBaseClass
   })
-  var x = d.cut('b')
+  // null path test first
+  var x = d.get('b').cut()
   var xo = x.observer
   var s1 = x.observer.map(spy)
   var y = d.cut('b')
@@ -525,8 +526,9 @@ it('.watch', () => {
   var d = edata({
     a: 1, b: { c: 2 }
   })
+  // null path test first
+  const unwatch2 = d.get('b').watch(spy)
   const unwatch1 = d.watch('b', spy)
-  const unwatch2 = d.watch('b', spy)
   d.set('b.c', 10)
   it(spy.callCount).equals(2)
   unwatch1()
