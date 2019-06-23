@@ -306,9 +306,9 @@ function edata (initData, config = {}) {
         },
         enumerable: true
       })
-      packed.on('change', () => {
+      packed.on('change', (e) => {
         if (root.observer == null) return
-        root.observer.value = ({ data: packed, type: MUTATION_TYPE.UPDATE })
+        root.observer.value = ({ data: packed, meta: { oldData: e.oldData }, type: MUTATION_TYPE.UPDATE })
       })
       root.observer.value = {
         data: packed,
@@ -563,7 +563,7 @@ function edata (initData, config = {}) {
 
     function observe (edata, config) {
       function buildProxy (o, thisObject) {
-        if (o != null && o.__target__) {
+        if (o == null || o.__isProxy__) {
           return o
         }
 
