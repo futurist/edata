@@ -13,6 +13,26 @@ declare interface IDisposer {
     (): any;
 }
 
+declare interface EdataProxy {
+  /**
+   * The target of the proxy
+   */
+  __target__: any;
+  /**
+   * Whether proxied by edata
+   */
+  __isProxy__: boolean;
+  /**
+   * The original edata to be proxied
+   */
+  __edata__: edata;
+  /**
+   * Shortcut of proxy.__edata__.watch(fn)
+   */
+  __watch__: (fn: Function) => IDisposer;
+  [key: string]: any;
+}
+
 declare class EdataBaseClass<T = any> extends EventEmitter {
     protected _value: T;
     /**
@@ -101,6 +121,24 @@ declare interface edata extends EdataBaseClass {
         from?: edata,
         filter?: (data: IObserverValue) => boolean,
     ): edataRoot | undefined;
+    /**
+     * Shortcut of edata.cut().map(fn)
+     * @param fn The function to .map()
+     * @returns {Function} The disposer to stop watch
+     */
+    watch(
+      fn: Function
+    ): IDisposer;
+    /**
+     * Shortcut of edata.cut(path).map(fn)
+     * @param path The path to .cut(), can be omit
+     * @param fn The function to .map()
+     * @returns {Function} The disposer to stop watch
+     */
+    watch(
+      path: string | string[],
+      fn: Function
+    ): IDisposer;
     /**
      * > Find `edata` up from **context parent**, which has been `.cut()`d and has `observer` on it.
      * @returns {edataRoot} Closest cut `edata` or `root`

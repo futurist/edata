@@ -606,6 +606,9 @@ function edata (initData, config = {}) {
             if (property === '__target__') return target
             if (property === '__isProxy__') return true
             if (property === '__edata__' && oIsEdata) return o
+            if (property === '__watch__' && oIsEdata) {
+              return o.watch.bind(o)
+            }
 
             let shouldNotProxy = false
             if (hasOwnProperty.call(target, property)) {
