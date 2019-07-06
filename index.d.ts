@@ -17,21 +17,24 @@ declare interface EdataProxy {
   /**
    * The target of the proxy
    */
-  __target__: any;
+  __target__?: any;
   /**
    * Whether proxied by edata
    */
-  __isProxy__: boolean;
+  __isProxy__?: any;
   /**
    * The original edata to be proxied
    */
-  __edata__: edata;
+  __edata__?: edata;
   /**
    * Shortcut of proxy.__edata__.watch(fn)
    */
-  __watch__: (fn: Function) => IDisposer;
-  [key: string]: any;
+  __watch__?: any;
+
+  [k: string]: EdataProxy | any;
+  [k: number]: EdataProxy | any;
 }
+
 
 declare class EdataBaseClass<T = any> extends EventEmitter {
     protected _value: T;
@@ -210,8 +213,8 @@ declare interface edata extends EdataBaseClass {
      * @param path {string | string[]} The target path to be the root of proxy
      * @returns {any} The proxy object, with __edata__ pointed to edata in each level
      */
-    proxy(path: string | string[], config?: {autoCreate?: boolean}): any;
-    proxy(config?: {autoCreate?: boolean}): any;
+    proxy(path: string | string[], config?: {autoCreate?: boolean}): EdataProxy;
+    proxy(config?: {autoCreate?: boolean}): EdataProxy;
     /**
      * > unwrap data and nested data while keep data structure, any level of `wrapper` will be stripped.
      * If set `config` arg with `{json: true}`, then any circular referenced data will be set `undefined`, suitable for `JSON.stringify`.
