@@ -11,6 +11,9 @@ export class EdataBaseClass extends EventEmitter {
     super()
     if (arguments.length > 0) this._value = arguments[0]
   }
+  get __isEdata__ () {
+    return true
+  }
   get value () {
     return this._value
   }
