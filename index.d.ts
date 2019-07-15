@@ -77,7 +77,8 @@ declare interface IUnwrapConfig {
 declare interface IObserverValue {
     data: edata,
     type: ValueOf<MUTATION_TYPE>,
-    path: string[]
+    path: string[],
+    meta: any,
 }
 
 
