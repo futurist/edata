@@ -12,8 +12,8 @@ It roughly referenced [Object.observe API](https://developer.mozilla.org/en-US/d
 - [Install](#install)
 - [Usage](#usage)
   * [- Quick Start](#--quick-start)
+  * [- Watch changes](#--watch-changes)
   * [- Flat data](#--flat-data)
-  * [- Observe root changes](#--observe-root-changes)
   * [- Define Data Relations](#--define-data-relations)
   * [- Use in React](#--use-in-react)
 - [API](#api)
@@ -58,7 +58,7 @@ const root = edata({
     }
 })
 const callback = ({type, path}) => console.log(`--> ${type}: ${path}`)
-root.observer.map(callback)
+root.watch(callback)
 root.set('address.city', 'Moon') // LOG: --> update: ['address', 'city']
 root.get('address.city').value // Moon
 ```
@@ -83,7 +83,34 @@ root.set('firstName', 'name')  // set: firstName
 root.get('address.city').on('change', ...) // watch change
 ```
 
-**The callback of `change` event:**
+**Proxy usage:**
+
+use `.proxy()` to shorten the path:
+
+```js
+const data = root.proxy()
+data.address.city // Moon
+data.__edata__  // get back the `root` edata
+```
+
+### - Watch changes
+
+Any edata can `watch` data changes inside(any level):
+
+```js
+const onDataChange = ({data, type, path})=>{
+    console.log('value mutated:', path, type, data.unwrap())
+}
+const unwatch = root.watch('change', onDataChange)
+
+root.set('address.city', 'Mars')
+// [LOG] data mutated: [ 'address', 'city' ] add Mars
+unwatch() // stop watch
+root.get('address.city').value = 'Earth'
+// nothing outout
+```
+
+**Watch single data `change` event:**
 
 ```js
 root.get('firstName').on('change', ({path, type, data})=>{
@@ -95,15 +122,24 @@ root.set('firstName', 'Hi')
 
 > Note: `edata.on('change', callback)` has shortcut: `edata.map(callback)`
 
-**Operation with .valueOf**
 
-`edata.valueOf()` method returns `.value`, so below are same:
+### - Define Data Relations
+
+You can define data relations using `setComputed`, as below:
 
 ```js
-root.get('age').value + 10  // 30
-
-// same as:
-root.get('age') + 10  // 30
+const root = edata({
+  firstName: 'Hello',
+  lastName: 'World'
+})
+root.setComputed(
+  'fullName',
+  ['firstName', 'lastName'],
+  ([firstName, lastName]) => firstName + ' ' + lastName
+)
+assert.equal(root.unwrap('fullName'), 'Hello World')
+root.set('firstName', 'Green')
+assert.equal(root.unwrap('fullName'), 'Green World')
 ```
 
 ### - Flat data
@@ -130,49 +166,6 @@ Also exist `edata.toJSON()`, so the `JSON.stringify(edata)` just like
 JSON.stringify(edata.unwrap({json:true}))
 ```
 
-### - Observe root changes
-
-The root has a `observer` attribute, which is also an edata itself, you can callback for every changes.
-
-**start observe changes** of root
-```js
-const onDataChange = ({data, type, path})=>{
-    console.log('value mutated:', path, type, data.unwrap())
-}
-root.observer.on('change', onDataChange)
-
-root.set('address.city', 'Mars')
-// [LOG] data mutated: [ 'address', 'city' ] add Mars
-root.get('address.city').value = 'Earth'
-// [LOG] data mutated: [ 'address', 'city' ] update Earth
-root.unset('address.city')
-// [LOG] data mutated: [ 'address', 'city' ] delete Earth
-```
-
-to **stop observing**, you can `.off()`
-```js
-root.observer.off('change', onDataChange)
-```
-
-### - Define Data Relations
-
-You can define data relations using `setComputed`, as below:
-
-```js
-const root = edata({
-  firstName: 'Hello',
-  lastName: 'World'
-})
-root.setComputed(
-  'fullName',
-  ['firstName', 'lastName'],
-  ([firstName, lastName]) => firstName + ' ' + lastName
-)
-assert.equal(root.unwrap('fullName'), 'Hello World')
-root.set('firstName', 'Green')
-assert.equal(root.unwrap('fullName'), 'Green World')
-```
-
 ### - Use in React
 
 The pros is you can use `edata.set()` instead of `this.setState`:
@@ -187,7 +180,7 @@ class App extends React.Component {
         const {model} = this.props
         this.state = model.unwrap()
         // state: {name: 'earth'}
-        this.stop = model.observer.map(()=>{
+        model.watch(()=>{
             this.setState(model.unwrap())
         })
     }
