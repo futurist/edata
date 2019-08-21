@@ -4,17 +4,18 @@
   (global.edata_combine = factory());
 }(this, (function () { 'use strict';
 
-  var combine = function combine(root, _ref) {
-    var isWrapper = _ref.isWrapper,
-        wrapSource = _ref.wrapSource;
+  var combine = function combine(root) {
+    var _root$util = root.util,
+        isWrapper = _root$util.isWrapper,
+        wrapSource = _root$util.wrapSource;
 
     function combine(edataArray) {
       var _this = this;
 
-      var _ref2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-          _ref2$checkNow = _ref2.checkNow,
-          checkNow = _ref2$checkNow === void 0 ? false : _ref2$checkNow,
-          filter = _ref2.filter;
+      var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+          _ref$checkNow = _ref.checkNow,
+          checkNow = _ref$checkNow === void 0 ? false : _ref$checkNow,
+          filter = _ref.filter;
 
       var arr = edataArray.map(function (r) {
         return isWrapper(r) ? r : _this.get(r);

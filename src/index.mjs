@@ -203,7 +203,7 @@ function edata (initData, config = {}) {
     return result
   }
 
-  const wrapSource = source => {
+  function wrapSource (source) {
     let root
 
     let _cache = null
@@ -318,6 +318,7 @@ function edata (initData, config = {}) {
         type
       }
       packed.of = wrapper
+      packed.wrap = val => createWrap(val, path)
       packed.cut = cut
       packed.watch = watch
       packed.closest = closest
@@ -340,12 +341,13 @@ function edata (initData, config = {}) {
         packed.sort = sort
         packed.splice = splice
       }
+      packed.util = {
+        isWrapper,
+        wrapSource,
+        createWrap
+      }
       plugins.forEach(plugin => {
-        plugin(packed, {
-          isWrapper,
-          wrapSource,
-          createWrap
-        })
+        plugin(packed)
       })
       return packed
     }

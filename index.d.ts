@@ -56,6 +56,8 @@ declare class EdataBaseClass<T = any> extends EventEmitter {
 declare class ObserverClass<T = any> extends EdataBaseClass<T> {
     public skip: boolean;
     public hold: boolean;
+    public meta: any;
+    public count: any;
 }
 
 declare interface IOptions {
@@ -92,6 +94,10 @@ declare interface edata extends EdataBaseClass {
      */
     path: string[];
     /**
+     * utils to help for plugins
+     */
+    util: any;
+    /**
      * > Wrap value into an edata.
      * This is important for performance when `.unwrap` for large deep tree, unwrap will only unwrap outer level of `edata(edata)` structure, and will not going deep for better performance, so `edata.of(value)` is made atom.
      * 
@@ -105,6 +111,20 @@ declare interface edata extends EdataBaseClass {
      * @returns {edata} The wrapped edata
      */
     of(value: any): EdataBaseClass;
+    /**
+     * > Wrap value into an edata, recursively.
+     * Reverse of `.unwrap`
+     * 
+     * ```js
+     * var d = root.set('a.b', root.wrap({x: {y: 10}}));
+     * d.get('a.b.x.y') // -> undefined
+     * d.unwrap('a.b') // {x: {y: 10}}
+     * ```
+     * 
+     * @param value {any} The value want to wrap
+     * @returns {edata} The wrapped edata
+     */
+    wrap(value: any): edata;
     /**
      * > get nested edata from path, and attach a `observer` edata object to observe scope mutations that the `root.path` starts with path.
      * The `edata.observer` edata object's value has `path` property to reflect the sub path of the cut data.

@@ -1,7 +1,8 @@
-module.exports = (root, {
-  isWrapper,
-  wrapSource
-}) => {
+module.exports = (root) => {
+  const {
+    isWrapper,
+    wrapSource
+  } = root.util
   function combine (edataArray, {
     checkNow = false,
     filter
