@@ -432,7 +432,7 @@ it('set descriptor', () => {
     baseClass: TestBaseClass
   })
   d.observer.map(spy)
-  var r = d.set('b.x', 3, {})
+  var r = d.set('b.x', 3, { descriptor: {} })
   it(spy.callCount).equals(1)
   it(r.unwrap()).equals(3)
 
@@ -441,8 +441,8 @@ it('set descriptor', () => {
   r = d.get('b.x')
   it(r.value).equals(4)
 
-  d.set('b.y', 10, {})
-  d.set('b.z', 10, { enumerable: true })
+  d.set('b.y', 10, { descriptor: {} })
+  d.set('b.z', 10, { descriptor: { enumerable: true } })
 
   d.get('a').set()
 
@@ -601,7 +601,7 @@ it('setMany', () => {
   d.setMany({
     y: 3
   }, {
-    y: {}
+    descriptor: {}
   })
   it(d.unwrap()).deepEquals({
     a: { b: 1 },

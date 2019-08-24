@@ -83,6 +83,11 @@ declare interface IObserverValue {
     meta: any,
 }
 
+declare interface SetOptions {
+  descriptor?: object
+  meta: any
+}
+
 
 declare interface edata extends EdataBaseClass {
     /**
@@ -193,7 +198,7 @@ declare interface edata extends EdataBaseClass {
      * @param value {any} Set value to edata
      * @returns {edata} The edata itself
      */
-    set(path: string | string[], value: any, descriptor?: object): edata;
+    set(path: string | string[], value: any, options: SetOptions): edata;
     /**
      * > Combine array of source edata into one target edata, any change of source will emit change event of target
      * @param arrayOfEdata {edata[] | string[]} The edata array, can be path string
@@ -213,7 +218,7 @@ declare interface edata extends EdataBaseClass {
      * @param valueFn {Function} Input prevVal, and return val will be set to edata
      * @returns {edata} The source edata
      */
-    getset(valueFn: (prevVal: edata | undefined) => any): edata;
+    getset(valueFn: (prevVal: edata | undefined) => any, options: SetOptions): edata;
     /**
      * > Like `set`, but value is from a function, it let you set `value` based on previous value, the `descriptor` only applied when `empty` is `true`.
      * @param path {string | string[]} The target path to be set
