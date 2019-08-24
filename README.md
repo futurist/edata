@@ -13,8 +13,8 @@ It roughly referenced [Object.observe API](https://developer.mozilla.org/en-US/d
 - [Usage](#usage)
   * [- Quick Start](#--quick-start)
   * [- Watch changes](#--watch-changes)
-  * [- Flat data](#--flat-data)
   * [- Define Data Relations](#--define-data-relations)
+  * [- Flat data](#--flat-data)
   * [- Use in React](#--use-in-react)
 - [API](#api)
 

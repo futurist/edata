@@ -457,16 +457,16 @@ function edata (initData, config = {}) {
       return n
     }
 
-    function set (path, value, descriptor) {
+    function set (path, value, options) {
       if (arguments.length <= 1) {
         value = path
         path = []
       }
       const func = () => value
-      return this.getset(path, func, descriptor)
+      return this.getset(path, func, options)
     }
 
-    function getset (path, func, descriptor) {
+    function getset (path, func, { descriptor, meta } = {}) {
       let obj = this
       if (!isWrapper(obj)) return obj
 
@@ -518,7 +518,8 @@ function edata (initData, config = {}) {
           action = MUTATION_TYPE.ADD
           root.observer.value = {
             data: value,
-            type: action
+            type: action,
+            meta
           }
         }
       }

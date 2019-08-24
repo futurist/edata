@@ -119,7 +119,7 @@ z.value = 10
 #### - .set
 
 ```js
-edata.set(path?: string|string[], value?: any, descriptor?: object)
+edata.set(path?: string|string[], value?: any, {descriptor?: object, meta?: any})
 ```
 
 > set nested edata value from path, same rule as `get` method. The `descriptor` only applied when path not exists.
