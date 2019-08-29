@@ -20,7 +20,7 @@ export class EdataBaseClass extends EventEmitter {
   set value (val) {
     const oldVal = this._value
     this._value = val
-    this.emit('change', { data: val, oldData: oldVal })
+    this.emit('change', { data: val, oldData: oldVal, meta: this._meta || {} })
   }
   map (fn) {
     this.on('change', fn)
@@ -311,7 +311,7 @@ function edata (initData, config = {}) {
       })
       packed.on('change', (e) => {
         if (root.observer == null) return
-        root.observer.value = ({ data: packed, meta: { oldData: e.oldData }, type: MUTATION_TYPE.UPDATE })
+        root.observer.value = ({ data: packed, meta: { oldData: e.oldData, ...e.meta }, type: MUTATION_TYPE.UPDATE })
       })
       root.observer.value = {
         data: packed,
@@ -501,8 +501,10 @@ function edata (initData, config = {}) {
         }
         [t, p] = path[i]
         if (isWrapper(n[p])) {
-          n[p].value = (createWrap(func(n[p]), obj._path.concat(_path)).value)
           value = n[p]
+          value._meta = meta
+          n[p].value = (createWrap(func(n[p]), obj._path.concat(_path)).value)
+          value._meta = null
           action = MUTATION_TYPE.UPDATE
         } else {
           value = createWrap(func(n[p], true), obj._path.concat(_path))
