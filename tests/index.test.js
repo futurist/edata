@@ -30,7 +30,7 @@ it('basic', () => {
   it(isWrapper(d)).equals(true)
   // event
   d.value.a.on('change', e => {
-    it(e).deepEquals({ data: 10, oldData: 1 })
+    it(e).deepEquals({ data: 10, oldData: 1, meta: {} })
   })
   d.value.a.value = 10
   it(keys(d.value)).deepEquals(['a', 'b'])
@@ -220,6 +220,8 @@ it('set test', () => {
   it(spy.callCount).equals(0)
   d.set('x.y.z', 10)
   it(spy.callCount).equals(3)
+  d.set('x.y.z', 11, { meta: { x: 1 } })
+  it(spy.args[0].meta).deepEquals({ oldData: 10, x: 1 })
 })
 
 it('object test', () => {
@@ -424,7 +426,7 @@ it('getset', () => {
   it(r.unwrap()).equals(4)
 })
 
-it('set descriptor', () => {
+it('set descriptor & meta', () => {
   var spy = it.spy()
   var d = edata({
     a: 1, b: { c: 2 }
@@ -432,8 +434,9 @@ it('set descriptor', () => {
     baseClass: TestBaseClass
   })
   d.observer.map(spy)
-  var r = d.set('b.x', 3, { descriptor: {} })
+  var r = d.set('b.x', 3, { descriptor: {}, meta: { x: 1 } })
   it(spy.callCount).equals(1)
+  it(spy.args[0].meta).deepEquals({ x: 1 })
   it(r.unwrap()).equals(3)
 
   // test set, then get
@@ -902,6 +905,7 @@ it('deep nested', () => {
 
   function contains (list, x) {
     if (!list) { return false }
+    // eslint-disable-next-line eqeqeq
     if (list.value == x) { return true }
     return contains(list.next, x)
   }
