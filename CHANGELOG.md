@@ -1,3 +1,9 @@
+<a name="0.8.15"></a>
+## [0.8.15](https://github.com/futurist/edata/compare/0.8.14...0.8.15) (2019-8-30 09:43:58)
+
+- fix: set not pass meta for change action  [ea5cfe0](https://github.com/futurist/edata/commit/ea5cfe0)
+
+
 <a name="0.8.14"></a>
 ## [0.8.14](https://github.com/futurist/edata/compare/0.8.13...0.8.14) (2019-8-24 11:13:30)
 
