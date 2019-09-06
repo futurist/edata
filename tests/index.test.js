@@ -531,7 +531,8 @@ it('.watch', () => {
   })
   // null path test first
   const unwatch2 = d.get('b').watch(spy)
-  const unwatch1 = d.watch('b', spy)
+  const unwatch1 = d.watch(/^b\./, spy)
+  const unwatch3 = d.watch('a', spy)
   d.set('b.c', 10)
   it(spy.callCount).equals(2)
   unwatch1()
@@ -540,6 +541,8 @@ it('.watch', () => {
   unwatch2()
   d.set('b.c', 12)
   it(spy.callCount).equals(3)
+  d.set('a', 12)
+  it(spy.callCount).equals(4)
 })
 
 it('nested getset', () => {

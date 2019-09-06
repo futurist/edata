@@ -1,6 +1,7 @@
 {
     "extends": "standard",
     "rules":{
+        "eqeqeq": 0,
         "no-return-assign": 0,
         "no-labels": 0
     }

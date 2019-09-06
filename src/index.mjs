@@ -240,8 +240,15 @@ function edata (initData, config = {}) {
         fn = path
         path = null
       }
-      const { observer } = this.cut(path)
-      return observer.map(fn)
+      const { observer } = this.cut()
+      return path == null
+        ? observer.map(fn)
+        : observer.map(e => {
+          const p = e.path.join('.')
+          if (path instanceof RegExp ? path.test(p) : String(path) === p) {
+            fn(e)
+          }
+        })
     }
 
     function cut (path, from, filter) {
