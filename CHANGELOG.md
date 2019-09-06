@@ -1,3 +1,9 @@
+<a name="0.9.0"></a>
+## [0.9.0](https://github.com/futurist/edata/compare/0.8.15...0.9.0) (2019-9-6 18:19:45)
+
+- feat(api): .watch change path behavior  [7241e8d](https://github.com/futurist/edata/commit/7241e8d)
+
+
 <a name="0.8.15"></a>
 ## [0.8.15](https://github.com/futurist/edata/compare/0.8.14...0.8.15) (2019-8-30 09:43:58)
 
