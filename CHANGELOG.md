@@ -1,3 +1,9 @@
+<a name="0.9.1"></a>
+## [0.9.1](https://github.com/futurist/edata/compare/0.9.0...0.9.1) (2019-9-7 06:32:54)
+
+- fix: type definition  [ad24c2d](https://github.com/futurist/edata/commit/ad24c2d)
+
+
 <a name="0.9.0"></a>
 ## [0.9.0](https://github.com/futurist/edata/compare/0.8.15...0.9.0) (2019-9-6 18:19:45)
 
