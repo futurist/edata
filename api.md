@@ -13,6 +13,7 @@
     + [- .unwrap](#--unwrap)
     + [- .of](#--of)
     + [- .cut](#--cut)
+    + [- .watch](#--watch)
     + [- .context](#--context)
     + [- .closest](#--closest)
     + [- .combine](#--combine)
@@ -266,6 +267,23 @@ The `edata.observer` edata object's value has `path` property to reflect the sub
 var xy = root.cut('x.y')
 xy.observer.on('change', ({data, type, path})=>console.log(type, path))
 xy.set('z', 1)
+// x.y changed! ['z']
+```
+
+
+#### - .watch
+
+```js
+edata.watch(path?: String|RegExp, callback: Function)
+```
+
+> Shortcut of edata.cut().map(fn), but only on path, if path is omitted, all change will run callback.
+
+*return: The disposer function to stop watch*
+
+```js
+var xy = root.watch('x.y', e=>{ console.log(e.path, 'changed') })  // watch for 'x.y' changes
+var all = root.watch(e=>{ console.log(e.path, 'changed') })  // watch all changes
 // x.y changed! ['z']
 ```
 

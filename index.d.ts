@@ -159,10 +159,10 @@ declare interface edata extends EdataBaseClass {
       fn: Function
     ): IDisposer;
     /**
-     * Shortcut of edata.cut(path).map(fn)
-     * @param path The path to .cut(), can be omit
+     * Shortcut of edata.cut().map(fn), but only on path
+     * @param path The path to watch, String or RegExp
      * @param fn The function to .map()
-     * @returns {Function} The disposer to stop watch
+     * @returns {Function} The disposer function to stop watch
      */
     watch(
       path: string | string[],
