@@ -46,7 +46,7 @@ declare class EdataBaseClass<T = any> extends EventEmitter {
      * > Shortcut to `on('change', callback)`
      * @returns {Function} Disposer function to off the `change` callback
      */
-    map: (fn: Function) => IDisposer;
+    map: (fn: (e: IChangeValue)=>any) => IDisposer;
     /**
      * Return `.value`, to be used with operation like `edata + 123`
      */
@@ -81,6 +81,12 @@ declare interface IObserverValue {
     type: ValueOf<MUTATION_TYPE>,
     path: string[],
     meta: any,
+}
+
+declare interface IChangeValue {
+  data: any,
+  oldData: any,
+  meta: any,
 }
 
 declare interface SetOptions {
@@ -156,7 +162,7 @@ declare interface edata extends EdataBaseClass {
      * @returns {Function} The disposer to stop watch
      */
     watch(
-      fn: Function
+      fn: (e:IObserverValue) => any
     ): IDisposer;
     /**
      * Shortcut of edata.cut().map(fn), but only on path
@@ -165,8 +171,8 @@ declare interface edata extends EdataBaseClass {
      * @returns {Function} The disposer function to stop watch
      */
     watch(
-      path: string | string[],
-      fn: Function
+      path: string | RegExp,
+      fn: (e:IObserverValue) => any
     ): IDisposer;
     /**
      * > Find `edata` up from **context parent**, which has been `.cut()`d and has `observer` on it.
