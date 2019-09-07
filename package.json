@@ -1,6 +1,6 @@
 {
   "name": "edata",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "edata is nested observable reactive EventEmitter with .value getter/setter and lodash style path.",
   "main": "dist/cjs.js",
   "module": "dist/es.js",
