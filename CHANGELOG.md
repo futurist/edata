@@ -1,3 +1,9 @@
+<a name="0.9.2"></a>
+## [0.9.2](https://github.com/futurist/edata/compare/0.9.1...0.9.2) (2019-9-7 14:28:23)
+
+- update es-mitt to 1.1.4  [72f1d86](https://github.com/futurist/edata/commit/72f1d86)
+
+
 <a name="0.9.1"></a>
 ## [0.9.1](https://github.com/futurist/edata/compare/0.9.0...0.9.1) (2019-9-7 06:32:54)
 
