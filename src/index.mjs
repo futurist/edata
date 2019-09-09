@@ -654,7 +654,7 @@ function edata (initData, config = {}) {
                 const ret = isEdataMethod
                   ? o[property](...args)
                   : out.apply(thisObject || (
-                    Array.isArray(target) ? target.map(v => buildProxy(v)) : target
+                    Array.isArray(target) ? target.map(v => buildProxy(v)) : buildProxy(target)
                   ), args)
 
                 if (Array.isArray(ret)) {

@@ -996,6 +996,28 @@ it('.proxy with array methods', () => {
   it(x[0].id).equals(1)
 })
 
+it('.proxy with object methods', () => {
+  var obj = {
+    x: { y: 10 },
+    data: 10,
+    updateData (v) { this.data = v },
+    updateXY (v) { this.x.y = v }
+  }
+  var d = edata(obj).proxy()
+  const spy = it.spy()
+  d.__watch__(spy)
+
+  d.updateXY(20)
+  d.updateXY(30)
+  it(spy.callCount).equals(2)
+  it(d.x.y).equals(30)
+
+  d.updateData(20)
+  d.updateData(30)
+  it(spy.callCount).equals(4)
+  it(d.data).equals(30)
+})
+
 // run if not from cli
 if (process.argv.pop() === __filename) {
   it.run()
