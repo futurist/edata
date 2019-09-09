@@ -1,3 +1,10 @@
+<a name="0.9.3"></a>
+## [0.9.3](https://github.com/futurist/edata/compare/0.9.2...0.9.3) (2019-9-9 15:33:55)
+
+- fix: proxy of object method bind right this  [03e1c5a](https://github.com/futurist/edata/commit/03e1c5a)
+- update docs  [75ba8db](https://github.com/futurist/edata/commit/75ba8db)
+
+
 <a name="0.9.2"></a>
 ## [0.9.2](https://github.com/futurist/edata/compare/0.9.1...0.9.2) (2019-9-7 14:28:23)
 
