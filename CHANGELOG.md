@@ -1,3 +1,9 @@
+<a name="0.9.4"></a>
+## [0.9.4](https://github.com/futurist/edata/compare/0.9.3...0.9.4) (2019-9-9 18:08:26)
+
+- add edataProxy export  [c065e90](https://github.com/futurist/edata/commit/c065e90)
+
+
 <a name="0.9.3"></a>
 ## [0.9.3](https://github.com/futurist/edata/compare/0.9.2...0.9.3) (2019-9-9 15:33:55)
 
