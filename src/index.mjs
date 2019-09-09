@@ -4,7 +4,6 @@ import EventEmitter from 'es-mitt'
 import pluginCombine from './plugins/combine'
 import { stringToPath } from './utils.mjs'
 // import { tco } from './tco'
-export default edata
 
 export class EdataBaseClass extends EventEmitter {
   constructor () {
@@ -801,6 +800,11 @@ function edata (initData, config = {}) {
     return root
   }
   return wrapSource(initData)
+}
+export default edata
+
+export function edataProxy (obj, config = {}) {
+  return edata(obj, { ...config, isProxy: true }).proxy()
 }
 
 edata.version = 'VERSION'

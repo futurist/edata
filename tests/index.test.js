@@ -3,7 +3,7 @@
 
 let path = require('path')
 let it = require('ospec')
-let { default: edata, EdataBaseClass } = require('../dist/node')
+let { default: edata, EdataBaseClass, edataProxy } = require('../dist/node')
 let { keys } = Object
 function isWrapper (s) { return s instanceof EdataBaseClass }
 
@@ -1003,7 +1003,7 @@ it('.proxy with object methods', () => {
     updateData (v) { this.data = v },
     updateXY (v) { this.x.y = v }
   }
-  var d = edata(obj).proxy()
+  var d = edataProxy(obj)
   const spy = it.spy()
   d.__watch__(spy)
 

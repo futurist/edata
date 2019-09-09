@@ -67,6 +67,7 @@ declare interface IOptions {
 }
 
 declare function edataConstructor (initData: any, options?: Partial<IOptions>): edataRoot;
+declare function edataProxy (initData: any, options?: Partial<IOptions>): EdataProxy;
 
 declare interface IUnwrapConfig {
     json?: boolean;
@@ -366,6 +367,7 @@ export {
     EdataBaseClass,
     edataRoot,
     edata,
+    edataProxy,
     IObserverValue,
     IUnwrapConfig,
     MUTATION_TYPE,
