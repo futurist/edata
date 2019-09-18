@@ -150,15 +150,15 @@ function edata (initData, config = {}) {
   }
 
   function _checkCacheAndUnwrap (config, _cache, val, result, key) {
-    const prev = _cache.find(v => v[0] === val)
+    const prev = _cache.get(val)
     if (prev != null) {
       !config.json && prev.push(() => {
       /* eslint-disable-next-line no-unused-vars */
-        const [_, r, k] = prev
+        const [r, k] = prev
         result[key] = k == null ? r : r[k]
       })
     } else {
-      _cache.push([val, result, key])
+      _cache.set(val, [result, key])
       result[key] = _unwrap(val, config, _cache)
     }
     return prev
@@ -167,7 +167,7 @@ function edata (initData, config = {}) {
   function _unwrap (obj, config, _cache) {
     let isRoot = _cache == null
     if (isRoot) {
-      _cache = [[obj]]
+      _cache = new Map([[obj, []]])
     }
 
     let result
@@ -193,8 +193,8 @@ function edata (initData, config = {}) {
     }
     if (isRoot) {
       _cache.forEach(v => {
-        if (isFunction(v[3])) {
-          v[3]()
+        if (isFunction(v[2])) {
+          v[2]()
         }
       })
       if (isFunction(config.map)) result = config.map(result)
