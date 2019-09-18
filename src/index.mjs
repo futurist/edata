@@ -207,7 +207,7 @@ function edata (initData, config = {}) {
 
     let _cache = null
     function deepIt (a, b, callback, path) {
-      _cache = isArray(_cache) ? _cache : []
+      _cache = _cache || new Map()
       path = isArray(path) ? path : []
       if (shouldNotDig(b)) return bindMethods(wrapper(a), path)
       for (let key in b) {
@@ -219,10 +219,10 @@ function edata (initData, config = {}) {
         const aval = a[key]
         const bval = b[key]
         if (!isPrimitive2(bval) && isWrapper(aval) && !isPrimitive(aval.value)) {
-          const prev = _cache.find(function (v) { return v[0] === bval })
+          const prev = _cache.get(bval)
           if (prev == null) {
             const _path = path.concat({ key })
-            _cache.push([bval, a, key])
+            _cache.set(bval, [a, key])
             deepIt(aval.value, bval, callback, _path)
           } else {
             // recursive found
@@ -362,7 +362,7 @@ function edata (initData, config = {}) {
       let packed = wrapper()
       const isRoot = _cache == null
       if (isRoot) {
-        _cache = [[source, packed, null]]
+        _cache = new Map([[source, [packed, null]]])
         root = makeChange(packed)
       }
       let skip = root.observer.skip
@@ -381,14 +381,14 @@ function edata (initData, config = {}) {
         if (bval === undefined) a[key] = wrapper()
         else if (shouldNotDig(bval)) a[key] = wrapper(bval)
         else {
-          const prev = _cache.find(function (v) { return v[0] === bval })
+          const prev = _cache.get(bval)
           if (prev == null) {
-            _cache.push([bval, a, key])
+            _cache.set(bval, [a, key])
             a[key] = createWrap(bval, _path)
           } else {
             prev.push(() => {
               /* eslint-disable-next-line no-unused-vars */
-              const [_, x, k] = prev
+              const [x, k] = prev
               a[key] = k == null ? x : x[k]
               bindMethods(a[key], k == null ? [] : _path)
             })
@@ -403,8 +403,8 @@ function edata (initData, config = {}) {
 
       if (isRoot) {
         _cache.forEach(v => {
-          if (isFunction(v[3])) {
-            v[3]()
+          if (isFunction(v[2])) {
+            v[2]()
           }
         })
       }
