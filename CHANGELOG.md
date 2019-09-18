@@ -1,3 +1,10 @@
+<a name="0.9.5"></a>
+## [0.9.5](https://github.com/futurist/edata/compare/0.9.4...0.9.5) (9/18/2019, 10:38:35 AM)
+
+- use Map _cache to createWrap  [93c20f6](https://github.com/futurist/edata/commit/93c20f6)
+- unwrap use Map  [0393c95](https://github.com/futurist/edata/commit/0393c95)
+
+
 <a name="0.9.4"></a>
 ## [0.9.4](https://github.com/futurist/edata/compare/0.9.3...0.9.4) (2019-9-9 18:08:26)
 
