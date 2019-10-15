@@ -1,3 +1,9 @@
+<a name="v0.9.6"></a>
+## [v0.9.6](https://github.com/futurist/edata/compare/0.9.5...v0.9.6) (2019-10-15 09:50:40)
+
+- fix: type definition  [c8841ba](https://github.com/futurist/edata/commit/c8841ba)
+
+
 <a name="0.9.5"></a>
 ## [0.9.5](https://github.com/futurist/edata/compare/0.9.4...0.9.5) (9/18/2019, 10:38:35 AM)
 
