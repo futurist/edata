@@ -708,6 +708,9 @@ function edata (initData, config = {}) {
     function reverse () {
       const { value } = this
       value.reverse().forEach((item, i) => {
+        if (!item || !isArray(item._path)) {
+          return
+        }
         item._path[item._path.length - 1].key = i
         item.set(item.value)
       })
@@ -717,6 +720,9 @@ function edata (initData, config = {}) {
     function sort (compareFunction) {
       const { value } = this
       value.sort(compareFunction).forEach((item, i) => {
+        if (!item || !isArray(item._path)) {
+          return
+        }
         item._path[item._path.length - 1].key = i
         item.set(item.value)
       })
@@ -734,9 +740,13 @@ function edata (initData, config = {}) {
         this.set(start + i, val)
       })
       const delta = args.length - deleteCount
+      // push array item AFTER start+delta
       if (delta) {
         for (let i = start + args.length; i < value.length; i++) {
           const item = value[i]
+          if (!item || !isArray(item._path)) {
+            continue
+          }
           const path = item._path[item._path.length - 1]
           path.key = +path.key + delta
         }
@@ -762,6 +772,9 @@ function edata (initData, config = {}) {
       let val = this.unset(0)
       value.shift()
       value.forEach(item => {
+        if (!item || !isArray(item._path)) {
+          return
+        }
         const path = item._path[item._path.length - 1]
         path.key = +path.key - 1
       })
@@ -776,6 +789,9 @@ function edata (initData, config = {}) {
         if (i < len) {
           this.set(i, item)
         } else {
+          if (!item || !isArray(item._path)) {
+            return
+          }
           const path = item._path[item._path.length - 1]
           path.key = +path.key + len
         }
