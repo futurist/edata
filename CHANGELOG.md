@@ -1,3 +1,11 @@
+<a name="v0.9.8"></a>
+## [v0.9.8](https://github.com/futurist/edata/compare/v0.9.7...v0.9.8) (2019-12-3 11:20:39)
+
+- fix: item._path throw for array op  [1047fc9](https://github.com/futurist/edata/commit/1047fc9)
+- Merge pull request #1 from futurist/dependabot/npm_and_yarn/eslint-utils-1.4.3  [c680746](https://github.com/futurist/edata/commit/c680746)
+- Bump eslint-utils from 1.3.1 to 1.4.3  [37d1bfd](https://github.com/futurist/edata/commit/37d1bfd)
+
+
 <a name="v0.9.6"></a>
 ## [v0.9.6](https://github.com/futurist/edata/compare/0.9.5...v0.9.6) (2019-10-15 09:50:40)
 
