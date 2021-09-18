@@ -17,7 +17,7 @@ class TestBaseClass extends EdataBaseClass {
   // map (fn) {
   //   this.on('change', fn)
   //   return () => {
-  //     this.removeListener('change', fn)
+  //     this.off('change', fn)
   //   }
   // }
 }

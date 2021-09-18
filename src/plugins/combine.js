@@ -21,7 +21,7 @@ module.exports = (root) => {
     }
     arr.forEach(edata => edata.on('change', checkValues))
     combinedData.end = () => {
-      arr.forEach(edata => edata.removeListener('change', checkValues))
+      arr.forEach(edata => edata.off('change', checkValues))
     }
     combinedData.check = checkValues
     if (checkNow) {
@@ -38,7 +38,7 @@ module.exports = (root) => {
     combined.on('change', onChange)
     combined.check()
     return () => {
-      combined.removeListener('change', onChange)
+      combined.off('change', onChange)
       combined.end()
       combined = null
     }

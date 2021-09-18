@@ -44,7 +44,7 @@
 
       combinedData.end = function () {
         arr.forEach(function (edata) {
-          return edata.removeListener('change', checkValues);
+          return edata.off('change', checkValues);
         });
       };
 
@@ -67,7 +67,7 @@
       combined.on('change', onChange);
       combined.check();
       return function () {
-        combined.removeListener('change', onChange);
+        combined.off('change', onChange);
         combined.end();
         combined = null;
       };
