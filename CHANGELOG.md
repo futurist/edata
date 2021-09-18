@@ -1,3 +1,27 @@
+<a name="v0.9.9"></a>
+## [v0.9.9](https://github.com/futurist/edata/compare/v0.9.8...v0.9.9) (9/18/2021, 7:32:47 AM)
+
+- fix: npm test deps errors  [c978b45](https://github.com/futurist/edata/commit/c978b45)
+- Merge pull request #9 from futurist/dependabot/npm_and_yarn/js-yaml-3.14.1  [0b37ca7](https://github.com/futurist/edata/commit/0b37ca7)
+- Merge pull request #8 from futurist/dependabot/npm_and_yarn/path-parse-1.0.7  [a63476a](https://github.com/futurist/edata/commit/a63476a)
+- Merge pull request #7 from futurist/dependabot/npm_and_yarn/set-getter-0.1.1  [c536580](https://github.com/futurist/edata/commit/c536580)
+- Merge pull request #6 from futurist/dependabot/npm_and_yarn/browserslist-4.16.6  [f118913](https://github.com/futurist/edata/commit/f118913)
+- Merge pull request #5 from futurist/dependabot/npm_and_yarn/hosted-git-info-2.8.9  [bcce05d](https://github.com/futurist/edata/commit/bcce05d)
+- feat: push support multiple items  [f9d32f8](https://github.com/futurist/edata/commit/f9d32f8)
+- fix: demo url  [55f4261](https://github.com/futurist/edata/commit/55f4261)
+- build(deps): bump js-yaml from 3.12.0 to 3.14.1  [2910a1a](https://github.com/futurist/edata/commit/2910a1a)
+- Merge pull request #4 from futurist/dependabot/npm_and_yarn/lodash-4.17.21  [be10897](https://github.com/futurist/edata/commit/be10897)
+- build(deps): bump path-parse from 1.0.5 to 1.0.7  [8293779](https://github.com/futurist/edata/commit/8293779)
+- build(deps): bump set-getter from 0.1.0 to 0.1.1  [a3a1ccd](https://github.com/futurist/edata/commit/a3a1ccd)
+- build(deps): bump browserslist from 4.3.4 to 4.16.6  [2fe82e6](https://github.com/futurist/edata/commit/2fe82e6)
+- build(deps): bump hosted-git-info from 2.7.1 to 2.8.9  [80e1f29](https://github.com/futurist/edata/commit/80e1f29)
+- build(deps-dev): bump lodash from 4.17.19 to 4.17.21  [378f8cb](https://github.com/futurist/edata/commit/378f8cb)
+- Merge pull request #3 from futurist/dependabot/npm_and_yarn/lodash-4.17.19  [4a26b78](https://github.com/futurist/edata/commit/4a26b78)
+- build(deps-dev): bump lodash from 4.17.15 to 4.17.19  [77088d2](https://github.com/futurist/edata/commit/77088d2)
+- Merge pull request #2 from futurist/dependabot/npm_and_yarn/acorn-5.7.4  [28137d3](https://github.com/futurist/edata/commit/28137d3)
+- build(deps): bump acorn from 5.7.1 to 5.7.4  [9a8edb0](https://github.com/futurist/edata/commit/9a8edb0)
+
+
 <a name="v0.9.8"></a>
 ## [v0.9.8](https://github.com/futurist/edata/compare/v0.9.7...v0.9.8) (2019-12-3 11:20:39)
 
