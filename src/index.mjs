@@ -754,10 +754,13 @@ function edata (initData, config = {}) {
       return ret
     }
 
-    function push (value) {
+    function push (...items) {
       let len = this.value.length
-      this.set(len, value)
-      return len + 1
+      for (let index = 0; index < items.length; index++) {
+        this.set(len, items[index]);
+        len++
+      }
+      return len
     }
 
     function pop () {
